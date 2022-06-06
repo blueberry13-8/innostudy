@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "31031967889",
+    "project_id": "innostudy-df50a",
+    "storage_bucket": "innostudy-df50a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31031967889:android:436c46224dfcfe04e6bf30",
+        "android_client_info": {
+          "package_name": "com.example.innostudy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "31031967889-pb5tga6er0v5ljjf50knmng9ee3d10pb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfmswpzsdWm5mjIft71o_E9PSeTqDo6FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "31031967889-pb5tga6er0v5ljjf50knmng9ee3d10pb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "31031967889-da7bfaot2r3in9vh0l9u1i0l90aq6jj8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.blueberry.testFlutter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
