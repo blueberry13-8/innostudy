@@ -35,10 +35,19 @@ void deleteGroup(Group group) {
 
 /// Stream for watching changes into groups' collection.
 /// Use it for dynamic rendering Group List.
-//final Stream<QuerySnapshot> _groupsStream = FirebaseFirestore.instance.collection('groups').snapshots();
+final Stream<QuerySnapshot> groupsStream =
+    FirebaseFirestore.instance.collection('groups').snapshots();
 
 /// Add file to the selected group (if group exists).
-void addFileToGroup(Group group, String filePath){
+void addFileToGroup(Group group, String filePath) {
   //final file = File(filePath);
+}
 
+List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
+  List<Group> groups = [];
+  for (var document in snapshot.docs) {
+    var data = document.data()! as Map<String, dynamic>;
+    groups.add(Group(groupName: data["groupName"]));
+  }
+  return groups;
 }

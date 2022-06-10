@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -17,9 +19,17 @@ class _GroupsPage extends State<GroupsPage> {
 
   ///Adds new group to widget
   void _addGroup(Group group) {
-
     setState(() {
       _groupList.add(group);
+      addGroup(group);
+    });
+  }
+
+  ///Removes group from widget
+  void _removeGroup(Group group) {
+    setState(() {
+      _groupList.remove(group);
+      deleteGroup(group);
     });
   }
 
@@ -49,43 +59,53 @@ class _GroupsPage extends State<GroupsPage> {
       ),
       //Dynamicly build widget
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: _groupList.length,
-          padding: const EdgeInsets.all(5),
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              color: Colors.yellow[100],
-              elevation: 5,
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: ListTile(
-                title: Text(
-                  _groupList[index].groupName,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                leading: const Icon(
-                  Icons.folder,
-                  color: Colors.black87,
-                ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.remove_circle_outline,
-                    color: Colors.black87,
+          child: StreamBuilder(
+        stream: groupsStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text("Idiot");
+          } else if (snapshot.hasData) {
+            _groupList = querySnapshotToGroupList(snapshot.data!);
+            return ListView.builder(
+              itemCount: _groupList.length,
+              padding: const EdgeInsets.all(5),
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  color: Colors.yellow[100],
+                  elevation: 5,
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  child: ListTile(
+                    title: Text(
+                      _groupList[index].groupName,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    leading: const Icon(
+                      Icons.folder,
+                      color: Colors.black87,
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.remove_circle_outline,
+                        color: Colors.black87,
+                      ),
+                      onPressed: () {
+                        _removeGroup(_groupList[index]);
+                      },
+                    ),
+                    onTap: () {
+                      openGroup(index);
+                    },
                   ),
-                  onPressed: () {
-                    _groupList.remove(_groupList[index]);
-                    setState(() {});
-                  },
-                ),
-                onTap: () {
-                  openGroup(index);
-                },
-              ),
+                );
+              },
+              // separatorBuilder: (BuildContext context, int index) =>
+              //     const Divider(),
             );
-          },
-          // separatorBuilder: (BuildContext context, int index) =>
-          //     const Divider(),
-        ),
-      ),
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //Bottom menu for adding new groups
