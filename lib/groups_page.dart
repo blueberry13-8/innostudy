@@ -17,6 +17,11 @@ class _GroupsPage extends State<GroupsPage> {
   //List of existing groups
   late List<Group> _groupList;
 
+  String _lastGroupName = '';
+
+  //Controller to get text from user for new group name
+  TextEditingController _textController = TextEditingController();
+
   ///Adds new group to widget
   void _addGroup(Group group) {
     setState(() {
@@ -49,6 +54,8 @@ class _GroupsPage extends State<GroupsPage> {
       Group(groupName: "AGLA"),
       Group(groupName: "Computer architecture")
     ];
+
+    _textController.text = _lastGroupName;
   }
 
   @override
@@ -111,24 +118,66 @@ class _GroupsPage extends State<GroupsPage> {
           //Bottom menu for adding new groups
           showModalBottomSheet(
               context: context,
+              isScrollControlled: true,
               builder: (BuildContext context) {
-                //Controller to get text from user for new group name
-                TextEditingController textController = TextEditingController();
-
-                return Container(
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: 15,
+                      left: 15,
+                      right: 15,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _textController,
+                        autofocus: true,
+                        onChanged: (value) {
+                          _lastGroupName = value;
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_textController.text != "") {
+                            _addGroup(Group(groupName: _textController.text));
+                            Navigator.pop(context);
+                            _textController.text = '';
+                            _lastGroupName = '';
+                          }
+                        },
+                        child: const Text("Add"),
+                      ),
+                    ],
+                  ),
+                );
+              });
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+/*
+Container(
                   margin: const EdgeInsets.all(15),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom),
                         margin: const EdgeInsets.all(10),
                         child: TextField(
+                          autofocus: true,
                           controller: textController,
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom),
+                        //margin: const EdgeInsets.all(10),
                         child: ElevatedButton(
                             onPressed: () {
                               if (textController.text != "") {
@@ -142,10 +191,4 @@ class _GroupsPage extends State<GroupsPage> {
                     ],
                   ),
                 );
-              });
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
+ */
