@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:innostudy/folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +21,7 @@ class _GroupsPage extends State<GroupsPage> {
   String _lastGroupName = '';
 
   //Controller to get text from user for new group name
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   ///Adds new group to widget
   void _addGroup(Group group) {
@@ -42,6 +43,13 @@ class _GroupsPage extends State<GroupsPage> {
     if (kDebugMode) {
       print("${_groupList[index].groupName} is opened");
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FoldersPage(title: _groupList[index].groupName),
+      ),
+    );
   }
 
   @override
