@@ -44,7 +44,9 @@ List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
   List<Group> groups = [];
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
-    groups.add(Group(groupName: data["groupName"]));
+    if (data['groupName'] != null) {
+      groups.add(Group(groupName: data["groupName"]));
+    }
   }
   return groups;
 }
