@@ -45,7 +45,11 @@ List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['groupName'] != null) {
-      groups.add(Group(groupName: data["groupName"]));
+      //!!!!!!!!!БЛЯТЬ ВОТ ТУТ СДЕЛАЙТЕ ПОЖАЛУЙТСА
+      //!!!!!!!!!БЛЯТЬ ВОТ ТУТ СДЕЛАЙТЕ ПОЖАЛУЙСТА
+      groups.add(Group(
+          groupName: data["groupName"],
+          folders: [])); //<- ВОТ ТУТ ЧТОБЫ ПАПКИ ЗАГРУЖАЛИСЬ С БД ВВВВВВОООООТТТТТ (заместо [])
     }
   }
   return groups;

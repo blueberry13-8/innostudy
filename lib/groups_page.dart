@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:innostudy/folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -47,7 +46,7 @@ class _GroupsPage extends State<GroupsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FoldersPage(title: _groupList[index].groupName),
+        builder: (context) => FoldersPage(openedGroup: _groupList[index]),
       ),
     );
   }
@@ -55,14 +54,6 @@ class _GroupsPage extends State<GroupsPage> {
   @override
   void initState() {
     super.initState();
-
-    //Example of groups
-    _groupList = [
-      Group(groupName: "Math analysis"),
-      Group(groupName: "AGLA"),
-      Group(groupName: "Computer architecture")
-    ];
-
     _textController.text = _lastGroupName;
   }
 
@@ -95,7 +86,7 @@ class _GroupsPage extends State<GroupsPage> {
                       style: const TextStyle(fontSize: 20),
                     ),
                     leading: const Icon(
-                      Icons.folder,
+                      Icons.group,
                       color: Colors.black87,
                     ),
                     trailing: IconButton(
@@ -148,7 +139,8 @@ class _GroupsPage extends State<GroupsPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (_textController.text != "") {
-                            _addGroup(Group(groupName: _textController.text));
+                            _addGroup(Group(
+                                groupName: _textController.text, folders: []));
                             Navigator.pop(context);
                             _textController.text = '';
                             _lastGroupName = '';

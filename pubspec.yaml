@@ -12,9 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  path: 1.8.1
   cupertino_icons: ^1.0.2
   firebase_core:
   cloud_firestore:
+  file_picker: ^4.6.1
+  open_file: ^3.2.1
 
 dev_dependencies:
   flutter_test:
