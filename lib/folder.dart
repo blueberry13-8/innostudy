@@ -6,12 +6,27 @@ class Folder {
   //All files in folder
   List<InnoFile> files;
   //Group where the folder is located
-  Group parentGroup;
+  Group? parentGroup;
   //The name of the folder
   String folderName;
 
   Folder(
       {required this.folderName,
-      required this.parentGroup,
-      required this.files});
+      required this.files, Group? parentGroup}){
+    this.parentGroup = parentGroup!;
+  }
+
+  factory Folder.fromJson(Map<String, dynamic> json) {
+    return Folder(
+      folderName: json['folderName'],
+      files: json['files'],
+    );
+  }
+
+  Map<String, dynamic> toJson() { // 2
+    return {
+      'folderName': folderName,
+      'files': files,
+    };
+  }
 }
