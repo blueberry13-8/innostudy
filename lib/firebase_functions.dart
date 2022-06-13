@@ -49,6 +49,19 @@ void addFolderInGroup(Group group, Folder folder){
   });
 }
 
+List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot) {
+  List<Folder> folders = [];
+  for (var document in snapshot.docs) {
+    var data = document.data()! as Map<String, dynamic>;
+    if (data['folderName'] != null) {
+      folders.add(Folder(
+          folderName: data["folderName"],
+          files: data['files']));
+    }
+  }
+  return folders;
+}
+
 void deleteFolderFromGroup(Group group, Folder folder){
   var database = FirebaseFirestore.instance;
   database.collection('groups').doc(group.groupName).collection('folders').doc(folder.folderName).get().then((value) {
