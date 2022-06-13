@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:work/inno_file.dart';
 import 'folder.dart';
 import 'group.dart';
 
@@ -64,12 +65,20 @@ void addFolderInGroup(Group group, Folder folder) {
   });
 }
 
+dynamicToPath(List <dynamic> paths){
+  List<InnoFile> correctPaths = [];
+  for (final path in paths){
+    correctPaths.add(InnoFile(fileName: path));
+  }
+  return correctPaths;
+}
+
 List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot) {
   List<Folder> folders = [];
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
-      folders.add(Folder(folderName: data["folderName"], files: data['files']));
+      folders.add(Folder(folderName: data["folderName"], files: dynamicToPath(data['files'])));
     }
   }
   return folders;
