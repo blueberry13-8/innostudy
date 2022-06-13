@@ -17,41 +17,41 @@ class FoldersPage extends StatefulWidget {
 }
 
 class _FoldersPageState extends State<FoldersPage> {
-  late List<Folder> _folderList;
+  //late List<Folder> _folderList;
 
   final TextEditingController _textController = TextEditingController();
 
   String _lastFolderName = '';
 
   ///Adds new folder to widget
-  void _addFolder(Group group, Folder folder) {
+  void _addFolder(Folder folder) {
     setState(() {
-      _folderList.add(folder);
-      group.folders.add(folder);
+      //_folderList.add(folder);
+      widget.openedGroup.folders.add(folder);
       //deleteGroup(group);
       //addGroup(group);
-      //addFolderInGroup(group, folder);
+      addFolderInGroup(widget.openedGroup, folder);
     });
   }
 
   ///Removes folder from widget
-  void _deleteFolder(Group group, Folder folder) {
+  void _deleteFolder(Folder folder) {
     setState(() {
-      _folderList.remove(folder);
-      deleteFolderFromGroup(group, folder);
+      widget.openedGroup.folders.remove(folder);
+      deleteFolderFromGroup(widget.openedGroup, folder);
     });
   }
 
   void openFolder(int index) {
     if (kDebugMode) {
-      print('${_folderList[index].folderName} is opened');
+      print('${widget.openedGroup.folders[index].folderName} is opened');
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => FilesPage(
-          openedFolder: _folderList[index],
+          openedFolder: widget.openedGroup.folders[index],
         ),
       ),
     );
@@ -61,7 +61,7 @@ class _FoldersPageState extends State<FoldersPage> {
   void initState() {
     super.initState();
 
-    _folderList = super.widget.openedGroup.folders;
+    //_folderList = super.widget.openedGroup.folders;
 
     _textController.text = _lastFolderName;
   }
@@ -85,9 +85,10 @@ class _FoldersPageState extends State<FoldersPage> {
             if (snapshot.hasError) {
               return const Text("Idiot");
             } else if (snapshot.hasData) {
-              _folderList = querySnapshotToFoldersList(snapshot.data!);
+              widget.openedGroup.folders =
+                  querySnapshotToFoldersList(snapshot.data!);
               return ListView.builder(
-                itemCount: _folderList.length,
+                itemCount: widget.openedGroup.folders.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   return Card(
@@ -96,7 +97,7 @@ class _FoldersPageState extends State<FoldersPage> {
                     margin: const EdgeInsets.symmetric(vertical: 5),
                     child: ListTile(
                       title: Text(
-                        _folderList[index].folderName,
+                        widget.openedGroup.folders[index].folderName,
                         style: const TextStyle(fontSize: 20),
                       ),
                       leading: const Icon(
@@ -109,7 +110,7 @@ class _FoldersPageState extends State<FoldersPage> {
                           color: Colors.black87,
                         ),
                         onPressed: () {
-                          _deleteFolder(widget.openedGroup, _folderList[index]);
+                          _deleteFolder(widget.openedGroup.folders[index]);
                         },
                       ),
                       onTap: () {
@@ -151,12 +152,10 @@ class _FoldersPageState extends State<FoldersPage> {
                     ElevatedButton(
                       onPressed: () {
                         if (_textController.text != '') {
-                          _addFolder(
-                              widget.openedGroup,
-                              Folder(
-                                  folderName: _textController.text,
-                                  parentGroup: widget.openedGroup,
-                                  files: []));
+                          _addFolder(Folder(
+                              folderName: _textController.text,
+                              parentGroup: widget.openedGroup,
+                              files: []));
                           Navigator.pop(context);
                           _textController.text = '';
                           _lastFolderName = '';
