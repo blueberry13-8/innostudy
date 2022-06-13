@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:innostudy/group.dart';
+import 'group.dart';
 import 'inno_file.dart';
 
 ///Class that represent all information about folder in application
@@ -13,7 +13,7 @@ class Folder {
   String folderName;
 
   Folder({required this.folderName, required this.files, Group? parentGroup}) {
-    this.parentGroup = parentGroup!;
+    this.parentGroup = parentGroup;
   }
 
   factory Folder.fromJson(Map<String, dynamic> loaded_json) {
