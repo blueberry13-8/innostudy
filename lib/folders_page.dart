@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:innostudy/files_page.dart';
@@ -26,7 +27,10 @@ class _FoldersPageState extends State<FoldersPage> {
   void _addFolder(Group group, Folder folder) {
     setState(() {
       _folderList.add(folder);
-      addFolderInGroup(group, folder);
+      group.folders.add(folder);
+      //deleteGroup(group);
+      //addGroup(group);
+      //addFolderInGroup(group, folder);
     });
   }
 
@@ -70,37 +74,54 @@ class _FoldersPageState extends State<FoldersPage> {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: ListView.builder(
-          itemCount: _folderList.length,
-          padding: const EdgeInsets.all(5),
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.yellow[100],
-              elevation: 5,
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              child: ListTile(
-                title: Text(
-                  _folderList[index].folderName,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                leading: const Icon(
-                  Icons.folder,
-                  color: Colors.black87,
-                ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.remove_circle_outline,
-                    color: Colors.black87,
-                  ),
-                  onPressed: () {
-                    _deleteFolder(widget.openedGroup, _folderList[index]);
-                  },
-                ),
-                onTap: () {
-                  openFolder(index);
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('groups')
+              .doc(widget.openedGroup.groupName)
+              .collection('folders')
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return const Text("Idiot");
+            } else if (snapshot.hasData) {
+              _folderList = querySnapshotToFoldersList(snapshot.data!);
+              return ListView.builder(
+                itemCount: _folderList.length,
+                padding: const EdgeInsets.all(5),
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.yellow[100],
+                    elevation: 5,
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    child: ListTile(
+                      title: Text(
+                        _folderList[index].folderName,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      leading: const Icon(
+                        Icons.folder,
+                        color: Colors.black87,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(
+                          Icons.remove_circle_outline,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () {
+                          _deleteFolder(widget.openedGroup, _folderList[index]);
+                        },
+                      ),
+                      onTap: () {
+                        openFolder(index);
+                      },
+                    ),
+                  );
                 },
-              ),
-            );
+              );
+            } else {
+              return const CircularProgressIndicator();
+            }
           },
         ),
       ),

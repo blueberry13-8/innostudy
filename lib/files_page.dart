@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'inno_file.dart';
 import 'folder.dart';
 import 'package:file_picker/file_picker.dart';
@@ -37,7 +38,7 @@ class _FilesPageState extends State<FilesPage> {
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    OpenFile.open(_filesList[index].realFile.path);
+    OpenFile.open(_filesList[index].realFile!.path);
   }
 
   @override
@@ -96,7 +97,9 @@ class _FilesPageState extends State<FilesPage> {
               await FilePicker.platform.pickFiles(allowMultiple: true);
           for (PlatformFile file in result!.files) {
             _addFile(InnoFile(
-                realFile: File(file.path!), parentFolder: widget.openedFolder));
+                realFile: File(file.path!),
+                parentFolder: widget.openedFolder,
+                fileName: basename(file.path!)));
           }
         },
         child: const Icon(Icons.add),

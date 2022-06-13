@@ -12,6 +12,9 @@ void addGroup(Group group) {
       debugPrint('Group with name - ${group.groupName} exists.');
     } else {
       database.collection('groups').doc(group.groupName).set(data);
+      for (var folder in group.folders) {
+        addFolderInGroup(group, folder);
+      }
       debugPrint(
           'Group with name - ${group.groupName} was successfully created!');
     }
@@ -36,14 +39,26 @@ void deleteGroup(Group group) {
 final Stream<QuerySnapshot> groupsStream =
     FirebaseFirestore.instance.collection('groups').snapshots();
 
-void addFolderInGroup(Group group, Folder folder){
+void addFolderInGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;
   var data = folder.toJson();
-  database.collection('groups').doc(group.groupName).collection('folders').doc(folder.folderName).get().then((value) {
+  database
+      .collection('groups')
+      .doc(group.groupName)
+      .collection('folders')
+      .doc(folder.folderName)
+      .get()
+      .then((value) {
     if (value.exists) {
       debugPrint('');
     } else {
-      database.collection('groups').doc(group.groupName).collection('folders').doc(folder.folderName).set(data);
+      database
+          .collection('groups')
+          .doc(group.groupName)
+          .collection('folders')
+          .doc(folder.folderName)
+          .set(data);
+      database.collection('groups').doc(group.groupName).set(group.toJson());
       debugPrint('');
     }
   });
@@ -54,19 +69,28 @@ List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
-      folders.add(Folder(
-          folderName: data["folderName"],
-          files: data['files']));
+      folders.add(Folder(folderName: data["folderName"], files: data['files']));
     }
   }
   return folders;
 }
 
-void deleteFolderFromGroup(Group group, Folder folder){
+void deleteFolderFromGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;
-  database.collection('groups').doc(group.groupName).collection('folders').doc(folder.folderName).get().then((value) {
+  database
+      .collection('groups')
+      .doc(group.groupName)
+      .collection('folders')
+      .doc(folder.folderName)
+      .get()
+      .then((value) {
     if (value.exists) {
-      database.collection('groups').doc(group.groupName).collection('folders').doc(folder.folderName).delete();
+      database
+          .collection('groups')
+          .doc(group.groupName)
+          .collection('folders')
+          .doc(folder.folderName)
+          .delete();
       debugPrint('');
     } else {
       debugPrint('');
@@ -84,11 +108,8 @@ List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['groupName'] != null) {
-      //!!!!!!!!!БЛЯТЬ ВОТ ТУТ СДЕЛАЙТЕ ПОЖАЛУЙТСА
-      //!!!!!!!!!БЛЯТЬ ВОТ ТУТ СДЕЛАЙТЕ ПОЖАЛУЙСТА
-      groups.add(Group(
-          groupName: data["groupName"],
-          folders: [])); //<- ВОТ ТУТ ЧТОБЫ ПАПКИ ЗАГРУЖАЛИСЬ С БД ВВВВВВОООООТТТТТ (заместо [])
+      debugPrint("!");
+      groups.add(Group.fromJson(data));
     }
   }
   return groups;
