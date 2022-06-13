@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:innostudy/files_page.dart';
 import 'folder.dart';
 import 'group.dart';
+import 'firebase_functions.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
@@ -22,18 +23,18 @@ class _FoldersPageState extends State<FoldersPage> {
   String _lastFolderName = '';
 
   ///Adds new folder to widget
-  void _addFolder(Folder folder) {
+  void _addFolder(Group group, Folder folder) {
     setState(() {
       _folderList.add(folder);
-      //addFolder(folder);
+      addFolderInGroup(group, folder);
     });
   }
 
   ///Removes folder from widget
-  void _removeFolder(Folder folder) {
+  void _deleteFolder(Group group, Folder folder) {
     setState(() {
       _folderList.remove(folder);
-      //deleteFolder(folder);
+      deleteFolderFromGroup(group, folder);
     });
   }
 
@@ -92,7 +93,7 @@ class _FoldersPageState extends State<FoldersPage> {
                     color: Colors.black87,
                   ),
                   onPressed: () {
-                    _removeFolder(_folderList[index]);
+                    _deleteFolder(widget.openedGroup, _folderList[index]);
                   },
                 ),
                 onTap: () {
@@ -129,10 +130,12 @@ class _FoldersPageState extends State<FoldersPage> {
                     ElevatedButton(
                       onPressed: () {
                         if (_textController.text != '') {
-                          _addFolder(Folder(
-                              folderName: _textController.text,
-                              parentGroup: widget.openedGroup,
-                              files: []));
+                          _addFolder(
+                              widget.openedGroup,
+                              Folder(
+                                  folderName: _textController.text,
+                                  parentGroup: widget.openedGroup,
+                                  files: []));
                           Navigator.pop(context);
                           _textController.text = '';
                           _lastFolderName = '';
