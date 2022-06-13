@@ -13,4 +13,5 @@ class InnoFile {
 
   InnoFile({required this.realFile, required this.parentFolder})
       : fileName = basename(realFile.path);
+
 }
