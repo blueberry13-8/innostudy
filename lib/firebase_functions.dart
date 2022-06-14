@@ -111,7 +111,7 @@ void deleteFolderFromGroup(Group group, Folder folder) {
 }
 
 /// Add file to the selected group (if group exists).
-Future<void> addFileToGroup(Group? group, Folder folder, String filePath, String name) async {
+Future<void> addFileToFolder(Group? group, Folder folder, String filePath, String name) async {
   if (group == null){
     throw Exception('addFileToGroup: group is null');
   }
@@ -129,13 +129,35 @@ Future<void> addFileToGroup(Group? group, Folder folder, String filePath, String
       throw Exception('addFileToGroup: File with such name already exists');
     }
   }
-
   await FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName).collection(folder.folderName).doc(name).set({'files/$name':'files/$name'});
   final ref = await FirebaseStorage.instance.ref().child('files/$name');
   final file = await File(filePath);
   await ref.putFile(file);
+}
+
+Future<void> deleteFileFromFolder(Group? group, Folder folder, String fileName) async {
+  if (group == null){
+    throw Exception('addFileToGroup: group is null');
+  }
+  final cur_doc = await FirebaseFirestore.instance
+      .collection('groups')
+      .doc(group.groupName)
+      .get();
+
+  if (cur_doc.exists == false){
+    throw Exception('addFileToGroup: Group does not exist');
+  }
+  final eraseDoc = await FirebaseFirestore.instance
+      .collection('groups')
+      .doc(group.groupName).collection(folder.folderName).doc(fileName); // it's folders, not files
+  if ((await eraseDoc.get()).exists == false){
+    throw Exception('deleteFileFromGroup: File/Folder to delete does not exist');
+  }
+  eraseDoc.delete();
+  final ref = await FirebaseStorage.instance.ref().child('files/$fileName');
+  ref.delete();
 }
 
 List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
