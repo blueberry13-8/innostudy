@@ -40,17 +40,16 @@ class _FilesPageState extends State<FilesPage> {
     });
   }
 
-  void openFile(int index) {
+  Future<void> openFile(int index) async{
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    OpenFile.open(_filesList[index].realFile!.path);
+    OpenFile.open((await getFromStorage(widget.openedFolder.parentGroup, widget.openedFolder, _filesList[index].fileName)).path);
   }
 
   @override
   void initState() {
     super.initState();
-
     _filesList = super.widget.openedFolder.files;
   }
 
@@ -90,6 +89,7 @@ class _FilesPageState extends State<FilesPage> {
                 ),
                 onTap: () {
                   print("WHATT");
+
                   openFile(index);
                 },
               ),

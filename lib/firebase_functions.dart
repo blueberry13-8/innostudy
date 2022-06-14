@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:work/inno_file.dart';
 import 'folder.dart';
 import 'group.dart';
@@ -158,6 +159,25 @@ Future<void> deleteFileFromFolder(Group? group, Folder folder, String fileName) 
   docRef.update({'files': FieldValue.arrayRemove(['files/$fileName'])});
   final ref = await FirebaseStorage.instance.ref().child('files/$fileName');
   ref.delete();
+}
+
+Future<File> getFromStorage(Group? group, Folder folder, String name) async{
+  if (group == null){
+    throw Exception('addFileToGroup: group is null');
+  }
+  dynamic cur_doc = await FirebaseFirestore.instance
+      .collection('groups')
+      .doc(group.groupName)
+      .get();
+
+  if (cur_doc.exists == false){
+    throw Exception('addFileToGroup: Group does not exist');
+  }
+  final ref = await FirebaseStorage.instance.ref().child('files/$name');
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File('${dir.path}/$name');
+  await ref.writeToFile(file);
+  return file;
 }
 
 List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
