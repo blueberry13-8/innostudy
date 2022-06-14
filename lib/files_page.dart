@@ -24,8 +24,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   void _addFile(InnoFile innoFile) {
-    // заглушка
-    addFileToGroup(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.realFile!.path, innoFile.fileName);
+
+    addFileToFolder(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.realFile!.path, innoFile.fileName);
     setState(() {
       _filesList.add(innoFile);
     });
@@ -33,6 +33,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Removes folder from widget
   void _removeFile(InnoFile innoFile) {
+    print(widget.openedFolder.folderName);
+    deleteFileFromFolder(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.fileName);
     setState(() {
       _filesList.remove(innoFile);
     });

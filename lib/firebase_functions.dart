@@ -70,7 +70,8 @@ void addFolderInGroup(Group group, Folder folder) {
 
 dynamicToPath(List <dynamic> paths){
   List<InnoFile> correctPaths = [];
-  for (final path in paths){
+  for (String path in paths){
+    path = path.split('/')[path.split('/').length - 1];
     correctPaths.add(InnoFile(fileName: path));
   }
   return correctPaths;
@@ -123,15 +124,17 @@ Future<void> addFileToFolder(Group? group, Folder folder, String filePath, Strin
   if (cur_doc.exists == false){
     throw Exception('addFileToGroup: Group does not exist');
   }
+  DocumentReference docRef = await FirebaseFirestore.instance
+      .collection('groups')
+      .doc(group.groupName).collection('folders').doc(folder.folderName);
+
   final filePool =  (await FirebaseStorage.instance.ref().child('files/').listAll()).items;
   for (var file in filePool){
     if (file.name == name){
       throw Exception('addFileToGroup: File with such name already exists');
     }
   }
-  await FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName).collection(folder.folderName).doc(name).set({'files/$name':'files/$name'});
+  docRef.update({'files': FieldValue.arrayUnion(['files/$name'])});
   final ref = await FirebaseStorage.instance.ref().child('files/$name');
   final file = await File(filePath);
   await ref.putFile(file);
@@ -149,13 +152,10 @@ Future<void> deleteFileFromFolder(Group? group, Folder folder, String fileName) 
   if (cur_doc.exists == false){
     throw Exception('addFileToGroup: Group does not exist');
   }
-  final eraseDoc = await FirebaseFirestore.instance
+  final docRef = await FirebaseFirestore.instance
       .collection('groups')
-      .doc(group.groupName).collection(folder.folderName).doc(fileName); // it's folders, not files
-  if ((await eraseDoc.get()).exists == false){
-    throw Exception('deleteFileFromGroup: File/Folder to delete does not exist');
-  }
-  eraseDoc.delete();
+      .doc(group.groupName).collection('folders').doc(folder.folderName);// it's folders, not files
+  docRef.update({'files': FieldValue.arrayRemove(['files/$fileName'])});
   final ref = await FirebaseStorage.instance.ref().child('files/$fileName');
   ref.delete();
 }
