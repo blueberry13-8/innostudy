@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:work/firebase_functions.dart';
+import 'package:work/group.dart';
 import 'inno_file.dart';
 import 'folder.dart';
 import 'package:file_picker/file_picker.dart';
@@ -22,6 +24,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   void _addFile(InnoFile innoFile) {
+    // заглушка
+    addFileToGroup(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.realFile!.path, innoFile.fileName);
     setState(() {
       _filesList.add(innoFile);
     });

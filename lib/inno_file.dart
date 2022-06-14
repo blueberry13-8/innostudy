@@ -1,4 +1,4 @@
-import 'package:innostudy/folder.dart';
+import 'folder.dart';
 import 'dart:io';
 
 ///The class that represents file in our application

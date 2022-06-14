@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:innostudy/files_page.dart';
+import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
@@ -86,8 +86,8 @@ class _FoldersPageState extends State<FoldersPage> {
               return const Text("Idiot");
             } else if (snapshot.hasData) {
               widget.openedGroup.folders =
-                  querySnapshotToFoldersList(snapshot.data!);
-              return ListView.builder(
+                  querySnapshotToFoldersList(snapshot.data!, widget.openedGroup);
+                  return ListView.builder(
                 itemCount: widget.openedGroup.folders.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {

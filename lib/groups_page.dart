@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:innostudy/folders_page.dart';
+import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
 
@@ -42,7 +42,6 @@ class _GroupsPage extends State<GroupsPage> {
     if (kDebugMode) {
       print("${_groupList[index].groupName} is opened");
     }
-
     Navigator.push(
       context,
       MaterialPageRoute(

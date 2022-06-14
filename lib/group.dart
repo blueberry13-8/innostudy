@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:innostudy/folder.dart';
+import 'folder.dart';
 
 ///Class that represent all information about groups in application
 class Group {
@@ -18,7 +18,7 @@ class Group {
     List<dynamic> notParsed = loaded_json["folders"];
     debugPrint("!");
     for (int i = 0; i < notParsed.length; i++) {
-      groupFolders.add(Folder.fromJson(json.decode(notParsed[i])));
+      groupFolders.add(Folder.fromJson(json.decode(notParsed[i]))); // serious thing think a lot in future on it
     }
 
     return Group(
