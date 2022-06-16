@@ -40,6 +40,8 @@ dependencies:
   path_provider: ^2.0.11
   file_picker: ^4.5.1
   open_file: ^3.2.1
+  firebase_storage: ^10.2.17
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:

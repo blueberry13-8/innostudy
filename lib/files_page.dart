@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:work/firebase_functions.dart';
-import 'package:work/group.dart';
+import 'firebase_functions.dart';
 import 'inno_file.dart';
 import 'folder.dart';
 import 'package:file_picker/file_picker.dart';
@@ -33,7 +32,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Removes folder from widget
   void _removeFile(InnoFile innoFile) {
-    print(widget.openedFolder.folderName);
+    debugPrint(widget.openedFolder.folderName);
+    debugPrint('${innoFile.fileName} for deleting.');
     deleteFileFromFolder(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.fileName);
     setState(() {
       _filesList.remove(innoFile);
