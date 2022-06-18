@@ -6,11 +6,12 @@ import 'folder.dart';
 class Group {
   //Name of group
   String groupName;
+  String creator = 'undefined';
 
   //All folders in this group
   List<Folder> folders;
 
-  Group({required this.groupName, required this.folders});
+  Group({required this.groupName, required this.folders, required this.creator});
 
   factory Group.fromJson(Map<String, dynamic> loaded_json) {
     debugPrint("!");
@@ -24,6 +25,7 @@ class Group {
     return Group(
       groupName: loaded_json['groupName'],
       folders: groupFolders,
+      creator:  loaded_json['creator']
     );
   }
 
@@ -37,6 +39,7 @@ class Group {
     return {
       'groupName': groupName,
       'folders': notParsed,
+      'creator': creator,
     };
   }
 }

@@ -6,6 +6,7 @@ import 'folder.dart';
 import 'group.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Add group to the DB if it doesn't exist.
 void addGroup(Group group) {
@@ -55,6 +56,10 @@ void deleteGroup(Group group) {
 /// Use it for dynamic rendering Group List.
 final Stream<QuerySnapshot> groupsStream =
     FirebaseFirestore.instance.collection('groups').snapshots();
+
+final Stream<User?> consumerStream = FirebaseAuth.instance
+    .authStateChanges();
+
 
 void addFolderInGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;

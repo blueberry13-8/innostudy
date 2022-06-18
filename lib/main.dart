@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'groups_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'hello_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class InnoStudyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const GroupsPage(),
+      home:  HelloPage(),
     );
   }
 }
