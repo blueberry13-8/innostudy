@@ -1,6 +1,6 @@
-# innostudy
+# Innostudy
 
-A new Flutter project.
+Innostudy - is the application that helps students of Innopolis University with education.
 
 ## Getting Started
 
