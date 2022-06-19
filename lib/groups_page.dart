@@ -65,7 +65,7 @@ class _GroupsPage extends State<GroupsPage> {
         appBar: AppBar(
           title: const Text("Group page"),
         ),
-        //Dynamicly build widget
+        //Dynamically build widget
         body: SafeArea(
             child: StreamBuilder(
           stream: groupsStream,
@@ -91,21 +91,24 @@ class _GroupsPage extends State<GroupsPage> {
                             _groupList[index].groupName,
                             style: const TextStyle(fontSize: 20),
                           ),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           Expanded(
                             child: DecoratedBox(
                               decoration: BoxDecoration(
-                                color: Color(0xFFBCAAA4),
+                                color: const Color(0xFFBCAAA4),
                                 border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.all(
+                                borderRadius: const BorderRadius.all(
                                   Radius.circular(
                                       10.0), //                 <--- border radius here
                                 ),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: Text(
                                   _groupList[index].creator,
-                                  style: const TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                             ),
@@ -160,7 +163,7 @@ class _GroupsPage extends State<GroupsPage> {
               },
               child: const Icon(Icons.exit_to_app),
             ),
-            SizedBox(
+            const SizedBox(
               width: 100,
             ),
             FloatingActionButton(
