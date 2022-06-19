@@ -2,7 +2,7 @@
     package="com.example.innostudy">
    <application
         android:label="InnoStudy"
-        android:name="InnoStudy"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
