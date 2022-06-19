@@ -1,6 +1,6 @@
 # Innostudy
 
-Innostudy - is the application that helps students of Innopolis University with education.
+InnoStudy - is the application that helps students of Innopolis University with education.
 
 ## Description
 
@@ -49,3 +49,6 @@ cd <PATH>/innostudy
 flutter pub get
 ```
 Now you can do any changes and modification in project.
+
+## Android release
+You can try InnoStudy now. Just install Android release by [this link](https://github.com/blueberry13-8/innostudy/releases/download/v1.0.0/InnoStudyApp-v1.0.0.apk).
