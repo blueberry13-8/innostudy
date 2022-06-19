@@ -91,20 +91,22 @@ class _GroupsPage extends State<GroupsPage> {
                             _groupList[index].groupName,
                             style: const TextStyle(fontSize: 20),
                           ),
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Color(0xFFBCAAA4),
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(
-                                    10.0), //                 <--- border radius here
+                          Expanded(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFBCAAA4),
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(
+                                      10.0), //                 <--- border radius here
+                                ),
                               ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Text(
-                                _groupList[index].creator,
-                                style: const TextStyle(fontSize: 20),
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Text(
+                                  _groupList[index].creator,
+                                  style: const TextStyle(fontSize: 20),
+                                ),
                               ),
                             ),
                           ),
@@ -123,8 +125,7 @@ class _GroupsPage extends State<GroupsPage> {
                           if (_groupList[index].creator ==
                               Consumer.data.email) {
                             _removeGroup(_groupList[index]);
-                          }
-                          else{
+                          } else {
                             Fluttertoast.showToast(
                                 msg: "You don't have rights for this action",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -132,8 +133,7 @@ class _GroupsPage extends State<GroupsPage> {
                                 timeInSecForIosWeb: 3,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.white,
-                                fontSize: 16.0
-                            );
+                                fontSize: 16.0);
                           }
                         },
                       ),
@@ -160,7 +160,9 @@ class _GroupsPage extends State<GroupsPage> {
               },
               child: const Icon(Icons.exit_to_app),
             ),
-            SizedBox(width: 100,),
+            SizedBox(
+              width: 100,
+            ),
             FloatingActionButton(
               onPressed: () {
                 //Bottom menu for adding new groups
