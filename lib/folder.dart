@@ -7,8 +7,10 @@ import 'inno_file.dart';
 class Folder {
   //All files in folder
   List<InnoFile> files;
+
   //Group where the folder is located
   Group? parentGroup;
+
   //The name of the folder
   String folderName;
 
