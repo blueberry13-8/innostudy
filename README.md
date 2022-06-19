@@ -9,12 +9,15 @@ Students can create their own groups where they can share the content <i>(video,
 
 ## Demonstration
 
-<p float="left">
-  <img src="./screens/start_screen.jpg"/ width="300" height="600">
-  <img src="./screens/groups_screen.jpg"/ width="300" height="600">
-  <img src="./screens/folders_screen.jpg"/ width="300" height="600">
-  <img src="./screens/files_screen.jpg"/ width="300" height="600">
-</p>
+<p>Starting page:</p>
+<img src="./screens/start_screen.jpg" width="230" height="400">
+<p>Groups page:</p>
+<img src="./screens/groups_screen.jpg" width="230" height="400">
+<p>Folders page:</p>
+<img src="./screens/folders_screen.jpg" width="230" height="400">
+<p>Files page:</p>
+<img src="./screens/files_screen.jpg" width="230" height="400">
+
 
 ## Technologies used
 
