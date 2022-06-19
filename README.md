@@ -18,6 +18,11 @@ Students can create their own groups where they can share the content <i>(video,
 <p>Files page:</p>
 <img src="./screens/files_screen.jpg" width="230" height="400">
 
+## List of features
+* Accounts for users
+* Saving files in Data Base
+* File sharing
+* Groups and folders creation
 
 ## Technologies used
 
