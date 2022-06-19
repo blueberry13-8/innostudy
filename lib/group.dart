@@ -11,7 +11,8 @@ class Group {
   //All folders in this group
   List<Folder> folders;
 
-  Group({required this.groupName, required this.folders, required this.creator});
+  Group(
+      {required this.groupName, required this.folders, required this.creator});
 
   factory Group.fromJson(Map<String, dynamic> loadedJson) {
     debugPrint("!");
@@ -19,14 +20,14 @@ class Group {
     List<dynamic> notParsed = loadedJson["folders"];
     debugPrint("!");
     for (int i = 0; i < notParsed.length; i++) {
-      groupFolders.add(Folder.fromJson(json.decode(notParsed[i]))); // serious thing think a lot in future on it
+      groupFolders.add(Folder.fromJson(json
+          .decode(notParsed[i]))); // serious thing think a lot in future on it
     }
 
     return Group(
-      groupName: loadedJson['groupName'],
-      folders: groupFolders,
-      creator:  loadedJson['creator']
-    );
+        groupName: loadedJson['groupName'],
+        folders: groupFolders,
+        creator: loadedJson['creator']);
   }
 
   Map<String, dynamic> toJson() {

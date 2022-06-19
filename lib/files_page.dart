@@ -23,8 +23,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   void _addFile(InnoFile innoFile) {
-
-    addFileToFolder(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.realFile!.path, innoFile.fileName);
+    addFileToFolder(widget.openedFolder.parentGroup, widget.openedFolder,
+        innoFile.realFile!.path, innoFile.fileName);
     setState(() {
       _filesList.add(innoFile);
     });
@@ -34,17 +34,20 @@ class _FilesPageState extends State<FilesPage> {
   void _removeFile(InnoFile innoFile) {
     debugPrint(widget.openedFolder.folderName);
     debugPrint('${innoFile.fileName} for deleting.');
-    deleteFileFromFolder(widget.openedFolder.parentGroup, widget.openedFolder, innoFile.fileName);
+    deleteFileFromFolder(widget.openedFolder.parentGroup, widget.openedFolder,
+        innoFile.fileName);
     setState(() {
       _filesList.remove(innoFile);
     });
   }
 
-  Future<void> openFile(int index) async{
+  Future<void> openFile(int index) async {
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    OpenFile.open((await getFromStorage(widget.openedFolder.parentGroup, widget.openedFolder, _filesList[index].fileName)).path);
+    OpenFile.open((await getFromStorage(widget.openedFolder.parentGroup,
+            widget.openedFolder, _filesList[index].fileName))
+        .path);
   }
 
   @override

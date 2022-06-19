@@ -85,9 +85,9 @@ class _FoldersPageState extends State<FoldersPage> {
             if (snapshot.hasError) {
               return const Text("Idiot");
             } else if (snapshot.hasData) {
-              widget.openedGroup.folders =
-                  querySnapshotToFoldersList(snapshot.data!, widget.openedGroup);
-                  return ListView.builder(
+              widget.openedGroup.folders = querySnapshotToFoldersList(
+                  snapshot.data!, widget.openedGroup);
+              return ListView.builder(
                 itemCount: widget.openedGroup.folders.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {

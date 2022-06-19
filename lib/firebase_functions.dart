@@ -57,9 +57,7 @@ void deleteGroup(Group group) {
 final Stream<QuerySnapshot> groupsStream =
     FirebaseFirestore.instance.collection('groups').snapshots();
 
-final Stream<User?> consumerStream = FirebaseAuth.instance
-    .authStateChanges();
-
+final Stream<User?> consumerStream = FirebaseAuth.instance.authStateChanges();
 
 void addFolderInGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;
@@ -122,9 +120,10 @@ void deleteFolderFromGroup(Group group, Folder folder) {
       .then((value) async {
     if (value.exists) {
       List<dynamic> files = value.data()!['files'];
-      for (String x in files){
+      for (String x in files) {
         debugPrint('$x         *******************************************');
-        deleteFileFromFolder(group, folder, x.toString().replaceAll('files/', ''));
+        deleteFileFromFolder(
+            group, folder, x.toString().replaceAll('files/', ''));
       }
       Future.delayed(const Duration(milliseconds: 1000)).then((value) {
         database
