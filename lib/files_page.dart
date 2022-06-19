@@ -88,7 +88,9 @@ class _FilesPageState extends State<FilesPage> {
                   },
                 ),
                 onTap: () {
-                  print("WHATT");
+                  if (kDebugMode) {
+                    print("WHAT");
+                  }
 
                   openFile(index);
                 },

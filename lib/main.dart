@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'groups_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'hello_page.dart';
@@ -23,7 +22,7 @@ class InnoStudyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:  HelloPage(),
+      home: const HelloPage(),
     );
   }
 }

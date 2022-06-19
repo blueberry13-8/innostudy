@@ -12,19 +12,17 @@ class Folder {
   //The name of the folder
   String folderName;
 
-  Folder({required this.folderName, required this.files, Group? parentGroup}) {
-    this.parentGroup = parentGroup;
-  }
+  Folder({required this.folderName, required this.files, this.parentGroup});
 
-  factory Folder.fromJson(Map<String, dynamic> loaded_json) {
+  factory Folder.fromJson(Map<String, dynamic> loadedJson) {
     List<InnoFile> innoFiles = [];
-    List<dynamic> notParsed = loaded_json["files"];
+    List<dynamic> notParsed = loadedJson["files"];
 
     for (int i = 0; i < notParsed.length; i++) {
       innoFiles.add(InnoFile.fromJson(json.decode(notParsed[i])));
     }
     return Folder(
-      folderName: loaded_json['folderName'],
+      folderName: loadedJson['folderName'],
       files: innoFiles,
     );
   }

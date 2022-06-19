@@ -147,15 +147,15 @@ Future<void> addFileToFolder(
   if (group == null) {
     throw Exception('addFileToGroup: group is null');
   }
-  dynamic cur_doc = await FirebaseFirestore.instance
+  dynamic curDoc = await FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName)
       .get();
 
-  if (cur_doc.exists == false) {
+  if (curDoc.exists == false) {
     throw Exception('addFileToGroup: Group does not exist');
   }
-  DocumentReference docRef = await FirebaseFirestore.instance
+  DocumentReference docRef = FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName)
       .collection('folders')
@@ -171,8 +171,8 @@ Future<void> addFileToFolder(
   docRef.update({
     'files': FieldValue.arrayUnion(['files/$name'])
   });
-  final ref = await FirebaseStorage.instance.ref().child('files/$name');
-  final file = await File(filePath);
+  final ref = FirebaseStorage.instance.ref().child('files/$name');
+  final file = File(filePath);
   await ref.putFile(file);
 }
 
@@ -181,15 +181,15 @@ Future<void> deleteFileFromFolder(
   if (group == null) {
     throw Exception('addFileToGroup: group is null');
   }
-  final cur_doc = await FirebaseFirestore.instance
+  final curDoc = await FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName)
       .get();
 
-  if (cur_doc.exists == false) {
+  if (curDoc.exists == false) {
     throw Exception('addFileToGroup: Group does not exist');
   }
-  final docRef = await FirebaseFirestore.instance
+  final docRef = FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName)
       .collection('folders')
@@ -197,7 +197,7 @@ Future<void> deleteFileFromFolder(
   docRef.update({
     'files': FieldValue.arrayRemove(['files/$fileName'])
   });
-  final ref = await FirebaseStorage.instance.ref().child('files/$fileName');
+  final ref = FirebaseStorage.instance.ref().child('files/$fileName');
   ref.delete();
 }
 
@@ -205,15 +205,15 @@ Future<File> getFromStorage(Group? group, Folder folder, String name) async {
   if (group == null) {
     throw Exception('addFileToGroup: group is null');
   }
-  dynamic cur_doc = await FirebaseFirestore.instance
+  dynamic curDoc = await FirebaseFirestore.instance
       .collection('groups')
       .doc(group.groupName)
       .get();
 
-  if (cur_doc.exists == false) {
+  if (curDoc.exists == false) {
     throw Exception('addFileToGroup: Group does not exist');
   }
-  final ref = await FirebaseStorage.instance.ref().child('files/$name');
+  final ref = FirebaseStorage.instance.ref().child('files/$name');
   final dir = await getApplicationDocumentsDirectory();
   final file = File('${dir.path}/$name');
   await ref.writeToFile(file);

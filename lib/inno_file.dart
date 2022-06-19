@@ -5,8 +5,10 @@ import 'dart:io';
 class InnoFile {
   //The file itself
   File? realFile;
+
   //Folder where the file is located
   Folder? parentFolder;
+
   //The name of the file
   String fileName;
 
