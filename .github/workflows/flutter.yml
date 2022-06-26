@@ -26,6 +26,10 @@ jobs:
         with:
           channel: "stable"
       
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      
       # Runs a single command using the runners shell
       - name: get dependencies
         run: flutter pub get
