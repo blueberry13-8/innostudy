@@ -37,3 +37,7 @@ jobs:
       # Run unit-tests
       - name: run tests
         run: flutter test --platform chrome
+      
+      #Test apk build
+      - name: build apk
+        run: flutter build apk
