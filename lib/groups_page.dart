@@ -22,7 +22,21 @@ class _GroupsPage extends State<GroupsPage> {
 
   String _lastGroupName = '';
 
-  //Controller to get text from user for new group name
+  var topAppBar = AppBar(
+    elevation: 0.1,
+    // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+    title: const Text('Group page'),
+    centerTitle: true,
+    /// Here we can add button to change mode from light to dark and vice versa
+    // actions: <Widget>[
+    //   IconButton(
+    //     icon: const Icon(Icons.light_mode),
+    //     onPressed: () {},
+    //   )
+    // ],
+  );
+
+  ///Controller to get text from user for new group name
   final TextEditingController _textController = TextEditingController();
 
   ///Adds new group to widget
@@ -62,9 +76,7 @@ class _GroupsPage extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Group page"),
-        ),
+        appBar: topAppBar,
         //Dynamically build widget
         body: SafeArea(
             child: StreamBuilder(
@@ -154,64 +166,73 @@ class _GroupsPage extends State<GroupsPage> {
             }
           },
         )),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Stack(
+          fit: StackFit.expand,
           children: [
-            FloatingActionButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-              child: const Icon(Icons.exit_to_app),
+            Positioned(
+              left: 30,
+              bottom: 10,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
+                child: const Icon(Icons.exit_to_app),
+              ),
             ),
-            const SizedBox(
-              width: 100,
-            ),
-            FloatingActionButton(
-              onPressed: () {
-                //Bottom menu for adding new groups
-                showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            top: 15,
-                            left: 15,
-                            right: 15,
-                            bottom:
-                                MediaQuery.of(context).viewInsets.bottom + 15),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              controller: _textController,
-                              autofocus: true,
-                              onChanged: (value) {
-                                _lastGroupName = value;
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_textController.text != "") {
-                                  _addGroup(Group(
-                                      groupName: _textController.text,
-                                      folders: [],
-                                      creator: FirebaseAuth
-                                          .instance.currentUser!.email!));
-                                  Navigator.pop(context);
-                                  _textController.text = '';
-                                  _lastGroupName = '';
-                                }
-                              },
-                              child: const Text("Add"),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-              child: const Icon(Icons.add),
+            // const SizedBox(
+            //   width: 10,
+            // ),
+            Positioned(
+              right: 30,
+              bottom: 10,
+              child: FloatingActionButton(
+                onPressed: () {
+                  //Bottom menu for adding new groups
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              top: 15,
+                              left: 15,
+                              right: 15,
+                              bottom:
+                                  MediaQuery.of(context).viewInsets.bottom + 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                controller: _textController,
+                                autofocus: true,
+                                onChanged: (value) {
+                                  _lastGroupName = value;
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_textController.text != "") {
+                                    _addGroup(Group(
+                                        groupName: _textController.text,
+                                        folders: [],
+                                        creator: FirebaseAuth
+                                            .instance.currentUser!.email!));
+                                    Navigator.pop(context);
+                                    _textController.text = '';
+                                    _lastGroupName = '';
+                                  }
+                                },
+                                child: const Text("Add"),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                child: const Icon(Icons.add),
+              ),
             ),
           ],
         ));
