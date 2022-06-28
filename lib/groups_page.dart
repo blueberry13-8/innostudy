@@ -88,44 +88,35 @@ class _GroupsPage extends State<GroupsPage> {
             } else if (snapshot.hasData) {
               _groupList = querySnapshotToGroupList(snapshot.data!);
               return ListView.builder(
+                scrollDirection: Axis.vertical,
                 itemCount: _groupList.length,
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     color: Colors.yellow[100],
-                    elevation: 5,
-                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _groupList[index].groupName,
-                            style: const TextStyle(fontSize: 20),
+                      title: Text(
+                        _groupList[index].groupName,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      subtitle: DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFBCAAA4),
+                          //border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(7), //<--- border radius here
                           ),
-                          const SizedBox(
-                            width: 5,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 5),
+                          child: Text(
+                            _groupList[index].creator,
+                            style: const TextStyle(fontSize: 15),
                           ),
-                          Expanded(
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFBCAAA4),
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(
-                                      10.0), //                 <--- border radius here
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text(
-                                  _groupList[index].creator,
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                       leading: const Icon(
                         Icons.group,
@@ -158,8 +149,6 @@ class _GroupsPage extends State<GroupsPage> {
                     ),
                   );
                 },
-                // separatorBuilder: (BuildContext context, int index) =>
-                //     const Divider(),
               );
             } else {
               return const CircularProgressIndicator();
@@ -198,8 +187,8 @@ class _GroupsPage extends State<GroupsPage> {
                               top: 15,
                               left: 15,
                               right: 15,
-                              bottom:
-                                  MediaQuery.of(context).viewInsets.bottom + 15),
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  15),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,37 +227,3 @@ class _GroupsPage extends State<GroupsPage> {
         ));
   }
 }
-/*
-Container(
-                  margin: const EdgeInsets.all(15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        margin: const EdgeInsets.all(10),
-                        child: TextField(
-                          autofocus: true,
-                          controller: textController,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        //margin: const EdgeInsets.all(10),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              if (textController.text != "") {
-                                _addGroup(
-                                    Group(groupName: textController.text));
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text("Add")),
-                      )
-                    ],
-                  ),
-                );
- */
