@@ -93,8 +93,8 @@ class _FoldersPageState extends State<FoldersPage> {
                 itemBuilder: (context, index) {
                   return Card(
                     color: Colors.yellow[100],
-                    elevation: 5,
-                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
                         widget.openedGroup.folders[index].folderName,

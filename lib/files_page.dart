@@ -70,12 +70,12 @@ class _FilesPageState extends State<FilesPage> {
           itemBuilder: (context, index) {
             return Card(
               color: Colors.yellow[100],
-              elevation: 5,
-              margin: const EdgeInsets.symmetric(vertical: 5),
+              elevation: 4,
+              margin: const EdgeInsets.symmetric(vertical: 4),
               child: ListTile(
                 title: Text(
                   _filesList[index].fileName,
-                  style: const TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 17),
                 ),
                 leading: const Icon(
                   Icons.file_present,
