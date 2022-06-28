@@ -27,7 +27,7 @@ class _HelloPageState extends State<HelloPage> {
         stream: consumerStream,
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasError) {
-            return const Text("Idiot");
+            return const Text("Error");
           } else if (snapshot.hasData) {
             Consumer();
             return const GroupsPage();
