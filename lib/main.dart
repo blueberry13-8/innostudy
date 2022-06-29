@@ -49,11 +49,12 @@ class InnoStudyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
         backgroundColor: Colors.blueGrey,
         appBarTheme: const AppBarTheme(
-          color: Color.fromRGBO(58, 66, 86, 1.0),
+          color: Color.fromRGBO(45, 80, 115, 1.0),
+          shadowColor: Color.fromRGBO(50, 85, 120, 1.0),
           foregroundColor: Colors.white,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+          backgroundColor: Color.fromRGBO(45, 80, 115, 1.0),
           foregroundColor: Colors.white,
         ),
         cardTheme: const CardTheme(
