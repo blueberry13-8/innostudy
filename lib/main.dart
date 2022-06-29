@@ -14,14 +14,63 @@ void main() async {
 class InnoStudyApp extends StatelessWidget {
   const InnoStudyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'InnoStudy',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        scaffoldBackgroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        primaryColor: Colors.black87,
+        appBarTheme: AppBarTheme(
+          color: Colors.lightGreen[300],
+          foregroundColor: Colors.white,
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.lightGreen[300],
+        ),
+        brightness: Brightness.light,
+        cardTheme: CardTheme(
+          color: Colors.yellow[100],
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.black87,
+          size: 25,
+        ),
+        textTheme: const TextTheme(
+          bodyText1: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+        ),
       ),
+      darkTheme: ThemeData(
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
+        backgroundColor: Colors.blueGrey,
+        appBarTheme: const AppBarTheme(
+          color: Color.fromRGBO(58, 66, 86, 1.0),
+          foregroundColor: Colors.white,
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
+          foregroundColor: Colors.white,
+        ),
+        cardTheme: const CardTheme(
+          color: Color.fromRGBO(89, 97, 122, 0.9019607843137255),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+          size: 25,
+        ),
+        textTheme: const TextTheme(
+          bodyText1: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.system,
       home: const HelloPage(),
     );
   }

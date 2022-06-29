@@ -27,6 +27,7 @@ class _GroupsPage extends State<GroupsPage> {
     // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
     title: const Text('Group page'),
     centerTitle: true,
+
     /// Here we can add button to change mode from light to dark and vice versa
     // actions: <Widget>[
     //   IconButton(
@@ -84,74 +85,83 @@ class _GroupsPage extends State<GroupsPage> {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
-              return const Text("Idiot");
+              return const Text("Error");
             } else if (snapshot.hasData) {
               _groupList = querySnapshotToGroupList(snapshot.data!);
               return ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: _groupList.length,
+                itemCount: _groupList.length + 1,
                 padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    color: Colors.yellow[100],
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    child: ListTile(
-                      title: Text(
-                        _groupList[index].groupName,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      subtitle: DecoratedBox(
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFBCAAA4),
-                          //border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(7), //<--- border radius here
+                  return index < _groupList.length
+                      ? Card(
+                          //color: Colors.yellow[100],
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            title: Text(
+                              _groupList[index].groupName,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            subtitle: DecoratedBox(
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFBCAAA4),
+                                //border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(7), //<--- border radius here
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2, horizontal: 5),
+                                child: Text(
+                                  _groupList[index].creator,
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ),
+                            ),
+                            leading: Icon(
+                              Icons.group,
+                              color: Theme.of(context).primaryColor,
+                              //color: Colors.black87,
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                Icons.remove_circle_outline,
+                                color: Theme.of(context).primaryColor,
+                                //color: Colors.black87,
+                              ),
+                              onPressed: () async {
+                                if (_groupList[index].creator ==
+                                    Consumer.data.email) {
+                                  _removeGroup(_groupList[index]);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          "You don't have rights for this action",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 3,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                }
+                              },
+                            ),
+                            onTap: () {
+                              openGroup(index);
+                            },
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 2, horizontal: 5),
-                          child: Text(
-                            _groupList[index].creator,
-                            style: const TextStyle(fontSize: 15),
-                          ),
-                        ),
-                      ),
-                      leading: const Icon(
-                        Icons.group,
-                        color: Colors.black87,
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle_outline,
-                          color: Colors.black87,
-                        ),
-                        onPressed: () async {
-                          if (_groupList[index].creator ==
-                              Consumer.data.email) {
-                            _removeGroup(_groupList[index]);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "You don't have rights for this action",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 3,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          }
-                        },
-                      ),
-                      onTap: () {
-                        openGroup(index);
-                      },
-                    ),
-                  );
+                        )
+                      : const SizedBox(
+                          height: 80,
+                        );
                 },
               );
             } else {
-              return const CircularProgressIndicator();
+              return CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              );
             }
           },
         )),

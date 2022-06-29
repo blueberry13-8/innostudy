@@ -69,22 +69,25 @@ class _FilesPageState extends State<FilesPage> {
           padding: const EdgeInsets.all(5),
           itemBuilder: (context, index) {
             return Card(
-              color: Colors.yellow[100],
+              //color: Colors.yellow[100],
               elevation: 4,
               margin: const EdgeInsets.symmetric(vertical: 4),
               child: ListTile(
                 title: Text(
                   _filesList[index].fileName,
-                  style: const TextStyle(fontSize: 17),
+                  style: Theme.of(context).textTheme.bodyText1,
+                  //style: const TextStyle(fontSize: 17),
                 ),
-                leading: const Icon(
+                leading: Icon(
                   Icons.file_present,
-                  color: Colors.black87,
+                  color: Theme.of(context).primaryColor,
+                  //color: Colors.black87,
                 ),
                 trailing: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.remove_circle_outline,
-                    color: Colors.black87,
+                    color: Theme.of(context).primaryColor,
+                    //color: Colors.black87,
                   ),
                   onPressed: () {
                     _removeFile(_filesList[index]);

@@ -83,7 +83,7 @@ class _FoldersPageState extends State<FoldersPage> {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
-              return const Text("Idiot");
+              return const Text("Error");
             } else if (snapshot.hasData) {
               widget.openedGroup.folders = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
@@ -92,22 +92,25 @@ class _FoldersPageState extends State<FoldersPage> {
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   return Card(
-                    color: Colors.yellow[100],
+                    //color: Colors.yellow[100],
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
                         widget.openedGroup.folders[index].folderName,
-                        style: const TextStyle(fontSize: 20),
+                        style: Theme.of(context).textTheme.bodyText1,
+                        //style: const TextStyle(fontSize: 20),
                       ),
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.folder,
-                        color: Colors.black87,
+                        color: Theme.of(context).primaryColor,
+                        //color: Colors.black87,
                       ),
                       trailing: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.remove_circle_outline,
-                          color: Colors.black87,
+                          color: Theme.of(context).primaryColor,
+                          //color: Colors.black87,
                         ),
                         onPressed: () {
                           _deleteFolder(widget.openedGroup.folders[index]);
