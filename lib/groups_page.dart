@@ -22,7 +22,22 @@ class _GroupsPage extends State<GroupsPage> {
 
   String _lastGroupName = '';
 
-  //Controller to get text from user for new group name
+  var topAppBar = AppBar(
+    elevation: 0.1,
+    // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+    title: const Text('Group page'),
+    centerTitle: true,
+
+    /// Here we can add button to change mode from light to dark and vice versa
+    // actions: <Widget>[
+    //   IconButton(
+    //     icon: const Icon(Icons.light_mode),
+    //     onPressed: () {},
+    //   )
+    // ],
+  );
+
+  ///Controller to get text from user for new group name
   final TextEditingController _textController = TextEditingController();
 
   ///Adds new group to widget
@@ -62,9 +77,7 @@ class _GroupsPage extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Group page"),
-        ),
+        appBar: topAppBar,
         //Dynamically build widget
         body: SafeArea(
             child: StreamBuilder(
@@ -72,182 +85,155 @@ class _GroupsPage extends State<GroupsPage> {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
-              return const Text("Idiot");
+              return const Text("Error");
             } else if (snapshot.hasData) {
               _groupList = querySnapshotToGroupList(snapshot.data!);
               return ListView.builder(
-                itemCount: _groupList.length,
-                padding: const EdgeInsets.all(5),
+                scrollDirection: Axis.vertical,
+                itemCount: _groupList.length + 1,
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    color: Colors.yellow[100],
-                    elevation: 5,
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _groupList[index].groupName,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Expanded(
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFBCAAA4),
-                                border: Border.all(color: Colors.black),
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(
-                                      10.0), //                 <--- border radius here
+                  return index < _groupList.length
+                      ? Card(
+                          //color: Colors.yellow[100],
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            title: Text(
+                              _groupList[index].groupName,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            subtitle: DecoratedBox(
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFBCAAA4),
+                                //border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(7), //<--- border radius here
                                 ),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(5.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2, horizontal: 5),
                                 child: Text(
                                   _groupList[index].creator,
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ),
                             ),
+                            leading: Icon(
+                              Icons.group,
+                              color: Theme.of(context).primaryColor,
+                              //color: Colors.black87,
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                Icons.remove_circle_outline,
+                                color: Theme.of(context).primaryColor,
+                                //color: Colors.black87,
+                              ),
+                              onPressed: () async {
+                                if (_groupList[index].creator ==
+                                    Consumer.data.email) {
+                                  _removeGroup(_groupList[index]);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          "You don't have rights for this action",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 3,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                }
+                              },
+                            ),
+                            onTap: () {
+                              openGroup(index);
+                            },
                           ),
-                        ],
-                      ),
-                      leading: const Icon(
-                        Icons.group,
-                        color: Colors.black87,
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.remove_circle_outline,
-                          color: Colors.black87,
-                        ),
-                        onPressed: () async {
-                          if (_groupList[index].creator ==
-                              Consumer.data.email) {
-                            _removeGroup(_groupList[index]);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "You don't have rights for this action",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 3,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          }
-                        },
-                      ),
-                      onTap: () {
-                        openGroup(index);
-                      },
-                    ),
-                  );
+                        )
+                      : const SizedBox(
+                          height: 80,
+                        );
                 },
-                // separatorBuilder: (BuildContext context, int index) =>
-                //     const Divider(),
               );
             } else {
-              return const CircularProgressIndicator();
+              return CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              );
             }
           },
         )),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Stack(
+          fit: StackFit.expand,
           children: [
-            FloatingActionButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-              },
-              child: const Icon(Icons.exit_to_app),
+            Positioned(
+              left: 30,
+              bottom: 10,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
+                child: const Icon(Icons.exit_to_app),
+              ),
             ),
-            const SizedBox(
-              width: 100,
-            ),
-            FloatingActionButton(
-              onPressed: () {
-                //Bottom menu for adding new groups
-                showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            top: 15,
-                            left: 15,
-                            right: 15,
-                            bottom:
-                                MediaQuery.of(context).viewInsets.bottom + 15),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              controller: _textController,
-                              autofocus: true,
-                              onChanged: (value) {
-                                _lastGroupName = value;
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_textController.text != "") {
-                                  _addGroup(Group(
-                                      groupName: _textController.text,
-                                      folders: [],
-                                      creator: FirebaseAuth
-                                          .instance.currentUser!.email!));
-                                  Navigator.pop(context);
-                                  _textController.text = '';
-                                  _lastGroupName = '';
-                                }
-                              },
-                              child: const Text("Add"),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-              child: const Icon(Icons.add),
+            // const SizedBox(
+            //   width: 10,
+            // ),
+            Positioned(
+              right: 30,
+              bottom: 10,
+              child: FloatingActionButton(
+                onPressed: () {
+                  //Bottom menu for adding new groups
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              top: 15,
+                              left: 15,
+                              right: 15,
+                              bottom: MediaQuery.of(context).viewInsets.bottom +
+                                  15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                controller: _textController,
+                                autofocus: true,
+                                onChanged: (value) {
+                                  _lastGroupName = value;
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_textController.text != "") {
+                                    _addGroup(Group(
+                                        groupName: _textController.text,
+                                        folders: [],
+                                        creator: FirebaseAuth
+                                            .instance.currentUser!.email!));
+                                    Navigator.pop(context);
+                                    _textController.text = '';
+                                    _lastGroupName = '';
+                                  }
+                                },
+                                child: const Text("Add"),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                child: const Icon(Icons.add),
+              ),
             ),
           ],
         ));
   }
 }
-/*
-Container(
-                  margin: const EdgeInsets.all(15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        margin: const EdgeInsets.all(10),
-                        child: TextField(
-                          autofocus: true,
-                          controller: textController,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                        //margin: const EdgeInsets.all(10),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              if (textController.text != "") {
-                                _addGroup(
-                                    Group(groupName: textController.text));
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text("Add")),
-                      )
-                    ],
-                  ),
-                );
- */

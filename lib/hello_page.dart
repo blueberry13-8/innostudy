@@ -21,13 +21,14 @@ class _HelloPageState extends State<HelloPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
       //Dynamically build widget
       child: SafeArea(
           child: StreamBuilder(
         stream: consumerStream,
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasError) {
-            return const Text("Idiot");
+            return const Text("Error");
           } else if (snapshot.hasData) {
             Consumer();
             return const GroupsPage();
@@ -40,19 +41,25 @@ class _HelloPageState extends State<HelloPage> {
                   const SizedBox(
                     height: 200,
                   ),
-                  const Center(
+                  Center(
                     child: Text(
                       "Welcome!",
-                      style:
-                          TextStyle(fontSize: 50, fontWeight: FontWeight.w400),
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 50,
+                          fontWeight: FontWeight.w400),
                     ),
                   ),
                   const SizedBox(
                     height: 30,
                   ),
-                  const Text(
+                  Text(
                     'E-mail',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                   const SizedBox(
                     height: 10,
@@ -63,18 +70,30 @@ class _HelloPageState extends State<HelloPage> {
                       onChanged: (text) {
                         curNick = text;
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
                         hintText: 'Enter email',
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        iconColor: Theme.of(context).primaryColor,
+                        hoverColor: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  const Text(
+                  Text(
                     'Password',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                   SizedBox(
                     height: 40,
@@ -82,9 +101,15 @@ class _HelloPageState extends State<HelloPage> {
                       onChanged: (text) {
                         curPass = text;
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
                         hintText: 'Password',
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
                   ),
