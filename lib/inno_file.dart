@@ -1,5 +1,6 @@
-import 'folder.dart';
 import 'dart:io';
+
+import 'folder.dart';
 
 ///The class that represents file in our application
 class InnoFile {
@@ -12,18 +13,26 @@ class InnoFile {
   //The name of the file
   String fileName;
 
-  InnoFile({this.realFile, this.parentFolder, required this.fileName});
+  //Path in the Storage to the file
+  String path;
+
+  InnoFile(
+      {this.realFile,
+      required this.fileName,
+      required this.path,
+      this.parentFolder});
 
   factory InnoFile.fromJson(Map<String, dynamic> json) {
     return InnoFile(
       fileName: json['fileName'],
+      path: json['path'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    // 2
     return {
       'fileName': fileName,
+      'path': path,
     };
   }
 }

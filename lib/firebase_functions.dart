@@ -12,11 +12,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 void addGroup(Group group) {
   final data = group.toJson();
   var database = FirebaseFirestore.instance;
-  database.collection('groups').doc(group.groupName).get().then((value) {
+  database
+      .collection('groups_normalnie')
+      .doc(group.groupName)
+      .get()
+      .then((value) {
     if (value.exists) {
       debugPrint('Group with name - ${group.groupName} exists.');
     } else {
-      database.collection('groups').doc(group.groupName).set(data);
+      database.collection('groups_normalnie').doc(group.groupName).set(data);
       for (var folder in group.folders) {
         addFolderInGroup(group, folder);
       }
@@ -29,21 +33,26 @@ void addGroup(Group group) {
 /// Delete group form DB if it exists.
 void deleteGroup(Group group) {
   var database = FirebaseFirestore.instance;
-  database.collection('groups').doc(group.groupName).get().then((value) {
+  database
+      .collection('groups_normalnie')
+      .doc(group.groupName)
+      .get()
+      .then((value) {
     if (value.exists) {
       database
-          .collection('groups')
+          .collection('groups_normalnie')
           .doc(group.groupName)
           .collection('folders')
           .get()
-          .then((value) {
+          .then((value) async {
         for (var folder in value.docs) {
           if (folder.exists) {
             Folder f = Folder.fromJson(folder.data());
             deleteFolderFromGroup(group, f);
           }
         }
-        database.collection('groups').doc(group.groupName).delete();
+        await Future.delayed(const Duration(milliseconds: 500));
+        database.collection('groups_normalnie').doc(group.groupName).delete();
         debugPrint('Group ${group.groupName} was deleted.');
       });
     } else {
@@ -55,7 +64,7 @@ void deleteGroup(Group group) {
 /// Stream for watching changes into groups' collection.
 /// Use it for dynamic rendering Group List.
 final Stream<QuerySnapshot> groupsStream =
-    FirebaseFirestore.instance.collection('groups').snapshots();
+    FirebaseFirestore.instance.collection('groups_normalnie').snapshots();
 
 final Stream<User?> consumerStream = FirebaseAuth.instance.authStateChanges();
 
@@ -63,7 +72,7 @@ void addFolderInGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;
   var data = folder.toJson();
   database
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .collection('folders')
       .doc(folder.folderName)
@@ -73,12 +82,15 @@ void addFolderInGroup(Group group, Folder folder) {
       debugPrint('Folder ${folder.folderName} is already exist.');
     } else {
       database
-          .collection('groups')
+          .collection('groups_normalnie')
           .doc(group.groupName)
           .collection('folders')
           .doc(folder.folderName)
           .set(data);
-      database.collection('groups').doc(group.groupName).set(group.toJson());
+      database
+          .collection('groups_normalnie')
+          .doc(group.groupName)
+          .set(group.toJson());
       debugPrint('Folder ${folder.folderName} was created.');
     }
   });
@@ -87,8 +99,8 @@ void addFolderInGroup(Group group, Folder folder) {
 dynamicToPath(List<dynamic> paths) {
   List<InnoFile> correctPaths = [];
   for (String path in paths) {
-    path = path.split('/')[path.split('/').length - 1];
-    correctPaths.add(InnoFile(fileName: path));
+    String name = path.split('/')[path.split('/').length - 1];
+    correctPaths.add(InnoFile(fileName: name, path: path));
   }
   return correctPaths;
 }
@@ -99,11 +111,11 @@ List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
       folders.add(Folder(
-          folderName: data["folderName"],
-          files: dynamicToPath(
-            data['files'],
-          ),
-          parentGroup: group));
+        folderName: data["folderName"],
+        files: dynamicToPath(
+          data['files'],
+        ),
+      ));
     }
   }
   return folders;
@@ -112,27 +124,34 @@ List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
 void deleteFolderFromGroup(Group group, Folder folder) {
   var database = FirebaseFirestore.instance;
   database
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .collection('folders')
       .doc(folder.folderName)
       .get()
       .then((value) async {
     if (value.exists) {
-      List<dynamic> files = value.data()!['files'];
-      for (String x in files) {
-        debugPrint('$x         *******************************************');
-        deleteFileFromFolder(
-            group, folder, x.toString().replaceAll('files/', ''));
-      }
-      Future.delayed(const Duration(milliseconds: 1000)).then((value) {
+      database
+          .collection('groups_normalnie')
+          .doc(group.groupName)
+          .collection('folders')
+          .doc(folder.folderName)
+          .collection('files')
+          .get()
+          .then((value) async {
+        for (var file in value.docs) {
+          if (file.exists) {
+            InnoFile x = InnoFile.fromJson(file.data());
+            deleteFileFromFolder(group, folder, x.fileName);
+          }
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
         database
-            .collection('groups')
+            .collection('groups_normalnie')
             .doc(group.groupName)
             .collection('folders')
             .doc(folder.folderName)
             .delete();
-        debugPrint('Folder ${folder.folderName} was deleted.');
       });
     } else {
       debugPrint('Folder ${folder.folderName} does not exist.');
@@ -142,77 +161,87 @@ void deleteFolderFromGroup(Group group, Folder folder) {
 
 /// Add file to the selected group (if group exists).
 Future<void> addFileToFolder(
-    Group? group, Folder folder, String filePath, String name) async {
-  if (group == null) {
-    throw Exception('addFileToGroup: group is null');
-  }
+    Group group, Folder folder, String filePath, String name) async {
   dynamic curDoc = await FirebaseFirestore.instance
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .get();
 
   if (curDoc.exists == false) {
-    throw Exception('addFileToGroup: Group does not exist');
+    throw Exception('addFileToFolder: Group does not exist');
   }
   DocumentReference docRef = FirebaseFirestore.instance
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .collection('folders')
-      .doc(folder.folderName);
-
-  final filePool =
-      (await FirebaseStorage.instance.ref().child('files/').listAll()).items;
+      .doc(folder.folderName)
+      .collection('files')
+      .doc(name);
+  docRef.get().then((value) {
+    if (!value.exists) {
+      docRef.set(InnoFile(
+              fileName: name,
+              path: '${group.groupName}/${folder.folderName}/$name')
+          .toJson());
+    }
+  });
+  final filePool = (await FirebaseStorage.instance
+          .ref()
+          .child('${group.groupName}/${folder.folderName}/')
+          .listAll())
+      .items;
   for (var file in filePool) {
     if (file.name == name) {
-      throw Exception('addFileToGroup: File with such name already exists');
+      throw Exception('addFileToFolder: File with such name already exists');
     }
   }
-  docRef.update({
-    'files': FieldValue.arrayUnion(['files/$name'])
-  });
-  final ref = FirebaseStorage.instance.ref().child('files/$name');
+  docRef.update(InnoFile(
+          fileName: name, path: '${group.groupName}/${folder.folderName}/$name')
+      .toJson());
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('${group.groupName}/${folder.folderName}/$name');
   final file = File(filePath);
   await ref.putFile(file);
 }
 
 Future<void> deleteFileFromFolder(
-    Group? group, Folder folder, String fileName) async {
-  if (group == null) {
-    throw Exception('addFileToGroup: group is null');
-  }
+    Group group, Folder folder, String fileName) async {
   final curDoc = await FirebaseFirestore.instance
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .get();
 
   if (curDoc.exists == false) {
-    throw Exception('addFileToGroup: Group does not exist');
+    throw Exception('deleteFileFromFolder: Group does not exist');
   }
   final docRef = FirebaseFirestore.instance
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .collection('folders')
-      .doc(folder.folderName); // it's folders, not files
-  docRef.update({
-    'files': FieldValue.arrayRemove(['files/$fileName'])
-  });
-  final ref = FirebaseStorage.instance.ref().child('files/$fileName');
+      .doc(folder.folderName)
+      .collection('files')
+      .doc(fileName); // it's folders, not files
+  docRef.delete();
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('${group.groupName}/${folder.folderName}/$fileName');
+  debugPrint('${group.groupName}/${folder.folderName}/$fileName');
   ref.delete();
 }
 
-Future<File> getFromStorage(Group? group, Folder folder, String name) async {
-  if (group == null) {
-    throw Exception('addFileToGroup: group is null');
-  }
+Future<File> getFromStorage(Group group, Folder folder, String name) async {
   dynamic curDoc = await FirebaseFirestore.instance
-      .collection('groups')
+      .collection('groups_normalnie')
       .doc(group.groupName)
       .get();
 
   if (curDoc.exists == false) {
-    throw Exception('addFileToGroup: Group does not exist');
+    throw Exception('deleteFileFromFolder: Group does not exist');
   }
-  final ref = FirebaseStorage.instance.ref().child('files/$name');
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('${group.groupName}/${folder.folderName}/$name');
   final dir = await getApplicationDocumentsDirectory();
   final file = File('${dir.path}/$name');
   await ref.writeToFile(file);
@@ -229,4 +258,16 @@ List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
     }
   }
   return groups;
+}
+
+List<InnoFile> querySnapshotToInnoFileList(QuerySnapshot snapshot) {
+  List<InnoFile> files = [];
+  for (var document in snapshot.docs) {
+    var data = document.data()! as Map<String, dynamic>;
+    if (data['fileName'] != null) {
+      //debugPrint("!");
+      files.add(InnoFile.fromJson(data));
+    }
+  }
+  return files;
 }

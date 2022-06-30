@@ -173,6 +173,7 @@ class _GroupsPage extends State<GroupsPage> {
               left: 30,
               bottom: 10,
               child: FloatingActionButton(
+                heroTag: "btn1",
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
                 },
@@ -186,6 +187,7 @@ class _GroupsPage extends State<GroupsPage> {
               right: 30,
               bottom: 10,
               child: FloatingActionButton(
+                heroTag: "btn2",
                 onPressed: () {
                   //Bottom menu for adding new groups
                   showModalBottomSheet(
