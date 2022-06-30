@@ -145,10 +145,11 @@ class _FilesPageState extends State<FilesPage> {
             } else if (snapshot.hasData) {
               _filesList = querySnapshotToInnoFileList(snapshot.data!);
               return ListView.builder(
-                itemCount: _filesList.length,
+                itemCount: _filesList.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
-                  return Card(
+                  return index < _filesList.length
+                  ? Card(
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
@@ -159,7 +160,6 @@ class _FilesPageState extends State<FilesPage> {
                       leading: Icon(
                         Icons.file_present,
                         color: Theme.of(context).primaryColor,
-                        //color: Colors.black87,
                       ),
                       trailing: PopupMenuButton<int>(
                         icon: Icon(
@@ -218,7 +218,8 @@ class _FilesPageState extends State<FilesPage> {
                         openFile(index);
                       },
                     ),
-                  );
+                  )
+                  : const SizedBox(height: 80,);
                 },
               );
             } else {
