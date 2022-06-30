@@ -52,6 +52,7 @@ class _FoldersPageState extends State<FoldersPage> {
       MaterialPageRoute(
         builder: (context) => FilesPage(
           openedFolder: widget.openedGroup.folders[index],
+          openedGroup: widget.openedGroup,
         ),
       ),
     );
@@ -135,7 +136,7 @@ class _FoldersPageState extends State<FoldersPage> {
       body: SafeArea(
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection('groups')
+              .collection('groups_normalnie')
               .doc(widget.openedGroup.groupName)
               .collection('folders')
               .snapshots(),
@@ -256,9 +257,7 @@ class _FoldersPageState extends State<FoldersPage> {
                       onPressed: () {
                         if (_textController.text != '') {
                           _addFolder(Folder(
-                              folderName: _textController.text,
-                              parentGroup: widget.openedGroup,
-                              files: []));
+                              folderName: _textController.text, files: []));
                           Navigator.pop(context);
                           _textController.text = '';
                           _lastFolderName = '';

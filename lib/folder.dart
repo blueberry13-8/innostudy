@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'group.dart';
 import 'inno_file.dart';
 
@@ -14,7 +13,11 @@ class Folder {
   //The name of the folder
   String folderName;
 
-  Folder({required this.folderName, required this.files, this.parentGroup});
+  Folder({required this.folderName, required this.files, this.parentGroup}) {
+    for (var file in files) {
+      file.parentFolder = this;
+    }
+  }
 
   factory Folder.fromJson(Map<String, dynamic> loadedJson) {
     List<InnoFile> innoFiles = [];
