@@ -57,6 +57,65 @@ class _FoldersPageState extends State<FoldersPage> {
     );
   }
 
+  Future<void> _showAlertDialog(BuildContext context, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        var cancelButton = TextButton(
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            if (kDebugMode) {
+              print('Canceled');
+            }
+            Navigator.of(context).pop();
+          },
+        );
+        var confirmButton = TextButton(
+          child: Text(
+            'Confirm',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () async {
+            if (kDebugMode) {
+              print('Confirmed');
+            }
+            _deleteFolder(widget.openedGroup.folders[index]);
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+        var alertDialog = AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Deleting of folder ${widget.openedGroup.folders[index].folderName}',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            'Are you sure about deleting this folder? It will be deleted without ability to restore.',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          actions: [
+            cancelButton,
+            confirmButton,
+          ],
+        );
+        return alertDialog;
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -106,15 +165,55 @@ class _FoldersPageState extends State<FoldersPage> {
                         color: Theme.of(context).primaryColor,
                         //color: Colors.black87,
                       ),
-                      trailing: IconButton(
+                      trailing: PopupMenuButton<int>(
                         icon: Icon(
-                          Icons.remove_circle_outline,
+                          Icons.more_vert,
                           color: Theme.of(context).primaryColor,
-                          //color: Colors.black87,
                         ),
-                        onPressed: () {
-                          _deleteFolder(widget.openedGroup.folders[index]);
-                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 1,
+                            child: GestureDetector(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete_forever,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Delete folder',
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor),
+                                  ),
+                                ],
+                              ),
+                              onTap: () async {
+                                Navigator.of(context).pop();
+                                _showAlertDialog(context, index);
+                              },
+                            ),
+                          ),
+
+                          /// Here we can add more menu items for additional actions, for ex. field Info about group/folder/file
+                          // PopupMenuItem(
+                          //   value: 2,
+                          //   child: Row(
+                          //     children: const [
+                          //       Icon(Icons.info_outline),
+                          //       SizedBox(
+                          //         width: 10,
+                          //       ),
+                          //       Text('Info'),
+                          //     ],
+                          //   ),
+                          // ),
+                        ],
+                        offset: const Offset(0, 50),
+                        color: Theme.of(context).backgroundColor,
+                        elevation: 3,
                       ),
                       onTap: () {
                         openFolder(index);
