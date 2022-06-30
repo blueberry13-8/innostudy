@@ -186,6 +186,7 @@ class _GroupsPage extends State<GroupsPage> {
               right: 30,
               bottom: 10,
               child: FloatingActionButton(
+                heroTag: "groups page",
                 onPressed: () {
                   //Bottom menu for adding new groups
                   showModalBottomSheet(

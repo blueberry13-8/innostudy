@@ -106,6 +106,7 @@ class _FilesPageState extends State<FilesPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "files page",
         onPressed: () async {
           FilePickerResult? result =
               await FilePicker.platform.pickFiles(allowMultiple: true);

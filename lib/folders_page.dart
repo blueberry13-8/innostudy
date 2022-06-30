@@ -130,6 +130,7 @@ class _FoldersPageState extends State<FoldersPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "folders page",
         onPressed: () {
           showModalBottomSheet(
             context: context,
