@@ -148,79 +148,82 @@ class _FoldersPageState extends State<FoldersPage> {
               widget.openedGroup.folders = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
               return ListView.builder(
-                itemCount: widget.openedGroup.folders.length,
+                itemCount: widget.openedGroup.folders.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
-                  return Card(
-                    //color: Colors.yellow[100],
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    child: ListTile(
-                      title: Text(
-                        widget.openedGroup.folders[index].folderName,
-                        style: Theme.of(context).textTheme.bodyText1,
-                        //style: const TextStyle(fontSize: 20),
-                      ),
-                      leading: Icon(
-                        Icons.folder,
-                        color: Theme.of(context).primaryColor,
-                        //color: Colors.black87,
-                      ),
-                      trailing: PopupMenuButton<int>(
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 1,
-                            child: GestureDetector(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.delete_forever,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'Delete folder',
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor),
-                                  ),
-                                ],
-                              ),
-                              onTap: () async {
-                                Navigator.of(context).pop();
-                                _showAlertDialog(context, index);
-                              },
+                  return index < widget.openedGroup.folders.length
+                      ? Card(
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            title: Text(
+                              widget.openedGroup.folders[index].folderName,
+                              style: Theme.of(context).textTheme.bodyText1,
                             ),
-                          ),
+                            leading: Icon(
+                              Icons.folder,
+                              color: Theme.of(context).primaryColor,
+                              //color: Colors.black87,
+                            ),
+                            trailing: PopupMenuButton<int>(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Delete folder',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      Navigator.of(context).pop();
+                                      _showAlertDialog(context, index);
+                                    },
+                                  ),
+                                ),
 
-                          /// Here we can add more menu items for additional actions, for ex. field Info about group/folder/file
-                          // PopupMenuItem(
-                          //   value: 2,
-                          //   child: Row(
-                          //     children: const [
-                          //       Icon(Icons.info_outline),
-                          //       SizedBox(
-                          //         width: 10,
-                          //       ),
-                          //       Text('Info'),
-                          //     ],
-                          //   ),
-                          // ),
-                        ],
-                        offset: const Offset(0, 50),
-                        color: Theme.of(context).backgroundColor,
-                        elevation: 3,
-                      ),
-                      onTap: () {
-                        openFolder(index);
-                      },
-                    ),
-                  );
+                                /// Here we can add more menu items for additional actions, for ex. field Info about group/folder/file
+                                // PopupMenuItem(
+                                //   value: 2,
+                                //   child: Row(
+                                //     children: const [
+                                //       Icon(Icons.info_outline),
+                                //       SizedBox(
+                                //         width: 10,
+                                //       ),
+                                //       Text('Info'),
+                                //     ],
+                                //   ),
+                                // ),
+                              ],
+                              offset: const Offset(0, 50),
+                              color: Theme.of(context).backgroundColor,
+                              elevation: 3,
+                            ),
+                            onTap: () {
+                              openFolder(index);
+                            },
+                          ),
+                        )
+                      : const SizedBox(
+                          height: 80,
+                        );
                 },
               );
             } else {

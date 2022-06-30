@@ -154,7 +154,6 @@ class _GroupsPage extends State<GroupsPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return index < _groupList.length
                       ? Card(
-                          //color: Colors.yellow[100],
                           elevation: 4,
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
@@ -165,7 +164,6 @@ class _GroupsPage extends State<GroupsPage> {
                             subtitle: DecoratedBox(
                               decoration: const BoxDecoration(
                                 color: Color(0xFFBCAAA4),
-                                //border: Border.all(color: Colors.black),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(7), //<--- border radius here
                                 ),

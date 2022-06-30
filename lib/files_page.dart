@@ -149,14 +149,12 @@ class _FilesPageState extends State<FilesPage> {
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   return Card(
-                    //color: Colors.yellow[100],
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
                         _filesList[index].fileName,
                         style: Theme.of(context).textTheme.bodyText1,
-                        //style: const TextStyle(fontSize: 17),
                       ),
                       leading: Icon(
                         Icons.file_present,
