@@ -12,7 +12,11 @@ class Group {
   List<Folder> folders;
 
   Group(
-      {required this.groupName, required this.folders, required this.creator});
+      {required this.groupName, required this.folders, required this.creator}) {
+    for (var folder in folders) {
+      folder.parentGroup = this;
+    }
+  }
 
   factory Group.fromJson(Map<String, dynamic> loadedJson) {
     debugPrint("!");
