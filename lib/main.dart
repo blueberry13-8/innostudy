@@ -58,7 +58,7 @@ class InnoStudyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         cardTheme: const CardTheme(
-          color: Color.fromRGBO(89, 97, 122, 0.9019607843137255),
+          color: Color.fromRGBO(89, 97, 122, 1),
         ),
         iconTheme: const IconThemeData(
           color: Colors.white,

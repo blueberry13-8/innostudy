@@ -28,7 +28,7 @@ class _GroupsPage extends State<GroupsPage> {
     title: const Text('Group page'),
     centerTitle: true,
 
-    /// Here we can add button to change mode from light to dark and vice versa
+    /// Here we can add button to change mode from light to dark and vice versa or a search button
     // actions: <Widget>[
     //   IconButton(
     //     icon: const Icon(Icons.light_mode),
@@ -68,6 +68,65 @@ class _GroupsPage extends State<GroupsPage> {
     );
   }
 
+  Future<void> _showAlertDialog(BuildContext context, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        var cancelButton = TextButton(
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            if (kDebugMode) {
+              print('Canceled');
+            }
+            Navigator.of(context).pop();
+          },
+        );
+        var confirmButton = TextButton(
+          child: Text(
+            'Confirm',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () async {
+            if (kDebugMode) {
+              print('Confirmed');
+            }
+            _removeGroup(_groupList[index]);
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+        var alertDialog = AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Deleting of group ${_groupList[index].groupName}',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            'Are you sure about deleting this group? It will be deleted without ability to restore.',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          actions: [
+            cancelButton,
+            confirmButton,
+          ],
+        );
+        return alertDialog;
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -95,7 +154,6 @@ class _GroupsPage extends State<GroupsPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return index < _groupList.length
                       ? Card(
-                          //color: Colors.yellow[100],
                           elevation: 4,
                           margin: const EdgeInsets.symmetric(vertical: 4),
                           child: ListTile(
@@ -106,7 +164,6 @@ class _GroupsPage extends State<GroupsPage> {
                             subtitle: DecoratedBox(
                               decoration: const BoxDecoration(
                                 color: Color(0xFFBCAAA4),
-                                //border: Border.all(color: Colors.black),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(7), //<--- border radius here
                                 ),
@@ -125,28 +182,69 @@ class _GroupsPage extends State<GroupsPage> {
                               color: Theme.of(context).primaryColor,
                               //color: Colors.black87,
                             ),
-                            trailing: IconButton(
+                            trailing: PopupMenuButton<int>(
                               icon: Icon(
-                                Icons.remove_circle_outline,
+                                Icons.more_vert,
                                 color: Theme.of(context).primaryColor,
-                                //color: Colors.black87,
                               ),
-                              onPressed: () async {
-                                if (_groupList[index].creator ==
-                                    Consumer.data.email) {
-                                  _removeGroup(_groupList[index]);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "You don't have rights for this action",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.CENTER,
-                                      timeInSecForIosWeb: 3,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 16.0);
-                                }
-                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Delete group',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      var email = Consumer.data.email;
+                                      if (_groupList[index].creator == email) {
+                                        Navigator.of(context).pop();
+                                        _showAlertDialog(context, index);
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                "You don't have rights for this action",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 3,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                      }
+                                    },
+                                  ),
+                                ),
+
+                                /// Here we can add more menu items for additional actions, for ex. field Info about group/folder/file
+                                // PopupMenuItem(
+                                //   value: 2,
+                                //   child: Row(
+                                //     children: const [
+                                //       Icon(Icons.info_outline),
+                                //       SizedBox(
+                                //         width: 10,
+                                //       ),
+                                //       Text('Info'),
+                                //     ],
+                                //   ),
+                                // ),
+                              ],
+                              offset: const Offset(0, 50),
+                              color: Theme.of(context).backgroundColor,
+                              elevation: 3,
                             ),
                             onTap: () {
                               openGroup(index);
