@@ -136,17 +136,7 @@ class _FilesPageState extends State<FilesPage> {
                           print("WHAT");
                         }
                         _filesList[index].parentFolder = widget.openedFolder;
-                        getPermissionsOfFile(_filesList[index])
-                            .then(((permissionEntity) {
-                          if (permissionEntity.allowAll ||
-                              permissionEntity.owners.contains(
-                                  FirebaseAuth.instance.currentUser!.email)) {
-                            openFile(index);
-                          } else {
-                            pessimisticToast(
-                                "You don't have rights for this action", 1);
-                          }
-                        }));
+                        openFile(index);
                       },
                       onLongPress: () {
                         _filesList[index].parentFolder = widget.openedFolder;

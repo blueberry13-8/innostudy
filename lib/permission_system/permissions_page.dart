@@ -89,14 +89,30 @@ class _PermissionsPage extends State<PermissionsPage> {
               showDialog(
                   context: context,
                   builder: (context) {
+                    TextEditingController passwordController =
+                        TextEditingController();
+
                     return AlertDialog(
                       title: const Text("Locking with password"),
-                      content: SizedBox(child: TextField()),
+                      content: SizedBox(
+                          child: TextField(
+                        controller: passwordController,
+                      )),
                       actions: [
                         Container(
                           alignment: Alignment.center,
                           child: ElevatedButton(
-                              onPressed: () {}, child: const Text("Set")),
+                              onPressed: () {
+                                if (passwordController.text.isNotEmpty) {
+                                  widget.permissionEntity.password =
+                                      passwordController.text;
+                                  attachPermissionRules(widget.permissionEntity,
+                                      widget.permissionableObject);
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: const Text("Set")),
                         )
                       ],
                     );

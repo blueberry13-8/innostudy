@@ -139,18 +139,7 @@ class _FoldersPageState extends State<FoldersPage> {
                         onTap: () {
                           widget.openedGroup.folders[index].parentGroup =
                               widget.openedGroup;
-                          getPermissionsOfFolder(
-                                  widget.openedGroup.folders[index])
-                              .then(((permissionEntity) {
-                            if (permissionEntity.allowAll ||
-                                permissionEntity.owners.contains(
-                                    FirebaseAuth.instance.currentUser!.email)) {
-                              openFolder(index);
-                            } else {
-                              pessimisticToast(
-                                  "You don't have rights for this action", 1);
-                            }
-                          }));
+                          openFolder(index);
                         },
                         onLongPress: () {
                           widget.openedGroup.folders[index].parentGroup =

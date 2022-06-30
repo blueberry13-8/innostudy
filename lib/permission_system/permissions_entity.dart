@@ -4,8 +4,8 @@ import 'package:work/inno_file.dart';
 
 class PermissionEntity {
   bool allowAll;
+  String password;
   final List<String> owners;
-  final String password;
 
   PermissionEntity(this.allowAll, this.owners, this.password);
 }

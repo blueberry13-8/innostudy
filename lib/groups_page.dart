@@ -152,19 +152,7 @@ class _GroupsPage extends State<GroupsPage> {
                               },
                             ),
                             onTap: () {
-                              getPermissionsOfGroup(_groupList[index])
-                                  .then(((permissionEntity) {
-                                if (permissionEntity.allowAll ||
-                                    permissionEntity.owners.contains(
-                                        FirebaseAuth
-                                            .instance.currentUser!.email)) {
-                                  openGroup(index);
-                                } else {
-                                  pessimisticToast(
-                                      "You don't have rights for this action",
-                                      1);
-                                }
-                              }));
+                              openGroup(index);
                             },
                             onLongPress: () {
                               getPermissionsOfGroup(_groupList[index])
