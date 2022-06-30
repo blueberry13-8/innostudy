@@ -10,6 +10,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'dart:io';
 
+import 'permission_system/permissions_entity.dart';
+import 'permission_system/permissions_functions.dart';
+import 'permission_system/permissions_page.dart';
+
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
   const FilesPage(
@@ -118,8 +122,25 @@ class _FilesPageState extends State<FilesPage> {
                         if (kDebugMode) {
                           print("WHAT");
                         }
-
+                        _filesList[index].parentFolder = widget.openedFolder;
                         openFile(index);
+                      },
+                      onLongPress: () {
+                        _filesList[index].parentFolder = widget.openedFolder;
+                        getPermissionsOfFile(_filesList[index])
+                            .then((permissionEntity) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PermissionsPage(
+                                permissionEntity: permissionEntity,
+                                permissionableObject:
+                                    PermissionableObject.fromInnoFile(
+                                        _filesList[index]),
+                              ),
+                            ),
+                          );
+                        });
                       },
                     ),
                   );

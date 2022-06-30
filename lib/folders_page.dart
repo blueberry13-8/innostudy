@@ -5,6 +5,9 @@ import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
+import 'permission_system/permissions_entity.dart';
+import 'permission_system/permissions_functions.dart';
+import 'permission_system/permissions_page.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
@@ -97,30 +100,50 @@ class _FoldersPageState extends State<FoldersPage> {
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                      title: Text(
-                        widget.openedGroup.folders[index].folderName,
-                        style: Theme.of(context).textTheme.bodyText1,
-                        //style: const TextStyle(fontSize: 20),
-                      ),
-                      leading: Icon(
-                        Icons.folder,
-                        color: Theme.of(context).primaryColor,
-                        //color: Colors.black87,
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.remove_circle_outline,
+                        title: Text(
+                          widget.openedGroup.folders[index].folderName,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          //style: const TextStyle(fontSize: 20),
+                        ),
+                        leading: Icon(
+                          Icons.folder,
                           color: Theme.of(context).primaryColor,
                           //color: Colors.black87,
                         ),
-                        onPressed: () {
-                          _deleteFolder(widget.openedGroup.folders[index]);
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.remove_circle_outline,
+                            color: Theme.of(context).primaryColor,
+                            //color: Colors.black87,
+                          ),
+                          onPressed: () {
+                            _deleteFolder(widget.openedGroup.folders[index]);
+                          },
+                        ),
+                        onTap: () {
+                          widget.openedGroup.folders[index].parentGroup =
+                              widget.openedGroup;
+                          openFolder(index);
                         },
-                      ),
-                      onTap: () {
-                        openFolder(index);
-                      },
-                    ),
+                        onLongPress: () {
+                          widget.openedGroup.folders[index].parentGroup =
+                              widget.openedGroup;
+                          getPermissionsOfFolder(
+                                  widget.openedGroup.folders[index])
+                              .then((permissionEntity) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PermissionsPage(
+                                  permissionEntity: permissionEntity,
+                                  permissionableObject:
+                                      PermissionableObject.fromFolder(
+                                          widget.openedGroup.folders[index]),
+                                ),
+                              ),
+                            );
+                          });
+                        }),
                   );
                 },
               );
