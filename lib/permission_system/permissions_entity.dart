@@ -5,11 +5,12 @@ import 'package:work/inno_file.dart';
 class PermissionEntity {
   bool allowAll;
   final List<String> owners;
+  final String password;
 
-  PermissionEntity(this.allowAll, this.owners);
+  PermissionEntity(this.allowAll, this.owners, this.password);
 }
 
-PermissionEntity getStandartPermissionSet() => PermissionEntity(true, []);
+PermissionEntity getStandartPermissionSet() => PermissionEntity(true, [], "");
 
 enum PermissionableType { group, folder, file }
 

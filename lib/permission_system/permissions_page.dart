@@ -85,7 +85,23 @@ class _PermissionsPage extends State<PermissionsPage> {
           flex: 1,
           child: ElevatedButton(
             child: const Text("Set password"),
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Locking with password"),
+                      content: SizedBox(child: TextField()),
+                      actions: [
+                        Container(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                              onPressed: () {}, child: const Text("Set")),
+                        )
+                      ],
+                    );
+                  });
+            },
           ),
         )
       ],

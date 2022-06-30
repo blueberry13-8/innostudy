@@ -36,7 +36,7 @@ Future<PermissionEntity> getPermissionsOfFile(InnoFile innoFile) async {
     for (int i = 0; i < data["owners"].length; i++) {
       owners.add(data["owners"][i]);
     }
-    return PermissionEntity(data["allow_all"], owners);
+    return PermissionEntity(data["allow_all"], owners, data["password"]);
   } else {
     attachPermissionRulesToFile(getStandartPermissionSet(), innoFile);
     return getStandartPermissionSet();
@@ -56,7 +56,7 @@ Future<PermissionEntity> getPermissionsOfFolder(Folder folder) async {
     for (int i = 0; i < data["owners"].length; i++) {
       owners.add(data["owners"][i]);
     }
-    return PermissionEntity(data["allow_all"], owners);
+    return PermissionEntity(data["allow_all"], owners, data["password"]);
   } else {
     attachPermissionRulesToFolder(getStandartPermissionSet(), folder);
     return getStandartPermissionSet();
@@ -74,7 +74,7 @@ Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
     for (int i = 0; i < data["owners"].length; i++) {
       owners.add(data["owners"][i]);
     }
-    return PermissionEntity(data["allow_all"], owners);
+    return PermissionEntity(data["allow_all"], owners, data["password"]);
   } else {
     attachPermissionRulesToGroup(getStandartPermissionSet(), group);
     return getStandartPermissionSet();
@@ -110,7 +110,8 @@ Future<void> attachPermissionRulesToFile(
       .doc(innoFile.fileName);
   await fileReference.set({
     "allow_all": permissionEntity.allowAll,
-    "owners": permissionEntity.owners
+    "owners": permissionEntity.owners,
+    "password": permissionEntity.password
   }, SetOptions(merge: true));
 }
 
@@ -123,7 +124,8 @@ Future<void> attachPermissionRulesToFolder(
       .doc(folder.folderName);
   await folderReference.set({
     "allow_all": permissionEntity.allowAll,
-    "owners": permissionEntity.owners
+    "owners": permissionEntity.owners,
+    "password": permissionEntity.password
   }, SetOptions(merge: true));
 }
 
@@ -135,6 +137,7 @@ Future<void> attachPermissionRulesToGroup(
 
   await groupReference.set({
     "allow_all": permissionEntity.allowAll,
-    "owners": permissionEntity.owners
+    "owners": permissionEntity.owners,
+    "password": permissionEntity.password
   }, SetOptions(merge: true));
 }
