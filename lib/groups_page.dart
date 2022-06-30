@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
+import 'package:work/pessimistic_toast.dart';
 import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
@@ -134,25 +135,36 @@ class _GroupsPage extends State<GroupsPage> {
                                 color: Theme.of(context).primaryColor,
                                 //color: Colors.black87,
                               ),
-                              onPressed: () async {
-                                if (_groupList[index].creator ==
-                                    Consumer.data.email) {
-                                  _removeGroup(_groupList[index]);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "You don't have rights for this action",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.CENTER,
-                                      timeInSecForIosWeb: 3,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 16.0);
-                                }
+                              onPressed: () {
+                                getPermissionsOfGroup(_groupList[index])
+                                    .then(((permissionEntity) {
+                                  if (permissionEntity.allowAll ||
+                                      permissionEntity.owners.contains(
+                                          FirebaseAuth
+                                              .instance.currentUser!.email)) {
+                                    _removeGroup(_groupList[index]);
+                                  } else {
+                                    pessimisticToast(
+                                        "You don't have rights for this action",
+                                        1);
+                                  }
+                                }));
                               },
                             ),
                             onTap: () {
-                              openGroup(index);
+                              getPermissionsOfGroup(_groupList[index])
+                                  .then(((permissionEntity) {
+                                if (permissionEntity.allowAll ||
+                                    permissionEntity.owners.contains(
+                                        FirebaseAuth
+                                            .instance.currentUser!.email)) {
+                                  openGroup(index);
+                                } else {
+                                  pessimisticToast(
+                                      "You don't have rights for this action",
+                                      1);
+                                }
+                              }));
                             },
                             onLongPress: () {
                               getPermissionsOfGroup(_groupList[index])

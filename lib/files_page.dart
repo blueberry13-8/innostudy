@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -13,6 +14,7 @@ import 'dart:io';
 import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
 import 'permission_system/permissions_page.dart';
+import 'pessimistic_toast.dart';
 
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
@@ -115,7 +117,18 @@ class _FilesPageState extends State<FilesPage> {
                           //color: Colors.black87,
                         ),
                         onPressed: () {
-                          _removeFile(_filesList[index]);
+                          _filesList[index].parentFolder = widget.openedFolder;
+                          getPermissionsOfFile(_filesList[index])
+                              .then(((permissionEntity) {
+                            if (permissionEntity.allowAll ||
+                                permissionEntity.owners.contains(
+                                    FirebaseAuth.instance.currentUser!.email)) {
+                              _removeFile(_filesList[index]);
+                            } else {
+                              pessimisticToast(
+                                  "You don't have rights for this action", 1);
+                            }
+                          }));
                         },
                       ),
                       onTap: () {
@@ -123,7 +136,17 @@ class _FilesPageState extends State<FilesPage> {
                           print("WHAT");
                         }
                         _filesList[index].parentFolder = widget.openedFolder;
-                        openFile(index);
+                        getPermissionsOfFile(_filesList[index])
+                            .then(((permissionEntity) {
+                          if (permissionEntity.allowAll ||
+                              permissionEntity.owners.contains(
+                                  FirebaseAuth.instance.currentUser!.email)) {
+                            openFile(index);
+                          } else {
+                            pessimisticToast(
+                                "You don't have rights for this action", 1);
+                          }
+                        }));
                       },
                       onLongPress: () {
                         _filesList[index].parentFolder = widget.openedFolder;

@@ -80,7 +80,14 @@ class _PermissionsPage extends State<PermissionsPage> {
                       },
                     ),
                   );
-                })))
+                }))),
+        Expanded(
+          flex: 1,
+          child: ElevatedButton(
+            child: const Text("Set password"),
+            onPressed: () {},
+          ),
+        )
       ],
     );
   }
