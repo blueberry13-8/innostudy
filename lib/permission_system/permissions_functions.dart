@@ -29,14 +29,56 @@ List<String> getOwnersOfFolder(Folder folder) {
   return [];
 }
 
-List<String> getOwnersOfGroup(Group group) {
-  return [];
+Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
+  Map<String, dynamic> data = (await FirebaseFirestore.instance
+          .collection("groups_normalnie")
+          .doc(group.groupName)
+          .get())
+      .data()!;
+  if (data.containsKey("allow_all")) {
+    List<String> owners = [];
+    for (int i = 0; i < data["owners"].length; i++) {
+      owners.add(data["owners"][i]);
+    }
+    return PermissionEntity(data["allow_all"], owners);
+  } else {
+    attachPermissionRulesToGroup(getStandartPermissionSet(), group);
+    return getStandartPermissionSet();
+  }
 }
+
+void attachPermissionRules(PermissionEntity permissionEntity,
+    PermissionableObject permissionableObject) {
+  switch (permissionableObject.type) {
+    case PermissionableType.file:
+      attachPermissionRulesToFile(
+          permissionEntity, permissionableObject.getFile());
+      break;
+    case PermissionableType.folder:
+      attachPermissionRulesToFolder(
+          permissionEntity, permissionableObject.getFolder());
+      break;
+    case PermissionableType.group:
+      attachPermissionRulesToGroup(
+          permissionEntity, permissionableObject.getGroup());
+      break;
+  }
+}
+
+void attachPermissionRulesToFile(
+    PermissionEntity permissionEntity, InnoFile innoFile) {}
 
 void attachPermissionRulesToFolder(
     PermissionEntity permissionEntity, Folder folder) {}
 
-void attachPermissionRulesToGroup(
-    PermissionEntity permissionEntity, Group group) {}
+Future<void> attachPermissionRulesToGroup(
+    PermissionEntity permissionEntity, Group group) async {
+  DocumentReference groupReference = FirebaseFirestore.instance
+      .collection("groups_normalnie")
+      .doc(group.groupName);
 
-void attachPermissionRulesToPage(PermissionEntity permissionEntity) {}
+  await groupReference.set({
+    "allow_all": permissionEntity.allowAll,
+    "owners": permissionEntity.owners
+  }, SetOptions(merge: true));
+}

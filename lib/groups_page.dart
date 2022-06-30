@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/permission_system/permissions_entity.dart';
+import 'package:work/permission_system/permissions_functions.dart';
+import 'package:work/permission_system/permissions_page.dart';
 import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
@@ -150,6 +153,22 @@ class _GroupsPage extends State<GroupsPage> {
                             ),
                             onTap: () {
                               openGroup(index);
+                            },
+                            onLongPress: () {
+                              getPermissionsOfGroup(_groupList[index])
+                                  .then((permissionEntity) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PermissionsPage(
+                                      permissionEntity: permissionEntity,
+                                      permissionableObject:
+                                          PermissionableObject.fromGroup(
+                                              _groupList[index]),
+                                    ),
+                                  ),
+                                );
+                              });
                             },
                           ),
                         )

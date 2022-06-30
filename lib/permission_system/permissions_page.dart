@@ -6,8 +6,12 @@ import 'package:work/pessimistic_toast.dart';
 
 class PermissionsPage extends StatefulWidget {
   final PermissionEntity permissionEntity;
+  final PermissionableObject permissionableObject;
 
-  const PermissionsPage({Key? key, required this.permissionEntity})
+  const PermissionsPage(
+      {Key? key,
+      required this.permissionEntity,
+      required this.permissionableObject})
       : super(key: key);
 
   @override
@@ -48,6 +52,8 @@ class _PermissionsPage extends State<PermissionsPage> {
                       onPressed: () {
                         if (_userList.contains(controller.text)) {
                           widget.permissionEntity.owners.add(controller.text);
+                          attachPermissionRules(widget.permissionEntity,
+                              widget.permissionableObject);
                           setState(() {});
                         } else {
                           pessimisticToast("This user does not exists", 1);
@@ -65,7 +71,13 @@ class _PermissionsPage extends State<PermissionsPage> {
                     title: Text(widget.permissionEntity.owners[index]),
                     trailing: IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: () {},
+                      onPressed: () {
+                        widget.permissionEntity.owners
+                            .remove(widget.permissionEntity.owners[index]);
+                        attachPermissionRules(widget.permissionEntity,
+                            widget.permissionableObject);
+                        setState(() {});
+                      },
                     ),
                   );
                 })))
@@ -95,6 +107,9 @@ class _PermissionsPage extends State<PermissionsPage> {
 
                         widget.permissionEntity.allowAll =
                             !widget.permissionEntity.allowAll;
+
+                        attachPermissionRules(widget.permissionEntity,
+                            widget.permissionableObject);
                         setState(() {});
                       }),
                   const Text(
