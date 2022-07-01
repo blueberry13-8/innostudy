@@ -111,11 +111,11 @@ List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
       folders.add(Folder(
-        folderName: data["folderName"],
-        files: dynamicToPath(
-          data['files'],
-        ),
-      ));
+          folderName: data["folderName"],
+          files: dynamicToPath(
+            data['files'],
+          ),
+          creator: data['creator']));
     }
   }
   return folders;

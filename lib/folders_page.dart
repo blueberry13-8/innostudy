@@ -207,7 +207,10 @@ class _FoldersPageState extends State<FoldersPage> {
                       onPressed: () {
                         if (_textController.text != '') {
                           _addFolder(Folder(
-                              folderName: _textController.text, files: []));
+                              folderName: _textController.text,
+                              files: [],
+                              creator:
+                                  FirebaseAuth.instance.currentUser!.email!));
                           Navigator.pop(context);
                           _textController.text = '';
                           _lastFolderName = '';
