@@ -71,6 +71,65 @@ class _FoldersPageState extends State<FoldersPage> {
     );
   }
 
+  Future<void> _showAlertDialog(BuildContext context, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        var cancelButton = TextButton(
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            if (kDebugMode) {
+              print('Canceled');
+            }
+            Navigator.of(context).pop();
+          },
+        );
+        var confirmButton = TextButton(
+          child: Text(
+            'Confirm',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () async {
+            if (kDebugMode) {
+              print('Confirmed');
+            }
+            _removeFolder(widget.openedGroup.folders[index]);
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+        var alertDialog = AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Deleting of folder ${widget.openedGroup.folders[index].folderName}',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            'Are you sure about deleting this folder? It will be deleted without ability to restore.',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          actions: [
+            cancelButton,
+            confirmButton,
+          ],
+        );
+        return alertDialog;
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,85 +164,142 @@ class _FoldersPageState extends State<FoldersPage> {
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
-                itemCount: _folderList.length,
+                itemCount: _folderList.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
+                  if (index == _folderList.length) {
+                    return const SizedBox(
+                      height: 80,
+                    );
+                  }
                   _folderList[index].parentGroup = widget.openedGroup;
                   RightsEntity rights = checkRightsForFolder(_folderList[index],
                       permissionEntitites[index], widget.parentPermissions);
                   return Card(
-                    //color: Colors.yellow[100],
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                        title: Text(
-                          _folderList[index].folderName,
-                          style: Theme.of(context).textTheme.bodyText1,
-                          //style: const TextStyle(fontSize: 20),
-                        ),
-                        leading: Icon(
-                          Icons.folder,
-                          color: Theme.of(context).primaryColor,
-                          //color: Colors.black87,
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            rights.openFoldersSettings
-                                ? Icons.remove_circle_outline
-                                : (rights.addFiles
-                                    ? Icons.lock_open
-                                    : Icons.lock_outline),
-                            color: Theme.of(context).primaryColor,
-                            //color: Colors.black87,
-                          ),
-                          onPressed: () {
-                            if (rights.deleteFolders ||
-                                rights.openFoldersSettings) {
-                              areYouShure(
-                                  context,
-                                  _folderList[index].folderName,
-                                  () => _removeFolder(_folderList[index]));
-                            } else if (!rights.addFiles) {
-                              if (permissionEntitites[index].password.isEmpty) {
-                                pessimisticToast(
-                                    "Only creator can invite you to this folder.",
-                                    1);
-                                return;
-                              }
-                              showPermissionDialog(
-                                  permissionEntitites[index],
-                                  PermissionableObject.fromFolder(
-                                      _folderList[index]),
-                                  context);
-                            }
-                          },
-                        ),
-                        onTap: () {
-                          if (rights.seeFiles) {
-                            openFolder(index, permissionEntitites[index]);
-                          } else {
-                            pessimisticToast(
-                                "You don't have rights for this action.", 1);
-                          }
-                        },
-                        onLongPress: () {
-                          if (!rights.openFoldersSettings) {
-                            pessimisticToast(
-                                "You don't have rights for this action.", 1);
-                            return;
-                          }
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PermissionsPage(
-                                permissionEntity: permissionEntitites[index],
-                                permissionableObject:
-                                    PermissionableObject.fromFolder(
-                                        _folderList[index]),
+                      title: Text(
+                        _folderList[index].folderName,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      leading: Icon(
+                        Icons.folder,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      trailing: rights.openFoldersSettings
+                          ? PopupMenuButton<int>(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).primaryColor,
                               ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Delete folder',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      Navigator.of(context).pop();
+                                      _showAlertDialog(context, index);
+                                    },
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 2,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.settings,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Settings',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PermissionsPage(
+                                            permissionEntity:
+                                                permissionEntitites[index],
+                                            permissionableObject:
+                                                PermissionableObject.fromFolder(
+                                                    _folderList[index]),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                              offset: const Offset(0, 50),
+                              color: Theme.of(context).backgroundColor,
+                              elevation: 3,
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                rights.addFiles
+                                    ? Icons.edit
+                                    : Icons.remove_red_eye_outlined,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                if (!rights.addFiles) {
+                                  if (permissionEntitites[index]
+                                      .password
+                                      .isEmpty) {
+                                    pessimisticToast(
+                                        "Only creator can invite you to manage this folder.",
+                                        1);
+                                    return;
+                                  }
+                                  showPermissionDialog(
+                                      permissionEntitites[index],
+                                      PermissionableObject.fromFolder(
+                                          _folderList[index]),
+                                      context);
+                                } else {
+                                  openFolder(index, permissionEntitites[index]);
+                                }
+                              },
                             ),
-                          );
-                        }),
+                      onTap: () {
+                        if (rights.seeFiles) {
+                          openFolder(index, permissionEntitites[index]);
+                        } else {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
+                        }
+                      },
+                    ),
                   );
                 },
               );

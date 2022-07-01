@@ -39,48 +39,63 @@ class _PermissionsPage extends State<PermissionsPage> {
             child: Row(
               children: [
                 Expanded(
-                    flex: 8,
-                    child: TextFieldSearch(
-                      label: "Search users",
-                      controller: controller,
-                      initialList: _userList,
-                    )),
+                  flex: 8,
+                  child: TextFieldSearch(
+                    label: "Search users",
+                    controller: controller,
+                    initialList: _userList,
+                    // decoration: InputDecoration(
+                    //   labelStyle: TextStyle(
+                    //     color: Theme.of(context).primaryColor,
+                    //   ),
+                    // ),
+                  ),
+                ),
                 Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      child: const Text("ADD"),
-                      onPressed: () {
-                        if (_userList.contains(controller.text)) {
-                          widget.permissionEntity.owners.add(controller.text);
-                          attachPermissionRules(widget.permissionEntity,
-                              widget.permissionableObject);
-                          setState(() {});
-                        } else {
-                          pessimisticToast("This user does not exists", 1);
-                        }
-                      },
-                    ))
-              ],
-            )),
-        Expanded(
-            flex: 5,
-            child: ListView.builder(
-                itemCount: widget.permissionEntity.owners.length,
-                itemBuilder: ((context, index) {
-                  return ListTile(
-                    title: Text(widget.permissionEntity.owners[index]),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () {
-                        widget.permissionEntity.owners
-                            .remove(widget.permissionEntity.owners[index]);
+                  flex: 2,
+                  child: ElevatedButton(
+                    child: const Text("ADD"),
+                    onPressed: () {
+                      if (_userList.contains(controller.text)) {
+                        widget.permissionEntity.owners.add(controller.text);
                         attachPermissionRules(widget.permissionEntity,
                             widget.permissionableObject);
                         setState(() {});
-                      },
-                    ),
-                  );
-                }))),
+                      } else {
+                        pessimisticToast("This user does not exists", 1);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            )),
+        Expanded(
+          flex: 5,
+          child: ListView.builder(
+            itemCount: widget.permissionEntity.owners.length,
+            itemBuilder: ((context, index) {
+              return ListTile(
+                title: Text(
+                  widget.permissionEntity.owners[index],
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.delete_forever,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    widget.permissionEntity.owners
+                        .remove(widget.permissionEntity.owners[index]);
+                    attachPermissionRules(
+                        widget.permissionEntity, widget.permissionableObject);
+                    setState(() {});
+                  },
+                ),
+              );
+            }),
+          ),
+        ),
         Expanded(
           flex: 1,
           child: ElevatedButton(
@@ -93,7 +108,12 @@ class _PermissionsPage extends State<PermissionsPage> {
                         TextEditingController();
 
                     return AlertDialog(
-                      title: const Text("Locking with password"),
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      title: Text(
+                        "Locking with password",
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      ),
                       content: SizedBox(
                           child: TextField(
                         controller: passwordController,
@@ -119,7 +139,7 @@ class _PermissionsPage extends State<PermissionsPage> {
                   });
             },
           ),
-        )
+        ),
       ],
     );
   }
@@ -127,20 +147,26 @@ class _PermissionsPage extends State<PermissionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Permissions settings"),
-          centerTitle: true,
-        ),
-        body: SafeArea(
-            child: Padding(
+      appBar: AppBar(
+        title: const Text("Permissions settings"),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(5),
           child: Column(children: [
             Expanded(
               flex: 1,
               child: Row(
                 children: [
+                  const SizedBox(
+                    width: 20,
+                  ),
                   Checkbox(
                       value: widget.permissionEntity.allowAll,
+                      //checkColor: Theme.of(context).primaryColor,
+                      activeColor: Theme.of(context).focusColor,
+                      focusColor: Theme.of(context).backgroundColor,
                       onChanged: (value) {
                         if (value == null) return;
 
@@ -151,19 +177,25 @@ class _PermissionsPage extends State<PermissionsPage> {
                             widget.permissionableObject);
                         setState(() {});
                       }),
-                  const Text(
+                  Text(
                     "ACCESS FOR ALL",
-                    style: TextStyle(fontSize: 18),
-                  )
+                    style: TextStyle(
+                        fontSize: 18, color: Theme.of(context).primaryColor),
+                  ),
                 ],
               ),
             ),
             Expanded(
                 flex: 9,
                 child: widget.permissionEntity.allowAll
-                    ? const Text("All users have access for this folder")
+                    ? Text(
+                        "All users have access for this folder",
+                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      )
                     : _getSearchBox())
           ]),
-        )));
+        ),
+      ),
+    );
   }
 }
