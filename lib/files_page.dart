@@ -72,6 +72,65 @@ class _FilesPageState extends State<FilesPage> {
         .path);
   }
 
+  Future<void> _showAlertDialog(BuildContext context, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        var cancelButton = TextButton(
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            if (kDebugMode) {
+              print('Canceled');
+            }
+            Navigator.of(context).pop();
+          },
+        );
+        var confirmButton = TextButton(
+          child: Text(
+            'Confirm',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () async {
+            if (kDebugMode) {
+              print('Confirmed');
+            }
+            _removeFile(_filesList[index]);
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+        var alertDialog = AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Deleting of file ${_filesList[index].fileName}',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            'Are you sure about deleting this file? It will be deleted without ability to restore.',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          actions: [
+            cancelButton,
+            confirmButton,
+          ],
+        );
+        return alertDialog;
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -104,17 +163,20 @@ class _FilesPageState extends State<FilesPage> {
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
-                itemCount: _filesList.length,
+                itemCount: _filesList.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
+                  if (index == _filesList.length) {
+                    return const SizedBox(
+                      height: 80,
+                    );
+                  }
                   _filesList[index].parentFolder = widget.openedFolder;
                   RightsEntity rights = checkRightsForFile(
                       _filesList[index],
                       widget.parentPermissionsFolder,
                       widget.parentPermissionsGroup);
                   return Card(
-                    //color: Colors.yellow[100],
-
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
@@ -126,32 +188,131 @@ class _FilesPageState extends State<FilesPage> {
                         Icons.file_present,
                         color: Theme.of(context).primaryColor,
                       ),
-                      trailing: IconButton(
-                        icon: Icon(
-                          rights.openFileSettings
-                              ? Icons.remove_circle_outline
-                              : Icons.lock_outline,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onPressed: () {
-                          if (rights.deleteFiles || rights.openFileSettings) {
-                            areYouShure(context, _filesList[index].fileName,
-                                () => _removeFile(_filesList[index]));
-                          } else {
-                            if (permissionEntitites[index].password.isEmpty) {
-                              pessimisticToast(
-                                  "Only creator can allow you to delete this file.",
-                                  1);
-                              return;
-                            }
-                            showPermissionDialog(
-                                permissionEntitites[index],
-                                PermissionableObject.fromInnoFile(
-                                    _filesList[index]),
-                                context);
-                          }
-                        },
-                      ),
+                      trailing: rights.openFileSettings
+                          ? PopupMenuButton<int>(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Delete file',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      _showAlertDialog(context, index);
+                                    },
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 2,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.settings,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Settings',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PermissionsPage(
+                                            permissionEntity:
+                                                permissionEntitites[index],
+                                            permissionableObject:
+                                                PermissionableObject
+                                                    .fromInnoFile(
+                                                        _filesList[index]),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                              offset: const Offset(0, 50),
+                              color: Theme.of(context).backgroundColor,
+                              elevation: 3,
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                Icons.remove_red_eye_outlined,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                if (permissionEntitites[index]
+                                    .password
+                                    .isEmpty) {
+                                  pessimisticToast(
+                                      "Only creator can allow you to delete this file.",
+                                      1);
+                                  return;
+                                }
+                                showPermissionDialog(
+                                    permissionEntitites[index],
+                                    PermissionableObject.fromInnoFile(
+                                        _filesList[index]),
+                                    context);
+                              },
+                            ),
+                      // IconButton(
+                      //   icon: Icon(
+                      //     rights.openFileSettings
+                      //         ? Icons.remove_circle_outline
+                      //         : Icons.lock_outline,
+                      //     color: Theme.of(context).primaryColor,
+                      //   ),
+                      //   onPressed: () {
+                      //     if (rights.deleteFiles || rights.openFileSettings) {
+                      //       areYouShure(context, _filesList[index].fileName,
+                      //           () => _removeFile(_filesList[index]));
+                      //     } else {
+                      //       if (permissionEntitites[index].password.isEmpty) {
+                      //         pessimisticToast(
+                      //             "Only creator can allow you to delete this file.",
+                      //             1);
+                      //         return;
+                      //       }
+                      //       showPermissionDialog(
+                      //           permissionEntitites[index],
+                      //           PermissionableObject.fromInnoFile(
+                      //               _filesList[index]),
+                      //           context);
+                      //     }
+                      //   },
+                      // ),
                       onTap: () {
                         if (rights.seeFiles) {
                           openFile(index);

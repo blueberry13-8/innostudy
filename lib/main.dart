@@ -48,6 +48,7 @@ class InnoStudyApp extends StatelessWidget {
         primaryColor: Colors.white,
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
         backgroundColor: Colors.blueGrey,
+        focusColor: Colors.indigo,
         appBarTheme: const AppBarTheme(
           color: Color.fromRGBO(45, 80, 115, 1.0),
           shadowColor: Color.fromRGBO(50, 85, 120, 1.0),
