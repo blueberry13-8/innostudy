@@ -41,14 +41,23 @@ class _PermissionsPage extends State<PermissionsPage> {
                 Expanded(
                   flex: 8,
                   child: TextFieldSearch(
-                    label: "Search users",
+                    label: 'Search users',
                     controller: controller,
                     initialList: _userList,
-                    // decoration: InputDecoration(
-                    //   labelStyle: TextStyle(
-                    //     color: Theme.of(context).primaryColor,
-                    //   ),
-                    // ),
+                    textStyle: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search users',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -164,9 +173,6 @@ class _PermissionsPage extends State<PermissionsPage> {
                   ),
                   Checkbox(
                       value: widget.permissionEntity.allowAll,
-                      //checkColor: Theme.of(context).primaryColor,
-                      activeColor: Theme.of(context).focusColor,
-                      focusColor: Theme.of(context).backgroundColor,
                       onChanged: (value) {
                         if (value == null) return;
 
