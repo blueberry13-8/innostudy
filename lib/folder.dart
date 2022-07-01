@@ -10,10 +10,17 @@ class Folder {
   //Group where the folder is located
   Group? parentGroup;
 
+  //The folder creator
+  String creator = "undefined";
+
   //The name of the folder
   String folderName;
 
-  Folder({required this.folderName, required this.files, this.parentGroup}) {
+  Folder(
+      {required this.folderName,
+      required this.files,
+      required this.creator,
+      this.parentGroup}) {
     for (var file in files) {
       file.parentFolder = this;
     }
@@ -27,9 +34,9 @@ class Folder {
       innoFiles.add(InnoFile.fromJson(json.decode(notParsed[i])));
     }
     return Folder(
-      folderName: loadedJson['folderName'],
-      files: innoFiles,
-    );
+        folderName: loadedJson['folderName'],
+        files: innoFiles,
+        creator: loadedJson['creator']);
   }
 
   Map<String, dynamic> toJson() {
@@ -38,9 +45,6 @@ class Folder {
     for (int i = 0; i < notParsed.length; i++) {
       notParsed.add(json.encode(files[i].toJson()));
     }
-    return {
-      'folderName': folderName,
-      'files': notParsed,
-    };
+    return {'folderName': folderName, 'files': notParsed, 'creator': creator};
   }
 }

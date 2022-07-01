@@ -13,6 +13,9 @@ class InnoFile {
   //The name of the file
   String fileName;
 
+  //The creator of file
+  String creator = "undefined";
+
   //Path in the Storage to the file
   String path;
 
@@ -20,19 +23,17 @@ class InnoFile {
       {this.realFile,
       required this.fileName,
       required this.path,
+      required this.creator,
       this.parentFolder});
 
   factory InnoFile.fromJson(Map<String, dynamic> json) {
     return InnoFile(
-      fileName: json['fileName'],
-      path: json['path'],
-    );
+        fileName: json['fileName'],
+        path: json['path'],
+        creator: json['creator']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'fileName': fileName,
-      'path': path,
-    };
+    return {'fileName': fileName, 'path': path, 'creator': creator};
   }
 }

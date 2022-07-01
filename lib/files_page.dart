@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:work/group.dart';
+import 'package:work/permission_system/permission_master.dart';
 import 'firebase_functions.dart';
 import 'inno_file.dart';
 import 'folder.dart';
@@ -10,15 +12,28 @@ import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'dart:io';
 
+import 'permission_system/permission_dialog.dart';
+import 'permission_system/permissions_entity.dart';
+import 'permission_system/permissions_functions.dart';
+import 'permission_system/permissions_page.dart';
+import 'pessimistic_toast.dart';
+
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
   const FilesPage(
-      {required this.openedFolder, required this.openedGroup, Key? key})
+      {required this.openedFolder,
+      required this.openedGroup,
+      required this.parentPermissionsGroup,
+      required this.parentPermissionsFolder,
+      Key? key})
       : super(key: key);
 
   final Folder openedFolder;
 
   final Group openedGroup;
+
+  final PermissionEntity parentPermissionsFolder;
+  final PermissionEntity parentPermissionsGroup;
 
   @override
   State<FilesPage> createState() => _FilesPageState();
@@ -29,8 +44,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   void _addFile(InnoFile innoFile) {
-    addFileToFolder(widget.openedGroup, widget.openedFolder,
-        innoFile.realFile!.path, innoFile.fileName);
+    innoFile.parentFolder = widget.openedFolder;
+    addFileToFolder(innoFile);
     setState(() {
       _filesList.add(innoFile);
     });
@@ -144,12 +159,22 @@ class _FilesPageState extends State<FilesPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _filesList = querySnapshotToInnoFileList(snapshot.data!);
+              widget.openedFolder.files = _filesList;
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
                 itemCount: _filesList.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
-                  return index < _filesList.length
-                  ? Card(
+
+                  _filesList[index].parentFolder = widget.openedFolder;
+                  RightsEntity rights = checkRightsForFile(
+                      _filesList[index],
+                      widget.parentPermissionsFolder,
+                      widget.parentPermissionsGroup);
+                  return Card(
+                    //color: Colors.yellow[100],
+
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
@@ -163,59 +188,56 @@ class _FilesPageState extends State<FilesPage> {
                       ),
                       trailing: PopupMenuButton<int>(
                         icon: Icon(
-                          Icons.more_vert,
+                          rights.openFileSettings
+                              ? Icons.remove_circle_outline
+                              : Icons.lock_outline,
+
                           color: Theme.of(context).primaryColor,
                         ),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 1,
-                            child: GestureDetector(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.delete_forever,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'Delete file',
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor),
-                                  ),
-                                ],
-                              ),
-                              onTap: () async {
-                                Navigator.of(context).pop();
-                                _showAlertDialog(context, index);
-                              },
-                            ),
-                          ),
-
-                          /// Here we can add more menu items for additional actions, for ex. field Info about group/folder/file
-                          // PopupMenuItem(
-                          //   value: 2,
-                          //   child: Row(
-                          //     children: const [
-                          //       Icon(Icons.info_outline),
-                          //       SizedBox(
-                          //         width: 10,
-                          //       ),
-                          //       Text('Info'),
-                          //     ],
-                          //   ),
-                          // ),
-                        ],
-                        offset: const Offset(0, 50),
-                        color: Theme.of(context).backgroundColor,
-                        elevation: 3,
+                        onPressed: () {
+                          if (rights.deleteFiles || rights.openFileSettings) {
+                            _removeFile(_filesList[index]);
+                          } else {
+                            if (permissionEntitites[index].password.isEmpty) {
+                              pessimisticToast(
+                                  "Only creator can allow you to delete this folder.",
+                                  1);
+                              return;
+                            }
+                            showPermissionDialog(
+                                permissionEntitites[index],
+                                PermissionableObject.fromInnoFile(
+                                    _filesList[index]),
+                                context);
+                          }
+                        },
                       ),
                       onTap: () {
-                        if (kDebugMode) {
-                          print("WHAT");
+                        if (rights.seeFiles) {
+                          openFile(index);
+                        } else {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
                         }
-                        openFile(index);
+                      },
+                      onLongPress: () {
+                        if (!rights.openFileSettings) {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
+                          return;
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PermissionsPage(
+                              permissionEntity: permissionEntitites[index],
+                              permissionableObject:
+                                  PermissionableObject.fromInnoFile(
+                                      _filesList[index]),
+                            ),
+                          ),
+                        );
                       },
                     ),
                   )
@@ -231,13 +253,24 @@ class _FilesPageState extends State<FilesPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "files page",
         onPressed: () async {
+          if (!checkRightsForFolder(widget.openedFolder,
+                  widget.parentPermissionsFolder, widget.parentPermissionsGroup)
+              .addFiles) {
+            pessimisticToast("You don't have rights for this action.", 1);
+            return;
+          }
+
           FilePickerResult? result =
               await FilePicker.platform.pickFiles(allowMultiple: true);
+
+          if (result == null) return;
+
           for (PlatformFile file in result!.files) {
             _addFile(InnoFile(
                 realFile: File(file.path!),
                 fileName: basename(file.path!),
-                path: file.path!));
+                path: file.path!,
+                creator: FirebaseAuth.instance.currentUser!.email!));
           }
         },
         child: const Icon(Icons.add),
