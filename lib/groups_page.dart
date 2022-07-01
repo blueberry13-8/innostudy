@@ -158,7 +158,6 @@ class _GroupsPage extends State<GroupsPage> {
                                         1);
                                     return;
                                   }
-
                                   showPermissionDialog(
                                       permissionEntitites[index],
                                       PermissionableObject.fromGroup(

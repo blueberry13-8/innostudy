@@ -6,6 +6,7 @@ import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
+import 'permission_system/permission_dialog.dart';
 import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
 import 'permission_system/permissions_page.dart';
@@ -40,7 +41,7 @@ class _FoldersPageState extends State<FoldersPage> {
   }
 
   ///Removes folder from widget
-  void _deleteFolder(Folder folder) {
+  void _removeFolder(Folder folder) {
     setState(() {
       _folderList.remove(folder);
       //widget.openedGroup.folders.remove(folder);
@@ -95,6 +96,8 @@ class _FoldersPageState extends State<FoldersPage> {
               _folderList = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
               widget.openedGroup.folders = _folderList;
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
                 itemCount: _folderList.length,
                 padding: const EdgeInsets.all(5),
@@ -116,24 +119,34 @@ class _FoldersPageState extends State<FoldersPage> {
                         ),
                         trailing: IconButton(
                           icon: Icon(
-                            Icons.remove_circle_outline,
+                            (permissionEntitites[index].owners.contains(
+                                        FirebaseAuth
+                                            .instance.currentUser!.email) ||
+                                    permissionEntitites[index].allowAll)
+                                ? Icons.remove_circle_outline
+                                : Icons.lock_outline,
                             color: Theme.of(context).primaryColor,
                             //color: Colors.black87,
                           ),
                           onPressed: () {
                             _folderList[index].parentGroup = widget.openedGroup;
-                            getPermissionsOfFolder(
-                                    widget.openedGroup.folders[index])
-                                .then(((permissionEntity) {
-                              if (permissionEntity.allowAll ||
-                                  permissionEntity.owners.contains(FirebaseAuth
-                                      .instance.currentUser!.email)) {
-                                _deleteFolder(_folderList[index]);
-                              } else {
+                            if (permissionEntitites[index].owners.contains(
+                                    FirebaseAuth.instance.currentUser!.email) ||
+                                permissionEntitites[index].allowAll) {
+                              _removeFolder(_folderList[index]);
+                            } else {
+                              if (permissionEntitites[index].password.isEmpty) {
                                 pessimisticToast(
-                                    "You don't have rights for this action", 1);
+                                    "Only creator can invite you to this folder.",
+                                    1);
+                                return;
                               }
-                            }));
+                              showPermissionDialog(
+                                  permissionEntitites[index],
+                                  PermissionableObject.fromFolder(
+                                      _folderList[index]),
+                                  context);
+                            }
                           },
                         ),
                         onTap: () {

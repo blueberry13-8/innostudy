@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'dart:io';
 
+import 'permission_system/permission_dialog.dart';
 import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
 import 'permission_system/permissions_page.dart';
@@ -91,6 +92,8 @@ class _FilesPageState extends State<FilesPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _filesList = querySnapshotToInnoFileList(snapshot.data!);
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
                 itemCount: _filesList.length,
                 padding: const EdgeInsets.all(5),
@@ -112,23 +115,34 @@ class _FilesPageState extends State<FilesPage> {
                       ),
                       trailing: IconButton(
                         icon: Icon(
-                          Icons.remove_circle_outline,
+                          (permissionEntitites[index].owners.contains(
+                                      FirebaseAuth
+                                          .instance.currentUser!.email) ||
+                                  permissionEntitites[index].allowAll)
+                              ? Icons.remove_circle_outline
+                              : Icons.lock_outline,
                           color: Theme.of(context).primaryColor,
                           //color: Colors.black87,
                         ),
                         onPressed: () {
                           _filesList[index].parentFolder = widget.openedFolder;
-                          getPermissionsOfFile(_filesList[index])
-                              .then(((permissionEntity) {
-                            if (permissionEntity.allowAll ||
-                                permissionEntity.owners.contains(
-                                    FirebaseAuth.instance.currentUser!.email)) {
-                              _removeFile(_filesList[index]);
-                            } else {
+                          if (permissionEntitites[index].owners.contains(
+                                  FirebaseAuth.instance.currentUser!.email) ||
+                              permissionEntitites[index].allowAll) {
+                            _removeFile(_filesList[index]);
+                          } else {
+                            if (permissionEntitites[index].password.isEmpty) {
                               pessimisticToast(
-                                  "You don't have rights for this action", 1);
+                                  "Only creator can allow you to delete this folder.",
+                                  1);
+                              return;
                             }
-                          }));
+                            showPermissionDialog(
+                                permissionEntitites[index],
+                                PermissionableObject.fromInnoFile(
+                                    _filesList[index]),
+                                context);
+                          }
                         },
                       ),
                       onTap: () {
