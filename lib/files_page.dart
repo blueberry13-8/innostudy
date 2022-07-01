@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:work/group.dart';
+import 'package:work/permission_system/permission_master.dart';
 import 'firebase_functions.dart';
 import 'inno_file.dart';
 import 'folder.dart';
@@ -20,12 +21,19 @@ import 'pessimistic_toast.dart';
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
   const FilesPage(
-      {required this.openedFolder, required this.openedGroup, Key? key})
+      {required this.openedFolder,
+      required this.openedGroup,
+      required this.parentPermissionsGroup,
+      required this.parentPermissionsFolder,
+      Key? key})
       : super(key: key);
 
   final Folder openedFolder;
 
   final Group openedGroup;
+
+  final PermissionEntity parentPermissionsFolder;
+  final PermissionEntity parentPermissionsGroup;
 
   @override
   State<FilesPage> createState() => _FilesPageState();
@@ -99,6 +107,11 @@ class _FilesPageState extends State<FilesPage> {
                 itemCount: _filesList.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
+                  _filesList[index].parentFolder = widget.openedFolder;
+                  RightsEntity rights = checkRightsForFile(
+                      _filesList[index],
+                      widget.parentPermissionsFolder,
+                      widget.parentPermissionsGroup);
                   return Card(
                     //color: Colors.yellow[100],
                     elevation: 4,
@@ -116,20 +129,14 @@ class _FilesPageState extends State<FilesPage> {
                       ),
                       trailing: IconButton(
                         icon: Icon(
-                          (permissionEntitites[index].owners.contains(
-                                      FirebaseAuth
-                                          .instance.currentUser!.email) ||
-                                  permissionEntitites[index].allowAll)
+                          rights.openFileSettings
                               ? Icons.remove_circle_outline
                               : Icons.lock_outline,
                           color: Theme.of(context).primaryColor,
                           //color: Colors.black87,
                         ),
                         onPressed: () {
-                          _filesList[index].parentFolder = widget.openedFolder;
-                          if (permissionEntitites[index].owners.contains(
-                                  FirebaseAuth.instance.currentUser!.email) ||
-                              permissionEntitites[index].allowAll) {
+                          if (rights.deleteFiles || rights.openFileSettings) {
                             _removeFile(_filesList[index]);
                           } else {
                             if (permissionEntitites[index].password.isEmpty) {
@@ -147,28 +154,31 @@ class _FilesPageState extends State<FilesPage> {
                         },
                       ),
                       onTap: () {
-                        if (kDebugMode) {
-                          print("WHAT");
+                        if (rights.seeFiles) {
+                          openFile(index);
+                        } else {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
                         }
-                        _filesList[index].parentFolder = widget.openedFolder;
-                        openFile(index);
                       },
                       onLongPress: () {
-                        _filesList[index].parentFolder = widget.openedFolder;
-                        getPermissionsOfFile(_filesList[index])
-                            .then((permissionEntity) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PermissionsPage(
-                                permissionEntity: permissionEntity,
-                                permissionableObject:
-                                    PermissionableObject.fromInnoFile(
-                                        _filesList[index]),
-                              ),
+                        if (!rights.openFileSettings) {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
+                          return;
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PermissionsPage(
+                              permissionEntity: permissionEntitites[index],
+                              permissionableObject:
+                                  PermissionableObject.fromInnoFile(
+                                      _filesList[index]),
                             ),
-                          );
-                        });
+                          ),
+                        );
                       },
                     ),
                   );
@@ -183,8 +193,18 @@ class _FilesPageState extends State<FilesPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "files page",
         onPressed: () async {
+          if (!checkRightsForFolder(widget.openedFolder,
+                  widget.parentPermissionsFolder, widget.parentPermissionsGroup)
+              .addFiles) {
+            pessimisticToast("You don't have rights for this action.", 1);
+            return;
+          }
+
           FilePickerResult? result =
               await FilePicker.platform.pickFiles(allowMultiple: true);
+
+          if (result == null) return;
+
           for (PlatformFile file in result!.files) {
             _addFile(InnoFile(
                 realFile: File(file.path!),

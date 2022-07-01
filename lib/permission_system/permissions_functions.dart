@@ -21,6 +21,27 @@ Future<List<String>> getUsersEmails() async {
   return userEmails;
 }
 
+Future<void> addRegisteredUser(String userEmail) async {
+  print("#");
+  int registeredUsers = (await FirebaseFirestore.instance
+      .collection("users_emails")
+      .doc("registered_users")
+      .get())["number"];
+  registeredUsers++;
+  print("##");
+  await FirebaseFirestore.instance
+      .collection("users_emails")
+      .doc("users")
+      .collection("emails")
+      .doc("user$registeredUsers")
+      .set({"email": userEmail});
+  print("###");
+  await FirebaseFirestore.instance
+      .collection("users_emails")
+      .doc("registered_users")
+      .set({"number": registeredUsers});
+}
+
 Future<PermissionEntity> getPermissionsOfFile(InnoFile innoFile) async {
   Map<String, dynamic> data = (await FirebaseFirestore.instance
           .collection("groups_normalnie")

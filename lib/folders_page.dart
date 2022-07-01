@@ -53,7 +53,7 @@ class _FoldersPageState extends State<FoldersPage> {
     });
   }
 
-  void openFolder(int index) {
+  void openFolder(int index, PermissionEntity permissionEntity) {
     if (kDebugMode) {
       print('${_folderList[index].folderName} is opened');
     }
@@ -64,6 +64,8 @@ class _FoldersPageState extends State<FoldersPage> {
         builder: (context) => FilesPage(
           openedFolder: _folderList[index],
           openedGroup: widget.openedGroup,
+          parentPermissionsFolder: permissionEntity,
+          parentPermissionsGroup: widget.parentPermissions,
         ),
       ),
     );
@@ -155,7 +157,7 @@ class _FoldersPageState extends State<FoldersPage> {
                         ),
                         onTap: () {
                           if (rights.seeFiles) {
-                            openFolder(index);
+                            openFolder(index, permissionEntitites[index]);
                           } else {
                             pessimisticToast(
                                 "You don't have rights for this action.", 1);

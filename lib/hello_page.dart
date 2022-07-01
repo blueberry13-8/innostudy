@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/pessimistic_toast.dart';
 import 'firebase_functions.dart';
 import 'groups_page.dart';
@@ -129,6 +130,7 @@ class _HelloPageState extends State<HelloPage> {
                               email: curNick,
                               password: curPass,
                             );
+                            await addRegisteredUser(curNick);
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'weak-password') {
                               pessimisticToast('password is too weak', 4);
