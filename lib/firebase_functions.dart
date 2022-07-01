@@ -96,26 +96,13 @@ void addFolderInGroup(Group group, Folder folder) {
   });
 }
 
-dynamicToPath(List<dynamic> paths) {
-  List<InnoFile> correctPaths = [];
-  for (String path in paths) {
-    String name = path.split('/')[path.split('/').length - 1];
-    correctPaths.add(InnoFile(fileName: name, path: path));
-  }
-  return correctPaths;
-}
-
 List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
   List<Folder> folders = [];
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
       folders.add(Folder(
-          folderName: data["folderName"],
-          files: dynamicToPath(
-            data['files'],
-          ),
-          creator: data['creator']));
+          folderName: data["folderName"], files: [], creator: data['creator']));
     }
   }
   return folders;
@@ -160,8 +147,10 @@ void deleteFolderFromGroup(Group group, Folder folder) {
 }
 
 /// Add file to the selected group (if group exists).
-Future<void> addFileToFolder(
-    Group group, Folder folder, String filePath, String name) async {
+Future<void> addFileToFolder(InnoFile innoFile) async {
+  Group group = innoFile.parentFolder!.parentGroup!;
+  Folder folder = innoFile.parentFolder!;
+
   dynamic curDoc = await FirebaseFirestore.instance
       .collection('groups_normalnie')
       .doc(group.groupName)
@@ -176,12 +165,14 @@ Future<void> addFileToFolder(
       .collection('folders')
       .doc(folder.folderName)
       .collection('files')
-      .doc(name);
+      .doc(innoFile.fileName);
   docRef.get().then((value) {
     if (!value.exists) {
       docRef.set(InnoFile(
-              fileName: name,
-              path: '${group.groupName}/${folder.folderName}/$name')
+              fileName: innoFile.fileName,
+              path:
+                  '${group.groupName}/${folder.folderName}/${innoFile.fileName}',
+              creator: innoFile.creator)
           .toJson());
     }
   });
@@ -191,18 +182,19 @@ Future<void> addFileToFolder(
           .listAll())
       .items;
   for (var file in filePool) {
-    if (file.name == name) {
+    if (file.name == innoFile.fileName) {
       throw Exception('addFileToFolder: File with such name already exists');
     }
   }
   docRef.update(InnoFile(
-          fileName: name, path: '${group.groupName}/${folder.folderName}/$name')
+          fileName: innoFile.fileName,
+          path: '${group.groupName}/${folder.folderName}/${innoFile.fileName}',
+          creator: innoFile.creator)
       .toJson());
   final ref = FirebaseStorage.instance
       .ref()
-      .child('${group.groupName}/${folder.folderName}/$name');
-  final file = File(filePath);
-  await ref.putFile(file);
+      .child('${group.groupName}/${folder.folderName}/${innoFile.fileName}');
+  await ref.putFile(innoFile.realFile!);
 }
 
 Future<void> deleteFileFromFolder(

@@ -182,47 +182,56 @@ class _FoldersPageState extends State<FoldersPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "folders page",
         onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      onChanged: (value) {
-                        _lastFolderName = value;
-                      },
+          getPermissionsOfGroup(widget.openedGroup)
+              .then((PermissionEntity permissionEntity) {
+            if (permissionEntity.owners
+                    .contains(FirebaseAuth.instance.currentUser!.email) ||
+                permissionEntity.allowAll) {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        top: 15,
+                        left: 15,
+                        right: 15,
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          controller: _textController,
+                          autofocus: true,
+                          onChanged: (value) {
+                            _lastFolderName = value;
+                          },
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_textController.text != '') {
+                              _addFolder(Folder(
+                                  folderName: _textController.text,
+                                  files: [],
+                                  creator: FirebaseAuth
+                                      .instance.currentUser!.email!));
+                              Navigator.pop(context);
+                              _textController.text = '';
+                              _lastFolderName = '';
+                            }
+                          },
+                          child: const Text('Add'),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_textController.text != '') {
-                          _addFolder(Folder(
-                              folderName: _textController.text,
-                              files: [],
-                              creator:
-                                  FirebaseAuth.instance.currentUser!.email!));
-                          Navigator.pop(context);
-                          _textController.text = '';
-                          _lastFolderName = '';
-                        }
-                      },
-                      child: const Text('Add'),
-                    ),
-                  ],
-                ),
+                  );
+                },
               );
-            },
-          );
+            } else {
+              pessimisticToast("You don't have rights for this action.", 1);
+            }
+          });
         },
         child: const Icon(Icons.add),
       ),

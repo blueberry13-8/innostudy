@@ -36,8 +36,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   void _addFile(InnoFile innoFile) {
-    addFileToFolder(widget.openedGroup, widget.openedFolder,
-        innoFile.realFile!.path, innoFile.fileName);
+    innoFile.parentFolder = widget.openedFolder;
+    addFileToFolder(innoFile);
     setState(() {
       _filesList.add(innoFile);
     });
@@ -92,6 +92,7 @@ class _FilesPageState extends State<FilesPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _filesList = querySnapshotToInnoFileList(snapshot.data!);
+              widget.openedFolder.files = _filesList;
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
@@ -188,7 +189,8 @@ class _FilesPageState extends State<FilesPage> {
             _addFile(InnoFile(
                 realFile: File(file.path!),
                 fileName: basename(file.path!),
-                path: file.path!));
+                path: file.path!,
+                creator: FirebaseAuth.instance.currentUser!.email!));
           }
         },
         child: const Icon(Icons.add),
