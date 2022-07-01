@@ -141,3 +141,22 @@ Future<void> attachPermissionRulesToGroup(
     "password": permissionEntity.password
   }, SetOptions(merge: true));
 }
+
+List<PermissionEntity> querySnapshotToListOfPermissionEntities(
+    QuerySnapshot snapshot) {
+  List<PermissionEntity> entities = [];
+  for (var document in snapshot.docs) {
+    var data = document.data()! as Map<String, dynamic>;
+    if (data.containsKey("allow_all")) {
+      List<String> owners = [];
+      for (var docOwner in data["owners"]) {
+        owners.add(docOwner);
+      }
+      entities
+          .add(PermissionEntity(data["allow_all"], owners, data["password"]));
+    } else {
+      entities.add(getStandartPermissionSet());
+    }
+  }
+  return entities;
+}

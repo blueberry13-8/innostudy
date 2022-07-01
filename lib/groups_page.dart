@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/permission_system/permission_dialog.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
@@ -92,6 +93,8 @@ class _GroupsPage extends State<GroupsPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _groupList = querySnapshotToGroupList(snapshot.data!);
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: _groupList.length + 1,
@@ -131,44 +134,55 @@ class _GroupsPage extends State<GroupsPage> {
                             ),
                             trailing: IconButton(
                               icon: Icon(
-                                Icons.remove_circle_outline,
+                                (permissionEntitites[index].owners.contains(
+                                            FirebaseAuth
+                                                .instance.currentUser!.email) ||
+                                        permissionEntitites[index].allowAll)
+                                    ? Icons.remove_circle_outline
+                                    : Icons.lock_outline,
                                 color: Theme.of(context).primaryColor,
                                 //color: Colors.black87,
                               ),
                               onPressed: () {
-                                getPermissionsOfGroup(_groupList[index])
-                                    .then(((permissionEntity) {
-                                  if (permissionEntity.allowAll ||
-                                      permissionEntity.owners.contains(
-                                          FirebaseAuth
-                                              .instance.currentUser!.email)) {
-                                    _removeGroup(_groupList[index]);
-                                  } else {
+                                if (permissionEntitites[index].owners.contains(
+                                        FirebaseAuth
+                                            .instance.currentUser!.email) ||
+                                    permissionEntitites[index].allowAll) {
+                                  _removeGroup(_groupList[index]);
+                                } else {
+                                  if (permissionEntitites[index]
+                                      .password
+                                      .isEmpty) {
                                     pessimisticToast(
-                                        "You don't have rights for this action",
+                                        "Only creator can invite you to this group.",
                                         1);
+                                    return;
                                   }
-                                }));
+
+                                  showPermissionDialog(
+                                      permissionEntitites[index],
+                                      PermissionableObject.fromGroup(
+                                          _groupList[index]),
+                                      context);
+                                }
                               },
                             ),
                             onTap: () {
                               openGroup(index);
                             },
                             onLongPress: () {
-                              getPermissionsOfGroup(_groupList[index])
-                                  .then((permissionEntity) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PermissionsPage(
-                                      permissionEntity: permissionEntity,
-                                      permissionableObject:
-                                          PermissionableObject.fromGroup(
-                                              _groupList[index]),
-                                    ),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PermissionsPage(
+                                    permissionEntity:
+                                        permissionEntitites[index],
+                                    permissionableObject:
+                                        PermissionableObject.fromGroup(
+                                            _groupList[index]),
                                   ),
-                                );
-                              });
+                                ),
+                              );
                             },
                           ),
                         )

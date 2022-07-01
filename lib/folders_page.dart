@@ -22,7 +22,7 @@ class FoldersPage extends StatefulWidget {
 }
 
 class _FoldersPageState extends State<FoldersPage> {
-  //late List<Folder> _folderList;
+  late List<Folder> _folderList;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -31,8 +31,8 @@ class _FoldersPageState extends State<FoldersPage> {
   ///Adds new folder to widget
   void _addFolder(Folder folder) {
     setState(() {
-      //_folderList.add(folder);
-      widget.openedGroup.folders.add(folder);
+      _folderList.add(folder);
+      //widget.openedGroup.folders.add(folder);
       //deleteGroup(group);
       //addGroup(group);
       addFolderInGroup(widget.openedGroup, folder);
@@ -42,21 +42,22 @@ class _FoldersPageState extends State<FoldersPage> {
   ///Removes folder from widget
   void _deleteFolder(Folder folder) {
     setState(() {
-      widget.openedGroup.folders.remove(folder);
+      _folderList.remove(folder);
+      //widget.openedGroup.folders.remove(folder);
       deleteFolderFromGroup(widget.openedGroup, folder);
     });
   }
 
   void openFolder(int index) {
     if (kDebugMode) {
-      print('${widget.openedGroup.folders[index].folderName} is opened');
+      print('${_folderList[index].folderName} is opened');
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => FilesPage(
-          openedFolder: widget.openedGroup.folders[index],
+          openedFolder: _folderList[index],
           openedGroup: widget.openedGroup,
         ),
       ),
@@ -91,10 +92,11 @@ class _FoldersPageState extends State<FoldersPage> {
             if (snapshot.hasError) {
               return const Text("Error");
             } else if (snapshot.hasData) {
-              widget.openedGroup.folders = querySnapshotToFoldersList(
+              _folderList = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
+              widget.openedGroup.folders = _folderList;
               return ListView.builder(
-                itemCount: widget.openedGroup.folders.length,
+                itemCount: _folderList.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   return Card(
@@ -103,7 +105,7 @@ class _FoldersPageState extends State<FoldersPage> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                         title: Text(
-                          widget.openedGroup.folders[index].folderName,
+                          _folderList[index].folderName,
                           style: Theme.of(context).textTheme.bodyText1,
                           //style: const TextStyle(fontSize: 20),
                         ),
@@ -119,16 +121,14 @@ class _FoldersPageState extends State<FoldersPage> {
                             //color: Colors.black87,
                           ),
                           onPressed: () {
-                            widget.openedGroup.folders[index].parentGroup =
-                                widget.openedGroup;
+                            _folderList[index].parentGroup = widget.openedGroup;
                             getPermissionsOfFolder(
                                     widget.openedGroup.folders[index])
                                 .then(((permissionEntity) {
                               if (permissionEntity.allowAll ||
                                   permissionEntity.owners.contains(FirebaseAuth
                                       .instance.currentUser!.email)) {
-                                _deleteFolder(
-                                    widget.openedGroup.folders[index]);
+                                _deleteFolder(_folderList[index]);
                               } else {
                                 pessimisticToast(
                                     "You don't have rights for this action", 1);
@@ -137,15 +137,12 @@ class _FoldersPageState extends State<FoldersPage> {
                           },
                         ),
                         onTap: () {
-                          widget.openedGroup.folders[index].parentGroup =
-                              widget.openedGroup;
+                          _folderList[index].parentGroup = widget.openedGroup;
                           openFolder(index);
                         },
                         onLongPress: () {
-                          widget.openedGroup.folders[index].parentGroup =
-                              widget.openedGroup;
-                          getPermissionsOfFolder(
-                                  widget.openedGroup.folders[index])
+                          _folderList[index].parentGroup = widget.openedGroup;
+                          getPermissionsOfFolder(_folderList[index])
                               .then((permissionEntity) {
                             Navigator.push(
                               context,
@@ -154,7 +151,7 @@ class _FoldersPageState extends State<FoldersPage> {
                                   permissionEntity: permissionEntity,
                                   permissionableObject:
                                       PermissionableObject.fromFolder(
-                                          widget.openedGroup.folders[index]),
+                                          _folderList[index]),
                                 ),
                               ),
                             );
