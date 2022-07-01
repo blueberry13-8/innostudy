@@ -10,7 +10,7 @@ class PermissionEntity {
   PermissionEntity(this.allowAll, this.owners, this.password);
 }
 
-PermissionEntity getStandartPermissionSet() => PermissionEntity(true, [], "");
+PermissionEntity getStandartPermissionSet() => PermissionEntity(false, [], "");
 
 enum PermissionableType { group, folder, file }
 
