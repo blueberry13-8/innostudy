@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/permission_system/permission_dialog.dart';
+import 'package:work/permission_system/permission_master.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
@@ -61,14 +62,17 @@ class _GroupsPage extends State<GroupsPage> {
     });
   }
 
-  void openGroup(int index) {
+  void openGroup(int index, PermissionEntity inheritedPermissions) {
     if (kDebugMode) {
       print("${_groupList[index].groupName} is opened");
     }
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FoldersPage(openedGroup: _groupList[index]),
+        builder: (context) => FoldersPage(
+          openedGroup: _groupList[index],
+          parentPermissions: inheritedPermissions,
+        ),
       ),
     );
   }
@@ -97,9 +101,11 @@ class _GroupsPage extends State<GroupsPage> {
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: _groupList.length + 1,
+                itemCount: _groupList.length,
                 padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                 itemBuilder: (BuildContext context, int index) {
+                  RightsEntity rights = checkRightsForGroup(
+                      _groupList[index], permissionEntitites[index]);
                   return index < _groupList.length
                       ? Card(
                           //color: Colors.yellow[100],
@@ -134,22 +140,18 @@ class _GroupsPage extends State<GroupsPage> {
                             ),
                             trailing: IconButton(
                               icon: Icon(
-                                (permissionEntitites[index].owners.contains(
-                                            FirebaseAuth
-                                                .instance.currentUser!.email) ||
-                                        permissionEntitites[index].allowAll)
+                                rights.openGroupSettings
                                     ? Icons.remove_circle_outline
-                                    : Icons.lock_outline,
+                                    : (rights.addFolders
+                                        ? Icons.lock_open
+                                        : Icons.lock_outline),
                                 color: Theme.of(context).primaryColor,
                                 //color: Colors.black87,
                               ),
                               onPressed: () {
-                                if (permissionEntitites[index].owners.contains(
-                                        FirebaseAuth
-                                            .instance.currentUser!.email) ||
-                                    permissionEntitites[index].allowAll) {
+                                if (rights.openGroupSettings) {
                                   _removeGroup(_groupList[index]);
-                                } else {
+                                } else if (!rights.addFolders) {
                                   if (permissionEntitites[index]
                                       .password
                                       .isEmpty) {
@@ -167,9 +169,22 @@ class _GroupsPage extends State<GroupsPage> {
                               },
                             ),
                             onTap: () {
-                              openGroup(index);
+                              if (rights.seeFolders) {
+                                openGroup(index, permissionEntitites[index]);
+                              } else {
+                                pessimisticToast(
+                                    "You don't have rights for this action.",
+                                    1);
+                              }
                             },
                             onLongPress: () {
+                              if (!rights.openGroupSettings) {
+                                pessimisticToast(
+                                    "You don't have rights for this action.",
+                                    1);
+                                return;
+                              }
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
