@@ -11,8 +11,6 @@ import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'consumer.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -77,65 +75,6 @@ class _GroupsPage extends State<GroupsPage> {
     );
   }
 
-  Future<void> _showAlertDialog(BuildContext context, int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        var cancelButton = TextButton(
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Canceled');
-            }
-            Navigator.of(context).pop();
-          },
-        );
-        var confirmButton = TextButton(
-          child: Text(
-            'Confirm',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () async {
-            if (kDebugMode) {
-              print('Confirmed');
-            }
-            _removeGroup(_groupList[index]);
-            Navigator.of(context).pop();
-            setState(() {});
-          },
-        );
-        var alertDialog = AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'Deleting of group ${_groupList[index].groupName}',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          content: Text(
-            'Are you sure about deleting this group? It will be deleted without ability to restore.',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            cancelButton,
-            confirmButton,
-          ],
-        );
-        return alertDialog;
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -195,20 +134,21 @@ class _GroupsPage extends State<GroupsPage> {
                               color: Theme.of(context).primaryColor,
                               //color: Colors.black87,
                             ),
-                            trailing: PopupMenuButton<int>(
+                            trailing: IconButton(
                               icon: Icon(
                                 rights.openGroupSettings
                                     ? Icons.remove_circle_outline
                                     : (rights.addFolders
                                         ? Icons.lock_open
                                         : Icons.lock_outline),
-
                                 color: Theme.of(context).primaryColor,
                               ),
-
                               onPressed: () {
                                 if (rights.openGroupSettings) {
-                                  _removeGroup(_groupList[index]);
+                                  areYouShure(
+                                      context,
+                                      _groupList[index].groupName,
+                                      () => _removeGroup(_groupList[index]));
                                 } else if (!rights.addFolders) {
                                   if (permissionEntitites[index]
                                       .password

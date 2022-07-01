@@ -72,65 +72,6 @@ class _FilesPageState extends State<FilesPage> {
         .path);
   }
 
-  Future<void> _showAlertDialog(BuildContext context, int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        var cancelButton = TextButton(
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Canceled');
-            }
-            Navigator.of(context).pop();
-          },
-        );
-        var confirmButton = TextButton(
-          child: Text(
-            'Confirm',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () async {
-            if (kDebugMode) {
-              print('Confirmed');
-            }
-            _removeFile(_filesList[index]);
-            Navigator.of(context).pop();
-            setState(() {});
-          },
-        );
-        var alertDialog = AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'Deleting of file ${_filesList[index].fileName}',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          content: Text(
-            'Are you sure about deleting this file? It will be deleted without ability to restore.',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            cancelButton,
-            confirmButton,
-          ],
-        );
-        return alertDialog;
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -163,10 +104,9 @@ class _FilesPageState extends State<FilesPage> {
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
-                itemCount: _filesList.length + 1,
+                itemCount: _filesList.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
-
                   _filesList[index].parentFolder = widget.openedFolder;
                   RightsEntity rights = checkRightsForFile(
                       _filesList[index],
@@ -186,21 +126,21 @@ class _FilesPageState extends State<FilesPage> {
                         Icons.file_present,
                         color: Theme.of(context).primaryColor,
                       ),
-                      trailing: PopupMenuButton<int>(
+                      trailing: IconButton(
                         icon: Icon(
                           rights.openFileSettings
                               ? Icons.remove_circle_outline
                               : Icons.lock_outline,
-
                           color: Theme.of(context).primaryColor,
                         ),
                         onPressed: () {
                           if (rights.deleteFiles || rights.openFileSettings) {
-                            _removeFile(_filesList[index]);
+                            areYouShure(context, _filesList[index].fileName,
+                                () => _removeFile(_filesList[index]));
                           } else {
                             if (permissionEntitites[index].password.isEmpty) {
                               pessimisticToast(
-                                  "Only creator can allow you to delete this folder.",
+                                  "Only creator can allow you to delete this file.",
                                   1);
                               return;
                             }
@@ -240,8 +180,7 @@ class _FilesPageState extends State<FilesPage> {
                         );
                       },
                     ),
-                  )
-                  : const SizedBox(height: 80,);
+                  );
                 },
               );
             } else {
@@ -265,7 +204,7 @@ class _FilesPageState extends State<FilesPage> {
 
           if (result == null) return;
 
-          for (PlatformFile file in result!.files) {
+          for (PlatformFile file in result.files) {
             _addFile(InnoFile(
                 realFile: File(file.path!),
                 fileName: basename(file.path!),

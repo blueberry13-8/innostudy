@@ -38,3 +38,42 @@ void showPermissionDialog(PermissionEntity permissionEntity,
         );
       });
 }
+
+void areYouShure(
+    BuildContext context, String objectName, VoidCallback callback) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Removing"),
+          content: Text("Do you want to delete $objectName?."),
+          actions: [
+            Container(
+              padding: const EdgeInsets.all(5),
+              alignment: Alignment.center,
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Expanded(
+                    flex: 4,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("No"))),
+                const Expanded(
+                  flex: 2,
+                  child: SizedBox(),
+                ),
+                Expanded(
+                    flex: 4,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          callback();
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Yes"))),
+              ]),
+            )
+          ],
+        );
+      });
+}

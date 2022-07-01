@@ -22,20 +22,17 @@ Future<List<String>> getUsersEmails() async {
 }
 
 Future<void> addRegisteredUser(String userEmail) async {
-  print("#");
   int registeredUsers = (await FirebaseFirestore.instance
       .collection("users_emails")
       .doc("registered_users")
       .get())["number"];
   registeredUsers++;
-  print("##");
   await FirebaseFirestore.instance
       .collection("users_emails")
       .doc("users")
       .collection("emails")
       .doc("user$registeredUsers")
       .set({"email": userEmail});
-  print("###");
   await FirebaseFirestore.instance
       .collection("users_emails")
       .doc("registered_users")

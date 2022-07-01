@@ -1,12 +1,10 @@
 //This module helps to understand the system which rights current user have
 
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work/folder.dart';
 import 'package:work/group.dart';
 import 'package:work/inno_file.dart';
 import 'package:work/permission_system/permissions_entity.dart';
-import 'package:work/permission_system/permissions_functions.dart';
 
 ///Class contains the rights that user have
 class RightsEntity {

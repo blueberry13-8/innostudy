@@ -183,7 +183,7 @@ Future<void> addFileToFolder(InnoFile innoFile) async {
       .items;
   for (var file in filePool) {
     if (file.name == innoFile.fileName) {
-      throw Exception('addFileToFolder: File with such name already exists');
+      return;
     }
   }
   docRef.update(InnoFile(

@@ -71,65 +71,6 @@ class _FoldersPageState extends State<FoldersPage> {
     );
   }
 
-  Future<void> _showAlertDialog(BuildContext context, int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        var cancelButton = TextButton(
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Canceled');
-            }
-            Navigator.of(context).pop();
-          },
-        );
-        var confirmButton = TextButton(
-          child: Text(
-            'Confirm',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () async {
-            if (kDebugMode) {
-              print('Confirmed');
-            }
-            _deleteFolder(widget.openedGroup.folders[index]);
-            Navigator.of(context).pop();
-            setState(() {});
-          },
-        );
-        var alertDialog = AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'Deleting of folder ${widget.openedGroup.folders[index].folderName}',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          content: Text(
-            'Are you sure about deleting this folder? It will be deleted without ability to restore.',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            cancelButton,
-            confirmButton,
-          ],
-        );
-        return alertDialog;
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -198,7 +139,10 @@ class _FoldersPageState extends State<FoldersPage> {
                           onPressed: () {
                             if (rights.deleteFolders ||
                                 rights.openFoldersSettings) {
-                              _removeFolder(_folderList[index]);
+                              areYouShure(
+                                  context,
+                                  _folderList[index].folderName,
+                                  () => _removeFolder(_folderList[index]));
                             } else if (!rights.addFiles) {
                               if (permissionEntitites[index].password.isEmpty) {
                                 pessimisticToast(
