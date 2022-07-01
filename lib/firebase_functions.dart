@@ -90,7 +90,7 @@ void addFolderInGroup(Group group, Folder folder) {
       database
           .collection('groups_normalnie')
           .doc(group.groupName)
-          .set(group.toJson());
+          .set(group.toJson(), SetOptions(merge: true));
       debugPrint('Folder ${folder.folderName} was created.');
     }
   });
@@ -157,7 +157,7 @@ Future<void> addFileToFolder(InnoFile innoFile) async {
       .get();
 
   if (curDoc.exists == false) {
-    throw Exception('addFileToFolder: Group does not exist');
+    return;
   }
   DocumentReference docRef = FirebaseFirestore.instance
       .collection('groups_normalnie')
@@ -168,12 +168,14 @@ Future<void> addFileToFolder(InnoFile innoFile) async {
       .doc(innoFile.fileName);
   docRef.get().then((value) {
     if (!value.exists) {
-      docRef.set(InnoFile(
-              fileName: innoFile.fileName,
-              path:
-                  '${group.groupName}/${folder.folderName}/${innoFile.fileName}',
-              creator: innoFile.creator)
-          .toJson());
+      docRef.set(
+          InnoFile(
+                  fileName: innoFile.fileName,
+                  path:
+                      '${group.groupName}/${folder.folderName}/${innoFile.fileName}',
+                  creator: innoFile.creator)
+              .toJson(),
+          SetOptions(merge: true));
     }
   });
   final filePool = (await FirebaseStorage.instance
