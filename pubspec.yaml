@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.0.9
   path: ^1.8.1
   textfield_search: ^0.10.0
+  firebase_crashlytics: ^2.8.4
 
 dev_dependencies:
   flutter_test:
