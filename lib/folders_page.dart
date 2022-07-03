@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/switch.dart';
@@ -46,13 +45,13 @@ class _FoldersPageState extends State<FoldersPage> {
   ///Removes folder from widget
   Future<void> _deleteFolder(Folder folder) async {
     await deleteFolder(widget.openedGroup, folder, widget.path);
-    setState(() {
-      if (widget.path.isEmpty) {
-        widget.openedGroup.folders.remove(folder);
-      } else {
-        widget.path.last.parentFolder!.folders!.remove(folder);
-      }
-    });
+    // setState(() {
+      // if (widget.path.isEmpty) {
+      //   widget.openedGroup.folders.remove(folder);
+      // } else {
+      //   widget.path.last.parentFolder!.folders!.remove(folder);
+      // }
+    // });
   }
 
   void openFolder(Folder folder) {

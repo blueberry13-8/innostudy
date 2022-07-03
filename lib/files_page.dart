@@ -31,9 +31,9 @@ class _FilesPageState extends State<FilesPage> {
   Future<void> _addFile(InnoFile innoFile) async {
     await addFileToFolderNEW(widget.openedGroup, widget.path,
         innoFile.realFile!.path, innoFile.fileName);
-    setState(() {
-      _filesList.add(innoFile);
-    });
+    // setState(() {
+    //   _filesList.add(innoFile);
+    // });
     //debugPrint(widget.openedFolder.files.toString());
   }
 
@@ -43,9 +43,9 @@ class _FilesPageState extends State<FilesPage> {
     debugPrint('${innoFile.fileName} for deleting.');
     await deleteFileFromFolderNEW(
         widget.openedGroup, widget.path, innoFile.fileName);
-    setState(() {
-      _filesList.remove(innoFile);
-    });
+    // setState(() {
+    //   _filesList.remove(innoFile);
+    // });
   }
 
   Future<void> openFile(int index) async {

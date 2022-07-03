@@ -63,7 +63,7 @@ class _GroupsPage extends State<GroupsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FoldersPage(openedGroup: _groupList[index], path: [],),
+        builder: (context) => FoldersPage(openedGroup: _groupList[index], path: const [],),
       ),
     );
   }

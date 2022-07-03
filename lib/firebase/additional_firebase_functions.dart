@@ -22,7 +22,6 @@ Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
       return;
     }
   }
-  print(path.toString());
   var doc = await ref.collection('folders').doc(newFolder.folderName).get();
   if (doc.exists) {
     debugPrint('Folder ${newFolder.folderName} is already exist.');
@@ -56,7 +55,20 @@ Future<void> deleteFolder(
   var doc =
       await ref.collection('folders').doc(folderForDelete.folderName).get();
   if (doc.exists) {
+    List<Folder> newPath = List.from(path);
+    newPath.add(folderForDelete);
     if (folderForDelete.withFolders) {
+      var foldersForDelete = await ref
+          .collection('folders')
+          .doc(folderForDelete.folderName)
+          .collection('folders')
+          .get();
+      for (var folder in foldersForDelete.docs) {
+        if (folder.exists) {
+          Folder x = Folder.fromJson(folder.data());
+          await deleteFolder(group, x, newPath);
+        }
+      }
     } else {
       var filesForDelete = await ref
           .collection('folders')
@@ -66,12 +78,11 @@ Future<void> deleteFolder(
       for (var file in filesForDelete.docs) {
         if (file.exists) {
           InnoFile x = InnoFile.fromJson(file.data());
-          path.add(folderForDelete);
-          await deleteFileFromFolderNEW(group, path, x.fileName);
+          await deleteFileFromFolderNEW(group, newPath, x.fileName);
         }
       }
-      await ref.collection('folders').doc(folderForDelete.folderName).delete();
     }
+    await ref.collection('folders').doc(folderForDelete.folderName).delete();
   } else {
     debugPrint('Folder ${folderForDelete.folderName} does not exist.');
   }
@@ -155,7 +166,7 @@ Future<void> deleteFileFromFolderNEW(
       return;
     }
   }
-  docRef.collection('files').doc(fileName);
+  docRef = docRef.collection('files').doc(fileName);
   docRef.delete();
   final ref = FirebaseStorage.instance
       .ref()
@@ -185,7 +196,7 @@ Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) asyn
       //TODO: return error file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
   }
-  docRef.collection('files').doc(name);
+  docRef = docRef.collection('files').doc(name);
 
   final ref = FirebaseStorage.instance
       .ref()
