@@ -10,7 +10,7 @@ import '../inno_file.dart';
 Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
   var database = FirebaseFirestore.instance;
   var data = newFolder.toJson();
-  var ref = database.collection('slave_groups').doc(group.groupName);
+  var ref = database.collection('groups').doc(group.groupName);
   if (!(await ref.get()).exists) {
     debugPrint('addFolder: Group ${group.groupName} does not exist!');
     return;
@@ -40,7 +40,7 @@ Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
 Future<void> deleteFolder(
     Group group, Folder folderForDelete, List<Folder> path) async {
   var database = FirebaseFirestore.instance;
-  var ref = database.collection('slave_groups').doc(group.groupName);
+  var ref = database.collection('groups').doc(group.groupName);
   if (!(await ref.get()).exists) {
     debugPrint('addFolder: Group ${group.groupName} does not exist!');
     return;
@@ -94,7 +94,7 @@ Future<void> addFileToFolderNEW(
     debugPrint(folder.folderName);
   }
   dynamic curDoc = await FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName)
       .get();
   if (!curDoc.exists) {
@@ -102,7 +102,7 @@ Future<void> addFileToFolderNEW(
     return;
   }
   DocumentReference docRef = FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {
@@ -141,7 +141,7 @@ Future<void> addFileToFolderNEW(
 Future<void> deleteFileFromFolderNEW(
     Group group, List<Folder> path, String fileName) async {
   final curDoc = await FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName)
       .get();
 
@@ -150,7 +150,7 @@ Future<void> deleteFileFromFolderNEW(
     return;
   }
   DocumentReference docRef = FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {
@@ -171,7 +171,7 @@ Future<void> deleteFileFromFolderNEW(
 
 Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) async {
   final curDoc = await FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName)
       .get();
 
@@ -180,7 +180,7 @@ Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) asyn
     //TODO: return error file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
   DocumentReference docRef = FirebaseFirestore.instance
-      .collection('slave_groups')
+      .collection('groups')
       .doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {

@@ -133,7 +133,7 @@ class _FilesPageState extends State<FilesPage> {
   @override
   Widget build(BuildContext context) {
     var ref = FirebaseFirestore.instance
-        .collection('slave_groups')
+        .collection('groups')
         .doc(widget.openedGroup.groupName);
     for (var folder in widget.path) {
       ref = ref.collection('folders').doc(folder.folderName);

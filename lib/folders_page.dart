@@ -166,7 +166,7 @@ class _FoldersPageState extends State<FoldersPage> {
       title = widget.path.last.folderName;
     }
     var ref = FirebaseFirestore.instance
-        .collection('slave_groups')
+        .collection('groups')
         .doc(widget.openedGroup.groupName)
         .collection('folders');
     var listOfFolders = widget.openedGroup.folders;

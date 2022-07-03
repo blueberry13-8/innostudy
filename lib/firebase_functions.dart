@@ -11,12 +11,12 @@ Future<void> addGroup(Group group) async {
   final data = group.toJson();
   var database = FirebaseFirestore.instance;
   var doc =
-      await database.collection('slave_groups').doc(group.groupName).get();
+      await database.collection('groups').doc(group.groupName).get();
   if (doc.exists) {
     debugPrint('Group with name - ${group.groupName} exists.');
   } else {
     await database
-        .collection('slave_groups')
+        .collection('groups')
         .doc(group.groupName)
         .set(data);
     // for (var folder in group.folders) {
@@ -31,10 +31,10 @@ Future<void> addGroup(Group group) async {
 Future<void> deleteGroup(Group group) async {
   var database = FirebaseFirestore.instance;
   var doc =
-      await database.collection('slave_groups').doc(group.groupName).get();
+      await database.collection('groups').doc(group.groupName).get();
   if (doc.exists) {
     var foldersForDelete = await database
-        .collection('slave_groups')
+        .collection('groups')
         .doc(group.groupName)
         .collection('folders')
         .get();
@@ -44,7 +44,7 @@ Future<void> deleteGroup(Group group) async {
         await deleteFolder(group, f, []);
       }
     }
-    await database.collection('slave_groups').doc(group.groupName).delete();
+    await database.collection('groups').doc(group.groupName).delete();
     debugPrint('Group ${group.groupName} was deleted.');
   } else {
     debugPrint('Group ${group.groupName} are not existing.');
@@ -54,7 +54,7 @@ Future<void> deleteGroup(Group group) async {
 /// Stream for watching changes into groups' collection.
 /// Use it for dynamic rendering Group List.
 final Stream<QuerySnapshot> groupsStream =
-    FirebaseFirestore.instance.collection('slave_groups').snapshots();
+    FirebaseFirestore.instance.collection('groups').snapshots();
 
 final Stream<User?> consumerStream = FirebaseAuth.instance.authStateChanges();
 
