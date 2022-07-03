@@ -1,16 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
+import 'firebase/additional_firebase_functions.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
-  const FoldersPage({required this.openedGroup, Key? key}) : super(key: key);
+  const FoldersPage({required this.openedGroup, Key? key, required this.path})
+      : super(key: key);
 
   final Group openedGroup;
+  final List<Folder> path;
 
   @override
   State<FoldersPage> createState() => _FoldersPageState();
@@ -24,38 +28,57 @@ class _FoldersPageState extends State<FoldersPage> {
   String _lastFolderName = '';
 
   ///Adds new folder to widget
-  void _addFolder(Folder folder) {
-    setState(() {
-      //_folderList.add(folder);
-      widget.openedGroup.folders.add(folder);
-      //deleteGroup(group);
-      //addGroup(group);
-      addFolderInGroup(widget.openedGroup, folder);
-    });
+  Future<void> _addFolder(Folder folder) async {
+    await addFolder(widget.openedGroup, folder, widget.path);
+    // setState(() {
+    //   //_folderList.add(folder);
+    //   if (widget.path.isEmpty) {
+    //     widget.openedGroup.folders.add(folder);
+    //   } else {
+    //     widget.path.last.parentFolder!.folders!.add(folder);
+    //   }
+    // });
   }
 
   ///Removes folder from widget
-  void _deleteFolder(Folder folder) {
+  Future<void> _deleteFolder(Folder folder) async {
+    await deleteFolder(widget.openedGroup, folder, widget.path);
     setState(() {
-      widget.openedGroup.folders.remove(folder);
-      deleteFolderFromGroup(widget.openedGroup, folder);
+      if (widget.path.isEmpty) {
+        widget.openedGroup.folders.remove(folder);
+      } else {
+        widget.path.last.parentFolder!.folders!.remove(folder);
+      }
     });
   }
 
-  void openFolder(int index) {
+  void openFolder(Folder folder) {
     if (kDebugMode) {
-      print('${widget.openedGroup.folders[index].folderName} is opened');
+      print('${folder.folderName} is opened');
     }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FilesPage(
-          openedFolder: widget.openedGroup.folders[index],
-          openedGroup: widget.openedGroup,
+    List<Folder> newPath = List.from(widget.path);
+    newPath.add(folder);
+    if (folder.withFolders) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FoldersPage(
+            openedGroup: widget.openedGroup,
+            path: newPath,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FilesPage(
+            path: newPath,
+            openedGroup: widget.openedGroup,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -69,27 +92,36 @@ class _FoldersPageState extends State<FoldersPage> {
 
   @override
   Widget build(BuildContext context) {
+    String title = widget.openedGroup.groupName;
+    if (widget.path.isNotEmpty) {
+      title = widget.path.last.folderName;
+    }
+    var ref = FirebaseFirestore.instance
+        .collection('slave_groups')
+        .doc(widget.openedGroup.groupName)
+        .collection('folders');
+    var listOfFolders = widget.openedGroup.folders;
+    for (var folder in widget.path) {
+      ref = ref.doc(folder.folderName).collection('folders');
+      listOfFolders = folder.folders!;
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.openedGroup.groupName),
+        title: Text(title),
         centerTitle: true,
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('groups_normalnie')
-              .doc(widget.openedGroup.groupName)
-              .collection('folders')
-              .snapshots(),
+          stream: ref.snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
               return const Text("Error");
             } else if (snapshot.hasData) {
-              widget.openedGroup.folders = querySnapshotToFoldersList(
+              listOfFolders = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
               return ListView.builder(
-                itemCount: widget.openedGroup.folders.length,
+                itemCount: listOfFolders.length,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   return Card(
@@ -98,7 +130,7 @@ class _FoldersPageState extends State<FoldersPage> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
-                        widget.openedGroup.folders[index].folderName,
+                        listOfFolders[index].folderName,
                         style: Theme.of(context).textTheme.bodyText1,
                         //style: const TextStyle(fontSize: 20),
                       ),
@@ -114,11 +146,11 @@ class _FoldersPageState extends State<FoldersPage> {
                           //color: Colors.black87,
                         ),
                         onPressed: () {
-                          _deleteFolder(widget.openedGroup.folders[index]);
+                          _deleteFolder(listOfFolders[index]);
                         },
                       ),
                       onTap: () {
-                        openFolder(index);
+                        openFolder(listOfFolders[index]);
                       },
                     ),
                   );
@@ -137,6 +169,8 @@ class _FoldersPageState extends State<FoldersPage> {
             context: context,
             isScrollControlled: true,
             builder: (context) {
+              //var _isSelected = [false];
+              bool withFolder = false;
               return Padding(
                 padding: EdgeInsets.only(
                     top: 15,
@@ -154,11 +188,48 @@ class _FoldersPageState extends State<FoldersPage> {
                         _lastFolderName = value;
                       },
                     ),
+                    Row(
+                      children: [
+                        const Text('With Files'),
+                        CupertinoSwitch(
+                            value: withFolder,
+                            onChanged: (value) {
+                              withFolder = value;
+                              debugPrint(withFolder.toString());
+                              setState(() {});
+                              super.setState(() {});
+                            }),
+                        const Text('With Folders'),
+                      ],
+                    ),
+                    // ToggleButtons(
+                    //   isSelected: _isSelected,
+                    //   onPressed: (int index) {
+                    //     _isSelected[index] = !_isSelected[index];
+                    //     debugPrint(_isSelected.toString());
+                    //     setState((){});
+                    //   },
+                    //   children: <Widget>[
+                    //     Icon(Icons.folder_copy),
+                    //   ],
+                    //   selectedColor: Colors.red,
+                    // ),
+
                     ElevatedButton(
                       onPressed: () {
                         if (_textController.text != '') {
-                          _addFolder(Folder(
-                              folderName: _textController.text, files: []));
+                          if (!withFolder) {
+                            _addFolder(Folder(
+                              folderName: _textController.text,
+                              files: [],
+                              withFolders: false,
+                            ));
+                          } else {
+                            _addFolder(Folder(
+                                folderName: _textController.text,
+                                folders: [],
+                                withFolders: true));
+                          }
                           Navigator.pop(context);
                           _textController.text = '';
                           _lastFolderName = '';

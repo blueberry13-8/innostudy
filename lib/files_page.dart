@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:work/group.dart';
+import 'firebase/additional_firebase_functions.dart';
 import 'firebase_functions.dart';
 import 'inno_file.dart';
 import 'folder.dart';
@@ -12,13 +13,12 @@ import 'dart:io';
 
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
-  const FilesPage(
-      {required this.openedFolder, required this.openedGroup, Key? key})
+  const FilesPage({required this.openedGroup, required this.path, Key? key})
       : super(key: key);
 
-  final Folder openedFolder;
-
   final Group openedGroup;
+
+  final List<Folder> path;
 
   @override
   State<FilesPage> createState() => _FilesPageState();
@@ -28,21 +28,21 @@ class _FilesPageState extends State<FilesPage> {
   late List<InnoFile> _filesList;
 
   ///Adds new folder to widget
-  void _addFile(InnoFile innoFile) {
-    addFileToFolder(widget.openedGroup, widget.openedFolder,
+  Future<void> _addFile(InnoFile innoFile) async {
+    await addFileToFolderNEW(widget.openedGroup, widget.path,
         innoFile.realFile!.path, innoFile.fileName);
     setState(() {
       _filesList.add(innoFile);
     });
-    debugPrint(widget.openedFolder.files.toString());
+    //debugPrint(widget.openedFolder.files.toString());
   }
 
   ///Removes folder from widget
-  void _removeFile(InnoFile innoFile) {
-    debugPrint(widget.openedFolder.folderName);
+  Future<void> _removeFile(InnoFile innoFile) async {
+    //debugPrint(widget.openedFolder.folderName);
     debugPrint('${innoFile.fileName} for deleting.');
-    deleteFileFromFolder(
-        widget.openedGroup, widget.openedFolder, innoFile.fileName);
+    await deleteFileFromFolderNEW(
+        widget.openedGroup, widget.path, innoFile.fileName);
     setState(() {
       _filesList.remove(innoFile);
     });
@@ -52,8 +52,8 @@ class _FilesPageState extends State<FilesPage> {
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    OpenFile.open((await getFromStorage(widget.openedGroup, widget.openedFolder,
-            _filesList[index].fileName))
+    OpenFile.open((await getFromStorageNEW(
+            widget.openedGroup, widget.path, _filesList[index].fileName))
         .path);
   }
 
@@ -65,20 +65,20 @@ class _FilesPageState extends State<FilesPage> {
 
   @override
   Widget build(BuildContext context) {
+    var ref = FirebaseFirestore.instance
+        .collection('slave_groups')
+        .doc(widget.openedGroup.groupName);
+    for (var folder in widget.path) {
+      ref = ref.collection('folders').doc(folder.folderName);
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.openedFolder.folderName),
+        title: Text(widget.path.last.folderName),
         centerTitle: true,
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('groups_normalnie')
-              .doc(widget.openedGroup.groupName)
-              .collection('folders')
-              .doc(widget.openedFolder.folderName)
-              .collection('files')
-              .snapshots(),
+          stream: ref.collection('files').snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {

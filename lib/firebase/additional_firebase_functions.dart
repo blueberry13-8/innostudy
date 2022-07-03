@@ -1,0 +1,197 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import '../folder.dart';
+import '../group.dart';
+import '../inno_file.dart';
+
+Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
+  var database = FirebaseFirestore.instance;
+  var data = newFolder.toJson();
+  var ref = database.collection('slave_groups').doc(group.groupName);
+  if (!(await ref.get()).exists) {
+    debugPrint('addFolder: Group ${group.groupName} does not exist!');
+    return;
+  }
+  for (var folder in path) {
+    ref = ref.collection('folders').doc(folder.folderName);
+    if (!(await ref.get()).exists) {
+      debugPrint('addFolder: Folder ${folder.folderName} does not exist!');
+      return;
+    }
+  }
+  print(path.toString());
+  var doc = await ref.collection('folders').doc(newFolder.folderName).get();
+  if (doc.exists) {
+    debugPrint('Folder ${newFolder.folderName} is already exist.');
+  } else {
+    await ref.collection('folders').doc(newFolder.folderName).set(data);
+    // if (path.isEmpty) {
+    //   group.folders.add(newFolder);
+    // } else {
+    //   path.last.folders!.add(newFolder);
+    // }
+    //await ref.set(group.toJson());
+    debugPrint('Folder ${newFolder.folderName} was created.');
+  }
+}
+
+Future<void> deleteFolder(
+    Group group, Folder folderForDelete, List<Folder> path) async {
+  var database = FirebaseFirestore.instance;
+  var ref = database.collection('slave_groups').doc(group.groupName);
+  if (!(await ref.get()).exists) {
+    debugPrint('addFolder: Group ${group.groupName} does not exist!');
+    return;
+  }
+  for (var folder in path) {
+    ref = ref.collection('folders').doc(folder.folderName);
+    if (!(await ref.get()).exists) {
+      debugPrint('addFolder: Folder ${folder.folderName} does not exist!');
+      return;
+    }
+  }
+  var doc =
+      await ref.collection('folders').doc(folderForDelete.folderName).get();
+  if (doc.exists) {
+    if (folderForDelete.withFolders) {
+    } else {
+      var filesForDelete = await ref
+          .collection('folders')
+          .doc(folderForDelete.folderName)
+          .collection('files')
+          .get();
+      for (var file in filesForDelete.docs) {
+        if (file.exists) {
+          InnoFile x = InnoFile.fromJson(file.data());
+          path.add(folderForDelete);
+          await deleteFileFromFolderNEW(group, path, x.fileName);
+        }
+      }
+      await ref.collection('folders').doc(folderForDelete.folderName).delete();
+    }
+  } else {
+    debugPrint('Folder ${folderForDelete.folderName} does not exist.');
+  }
+}
+
+Future<void> addFileToFolderNEW(
+    Group group, List<Folder> path, String filePath, String name) async {
+  for (var folder in path){
+    debugPrint(folder.folderName);
+  }
+  dynamic curDoc = await FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName)
+      .get();
+  if (!curDoc.exists) {
+    debugPrint('addFileToFolder: Group does not exist');
+    return;
+  }
+  DocumentReference docRef = FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName);
+  String storagePath = '${group.groupName}/';
+  for (var folder in path) {
+    docRef = docRef.collection('folders').doc(folder.folderName);
+    storagePath += '${folder.folderName}/';
+    if (!(await docRef.get()).exists) {
+      debugPrint('addFolder: Folder ${folder.folderName} does not exist!');
+      return;
+    }
+  }
+  docRef = docRef.collection('files').doc(name);
+  docRef.get().then((value) {
+    if (!value.exists) {
+      docRef.set(InnoFile(
+              fileName: name,
+              path: '$storagePath$name')
+          .toJson());
+    }
+  });
+  final filePool = (await FirebaseStorage.instance
+          .ref()
+          .child(storagePath)
+          .listAll())
+      .items;
+  for (var file in filePool) {
+    if (file.name == name) {
+      debugPrint('addFileToFolder: File with such name already exists');
+      return;
+    }
+  }
+  docRef.update(InnoFile(
+          fileName: name, path: '$storagePath$name')
+      .toJson());
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('$storagePath$name');
+  final file = File(filePath);
+  await ref.putFile(file);
+}
+
+Future<void> deleteFileFromFolderNEW(
+    Group group, List<Folder> path, String fileName) async {
+  final curDoc = await FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName)
+      .get();
+
+  if (curDoc.exists == false) {
+    debugPrint('deleteFileFromFolder: Group does not exist');
+    return;
+  }
+  DocumentReference docRef = FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName);
+  String storagePath = '${group.groupName}/';
+  for (var folder in path) {
+    docRef = docRef.collection('folders').doc(folder.folderName);
+    storagePath += '${folder.folderName}/';
+    if (!(await docRef.get()).exists) {
+      debugPrint('addFolder: Folder ${folder.folderName} does not exist!');
+      return;
+    }
+  }
+  docRef.collection('files').doc(fileName);
+  docRef.delete();
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('$storagePath$fileName');
+  ref.delete();
+}
+
+Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) async {
+  final curDoc = await FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName)
+      .get();
+
+  if (curDoc.exists == false) {
+    debugPrint('deleteFileFromFolder: Group does not exist');
+    //TODO: return error file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  }
+  DocumentReference docRef = FirebaseFirestore.instance
+      .collection('slave_groups')
+      .doc(group.groupName);
+  String storagePath = '${group.groupName}/';
+  for (var folder in path) {
+    docRef = docRef.collection('folders').doc(folder.folderName);
+    storagePath += '${folder.folderName}/';
+    if (!(await docRef.get()).exists) {
+      debugPrint('addFolder: Folder ${folder.folderName} does not exist!');
+      //TODO: return error file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    }
+  }
+  docRef.collection('files').doc(name);
+
+  final ref = FirebaseStorage.instance
+      .ref()
+      .child('$storagePath$name');
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File('${dir.path}/$name');
+  await ref.writeToFile(file);
+  return file;
+}

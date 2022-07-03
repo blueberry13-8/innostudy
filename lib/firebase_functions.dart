@@ -9,100 +9,115 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Add group to the DB if it doesn't exist.
-void addGroup(Group group) {
+Future<void> addGroup(Group group) async {
   final data = group.toJson();
   var database = FirebaseFirestore.instance;
-  database
-      .collection('groups_normalnie')
-      .doc(group.groupName)
-      .get()
-      .then((value) {
-    if (value.exists) {
-      debugPrint('Group with name - ${group.groupName} exists.');
-    } else {
-      database.collection('groups_normalnie').doc(group.groupName).set(data);
-      for (var folder in group.folders) {
-        addFolderInGroup(group, folder);
-      }
-      debugPrint(
-          'Group with name - ${group.groupName} was successfully created!');
-    }
-  });
+  var doc =
+      await database.collection('slave_groups').doc(group.groupName).get();
+  if (doc.exists) {
+    debugPrint('Group with name - ${group.groupName} exists.');
+  } else {
+    await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .set(data);
+    // for (var folder in group.folders) {
+    //   addFolderInGroup(group, folder);
+    // }
+    debugPrint(
+        'Group with name - ${group.groupName} was successfully created!');
+  }
 }
 
 /// Delete group form DB if it exists.
-void deleteGroup(Group group) {
+Future<void> deleteGroup(Group group) async {
   var database = FirebaseFirestore.instance;
-  database
-      .collection('groups_normalnie')
-      .doc(group.groupName)
-      .get()
-      .then((value) {
-    if (value.exists) {
-      database
-          .collection('groups_normalnie')
-          .doc(group.groupName)
-          .collection('folders')
-          .get()
-          .then((value) async {
-        for (var folder in value.docs) {
-          if (folder.exists) {
-            Folder f = Folder.fromJson(folder.data());
-            deleteFolderFromGroup(group, f);
-          }
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        database.collection('groups_normalnie').doc(group.groupName).delete();
-        debugPrint('Group ${group.groupName} was deleted.');
-      });
-    } else {
-      debugPrint('Group ${group.groupName} are not existing.');
+  var doc =
+      await database.collection('slave_groups').doc(group.groupName).get();
+  if (doc.exists) {
+    var foldersForDelete = await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .collection('folders')
+        .get();
+    for (var folder in foldersForDelete.docs) {
+      if (folder.exists) {
+        Folder f = Folder.fromJson(folder.data());
+        await deleteFolderFromGroup(group, f);
+      }
     }
-  });
+    await database.collection('slave_groups').doc(group.groupName).delete();
+    debugPrint('Group ${group.groupName} was deleted.');
+  } else {
+    debugPrint('Group ${group.groupName} are not existing.');
+  }
 }
 
 /// Stream for watching changes into groups' collection.
 /// Use it for dynamic rendering Group List.
 final Stream<QuerySnapshot> groupsStream =
-    FirebaseFirestore.instance.collection('groups_normalnie').snapshots();
+    FirebaseFirestore.instance.collection('slave_groups').snapshots();
 
 final Stream<User?> consumerStream = FirebaseAuth.instance.authStateChanges();
 
-void addFolderInGroup(Group group, Folder folder) {
+Future<void> addFolderInGroup(Group group, Folder folder) async {
   var database = FirebaseFirestore.instance;
   var data = folder.toJson();
-  database
-      .collection('groups_normalnie')
+  var doc = await database
+      .collection('slave_groups')
       .doc(group.groupName)
       .collection('folders')
       .doc(folder.folderName)
-      .get()
-      .then((value) {
-    if (value.exists) {
-      debugPrint('Folder ${folder.folderName} is already exist.');
-    } else {
-      database
-          .collection('groups_normalnie')
-          .doc(group.groupName)
-          .collection('folders')
-          .doc(folder.folderName)
-          .set(data);
-      database
-          .collection('groups_normalnie')
-          .doc(group.groupName)
-          .set(group.toJson());
-      debugPrint('Folder ${folder.folderName} was created.');
-    }
-  });
+      .get();
+  if (doc.exists) {
+    debugPrint('Folder ${folder.folderName} is already exist.');
+  } else {
+    await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .collection('folders')
+        .doc(folder.folderName)
+        .set(data);
+    group.folders.add(folder);
+    await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .set(group.toJson());
+    debugPrint('Folder ${folder.folderName} was created.');
+  }
 }
 
-dynamicToPath(List<dynamic> paths) {
-  List<InnoFile> correctPaths = [];
-  for (String path in paths) {
-    String name = path.split('/')[path.split('/').length - 1];
-    correctPaths.add(InnoFile(fileName: name, path: path));
+Future<void> deleteFolderFromGroup(Group group, Folder folder) async {
+  var database = FirebaseFirestore.instance;
+  var doc = await database
+      .collection('slave_groups')
+      .doc(group.groupName)
+      .collection('folders')
+      .doc(folder.folderName)
+      .get();
+  if (doc.exists) {
+    var filesForDelete = await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .collection('folders')
+        .doc(folder.folderName)
+        .collection('files')
+        .get();
+    for (var file in filesForDelete.docs) {
+      if (file.exists) {
+        InnoFile x = InnoFile.fromJson(file.data());
+        await deleteFileFromFolder(group, folder, x.fileName);
+      }
+    }
+    await database
+        .collection('slave_groups')
+        .doc(group.groupName)
+        .collection('folders')
+        .doc(folder.folderName)
+        .delete();
+  } else {
+    debugPrint('Folder ${folder.folderName} does not exist.');
   }
-  return correctPaths;
 }
 
 List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
@@ -110,60 +125,17 @@ List<Folder> querySnapshotToFoldersList(QuerySnapshot snapshot, Group group) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['folderName'] != null) {
-      folders.add(Folder(
-        folderName: data["folderName"],
-        files: dynamicToPath(
-          data['files'],
-        ),
-      ));
+      folders.add(Folder.fromJson(data));
     }
   }
   return folders;
-}
-
-void deleteFolderFromGroup(Group group, Folder folder) {
-  var database = FirebaseFirestore.instance;
-  database
-      .collection('groups_normalnie')
-      .doc(group.groupName)
-      .collection('folders')
-      .doc(folder.folderName)
-      .get()
-      .then((value) async {
-    if (value.exists) {
-      database
-          .collection('groups_normalnie')
-          .doc(group.groupName)
-          .collection('folders')
-          .doc(folder.folderName)
-          .collection('files')
-          .get()
-          .then((value) async {
-        for (var file in value.docs) {
-          if (file.exists) {
-            InnoFile x = InnoFile.fromJson(file.data());
-            deleteFileFromFolder(group, folder, x.fileName);
-          }
-        }
-        await Future.delayed(const Duration(milliseconds: 500));
-        database
-            .collection('groups_normalnie')
-            .doc(group.groupName)
-            .collection('folders')
-            .doc(folder.folderName)
-            .delete();
-      });
-    } else {
-      debugPrint('Folder ${folder.folderName} does not exist.');
-    }
-  });
 }
 
 /// Add file to the selected group (if group exists).
 Future<void> addFileToFolder(
     Group group, Folder folder, String filePath, String name) async {
   dynamic curDoc = await FirebaseFirestore.instance
-      .collection('groups_normalnie')
+      .collection('slave_groups')
       .doc(group.groupName)
       .get();
 
@@ -171,7 +143,7 @@ Future<void> addFileToFolder(
     throw Exception('addFileToFolder: Group does not exist');
   }
   DocumentReference docRef = FirebaseFirestore.instance
-      .collection('groups_normalnie')
+      .collection('slave_groups')
       .doc(group.groupName)
       .collection('folders')
       .doc(folder.folderName)
@@ -208,7 +180,7 @@ Future<void> addFileToFolder(
 Future<void> deleteFileFromFolder(
     Group group, Folder folder, String fileName) async {
   final curDoc = await FirebaseFirestore.instance
-      .collection('groups_normalnie')
+      .collection('slave_groups')
       .doc(group.groupName)
       .get();
 
@@ -216,7 +188,7 @@ Future<void> deleteFileFromFolder(
     throw Exception('deleteFileFromFolder: Group does not exist');
   }
   final docRef = FirebaseFirestore.instance
-      .collection('groups_normalnie')
+      .collection('slave_groups')
       .doc(group.groupName)
       .collection('folders')
       .doc(folder.folderName)
@@ -232,11 +204,11 @@ Future<void> deleteFileFromFolder(
 
 Future<File> getFromStorage(Group group, Folder folder, String name) async {
   dynamic curDoc = await FirebaseFirestore.instance
-      .collection('groups_normalnie')
+      .collection('slave_groups')
       .doc(group.groupName)
       .get();
 
-  if (curDoc.exists == false) {
+  if (!curDoc.exists) {
     throw Exception('deleteFileFromFolder: Group does not exist');
   }
   final ref = FirebaseStorage.instance
