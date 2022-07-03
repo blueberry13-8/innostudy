@@ -1,14 +1,22 @@
+import 'dart:async';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'hello_page.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const InnoStudyApp());
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    runApp(const InnoStudyApp());
+  },
+      ((error, stack) =>
+          FirebaseCrashlytics.instance.recordError(error, stack)));
 }
 
 class InnoStudyApp extends StatelessWidget {
@@ -48,6 +56,7 @@ class InnoStudyApp extends StatelessWidget {
         primaryColor: Colors.white,
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
         backgroundColor: Colors.blueGrey,
+        focusColor: Colors.indigo,
         appBarTheme: const AppBarTheme(
           color: Color.fromRGBO(45, 80, 115, 1.0),
           shadowColor: Color.fromRGBO(50, 85, 120, 1.0),
@@ -58,7 +67,7 @@ class InnoStudyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         cardTheme: const CardTheme(
-          color: Color.fromRGBO(89, 97, 122, 0.9019607843137255),
+          color: Color.fromRGBO(89, 97, 122, 1),
         ),
         iconTheme: const IconThemeData(
           color: Colors.white,

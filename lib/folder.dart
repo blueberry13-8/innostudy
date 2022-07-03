@@ -19,6 +19,9 @@ class Folder {
   //Folder where the folder is located
   Folder? parentFolder;
 
+//The folder creator
+  String creator = "undefined";
+
   //The name of the folder
   String folderName;
 
@@ -53,6 +56,7 @@ class Folder {
         folderName: loadedJson['folderName'],
         files: innoFiles,
         withFolders: loadedJson['withFolders'],
+        creator: loadedJson['creator']);
       );
     } else {
       List<Folder> folders = [];
@@ -65,6 +69,7 @@ class Folder {
         folderName: loadedJson['folderName'],
         folders: folders,
         withFolders: loadedJson['withFolders'],
+        creator: loadedJson['creator']);
       );
     }
   }
@@ -80,6 +85,7 @@ class Folder {
         'folderName': folderName,
         'files': notParsed,
         'withFolders': withFolders,
+        'creator': creator
       };
     } else {
       for (int i = 0; i < folders!.length; i++) {
@@ -89,6 +95,7 @@ class Folder {
         'folderName': folderName,
         'folders': notParsed,
         'withFolders': withFolders,
+        'creator': creator
       };
     }
   }

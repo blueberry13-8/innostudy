@@ -1,12 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/switch.dart';
+import 'package:work/permission_system/permission_master.dart';
 import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
 import 'firebase/additional_firebase_functions.dart';
+import 'permission_system/permission_dialog.dart';
+import 'permission_system/permissions_entity.dart';
+import 'permission_system/permissions_functions.dart';
+import 'permission_system/permissions_page.dart';
+import 'pessimistic_toast.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
@@ -15,13 +22,14 @@ class FoldersPage extends StatefulWidget {
 
   final Group openedGroup;
   final List<Folder> path;
+  final PermissionEntity parentPermissions;
 
   @override
   State<FoldersPage> createState() => _FoldersPageState();
 }
 
 class _FoldersPageState extends State<FoldersPage> {
-  //late List<Folder> _folderList;
+  late List<Folder> _folderList;
 
   final TextEditingController _textController = TextEditingController();
 
@@ -54,7 +62,7 @@ class _FoldersPageState extends State<FoldersPage> {
     // });
   }
 
-  void openFolder(Folder folder) {
+  void openFolder(Folder folder, PermissionEntity permissionEntity) {
     if (kDebugMode) {
       print('${folder.folderName} is opened');
     }
@@ -67,6 +75,8 @@ class _FoldersPageState extends State<FoldersPage> {
           builder: (context) => FoldersPage(
             openedGroup: widget.openedGroup,
             path: newPath,
+            parentPermissionsFolder: permissionEntity,
+            parentPermissionsGroup: widget.parentPermissions,
           ),
         ),
       );
@@ -81,6 +91,65 @@ class _FoldersPageState extends State<FoldersPage> {
         ),
       );
     }
+  }
+
+  Future<void> _showAlertDialog(BuildContext context, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        var cancelButton = TextButton(
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            if (kDebugMode) {
+              print('Canceled');
+            }
+            Navigator.of(context).pop();
+          },
+        );
+        var confirmButton = TextButton(
+          child: Text(
+            'Confirm',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () async {
+            if (kDebugMode) {
+              print('Confirmed');
+            }
+            _removeFolder(widget.openedGroup.folders[index]);
+            Navigator.of(context).pop();
+            setState(() {});
+          },
+        );
+        var alertDialog = AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Deleting of folder ${widget.openedGroup.folders[index].folderName}',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            'Are you sure about deleting this folder? It will be deleted without ability to restore.',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          actions: [
+            cancelButton,
+            confirmButton,
+          ],
+        );
+        return alertDialog;
+      },
+    );
   }
 
   @override
@@ -122,37 +191,144 @@ class _FoldersPageState extends State<FoldersPage> {
             } else if (snapshot.hasData) {
               listOfFolders = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
+              widget.openedGroup.folders = _folderList;
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
-                itemCount: listOfFolders.length,
+                itemCount: listOfFolders.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
+                  if (index == _folderList.length) {
+                    return const SizedBox(
+                      height: 80,
+                    );
+                  }
+                  _folderList[index].parentGroup = widget.openedGroup;
+                  RightsEntity rights = checkRightsForFolder(_folderList[index],
+                      permissionEntitites[index], widget.parentPermissions);
                   return Card(
-                    //color: Colors.yellow[100],
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
                         listOfFolders[index].folderName,
                         style: Theme.of(context).textTheme.bodyText1,
-                        //style: const TextStyle(fontSize: 20),
                       ),
                       leading: Icon(
                         Icons.folder,
                         color: Theme.of(context).primaryColor,
-                        //color: Colors.black87,
                       ),
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.remove_circle_outline,
-                          color: Theme.of(context).primaryColor,
-                          //color: Colors.black87,
-                        ),
-                        onPressed: () {
-                          _deleteFolder(listOfFolders[index]);
-                        },
-                      ),
+                      trailing: rights.openFoldersSettings
+                          ? PopupMenuButton<int>(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_forever,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Delete folder',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      Navigator.of(context).pop();
+                                      _showAlertDialog(context, index);
+                                    },
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 2,
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.settings,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Settings',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PermissionsPage(
+                                            permissionEntity:
+                                                permissionEntitites[index],
+                                            permissionableObject:
+                                                PermissionableObject.fromFolder(
+                                                    _folderList[index]),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                              offset: const Offset(0, 50),
+                              color: Theme.of(context).backgroundColor,
+                              elevation: 3,
+                            )
+                          : IconButton(
+                              icon: Icon(
+                                rights.addFiles
+                                    ? Icons.edit
+                                    : Icons.remove_red_eye_outlined,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                if (!rights.addFiles) {
+                                  if (permissionEntitites[index]
+                                      .password
+                                      .isEmpty) {
+                                    pessimisticToast(
+                                        "Only creator can invite you to manage this folder.",
+                                        1);
+                                    return;
+                                  }
+                                  showPermissionDialog(
+                                      permissionEntitites[index],
+                                      PermissionableObject.fromFolder(
+                                          _folderList[index]),
+                                      context);
+                                } else {
+                                  openFolder(index, permissionEntitites[index]);
+                                }
+                              },
+                            ),
                       onTap: () {
-                        openFolder(listOfFolders[index]);
+                        if (rights.seeFiles) {
+                          openFolder(listOfFolders[index], permissionEntitites[index]);
+                        } else {
+                          pessimisticToast(
+                              "You don't have rights for this action.", 1);
+                        }
                       },
                     ),
                   );
@@ -165,9 +341,11 @@ class _FoldersPageState extends State<FoldersPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: "btn3",
+        heroTag: "folders page",
         onPressed: () {
-          showModalBottomSheet(
+          if (checkRightsForGroup(widget.openedGroup, widget.parentPermissions)
+              .addFolders) {
+            showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             builder: (context) {
@@ -220,6 +398,9 @@ class _FoldersPageState extends State<FoldersPage> {
               );
             },
           );
+          } else {
+            pessimisticToast("You don't have rights for this action.", 1);
+          }
         },
         child: const Icon(Icons.add),
       ),
