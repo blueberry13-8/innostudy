@@ -262,7 +262,7 @@ class _GroupsPage extends State<GroupsPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     PermissionsPage(
-                                                  path: [],
+                                                  path: const [],
                                                   permissionEntity:
                                                       permissionEntitites[
                                                           index],

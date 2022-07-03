@@ -156,9 +156,7 @@ Future<void> attachPermissionRulesToFolder(
       .doc(normalPath[0].parentGroup!.groupName)
       .collection("folders")
       .doc(normalPath[0].folderName);
-  print(normalPath[0].folderName);
   for (int i = 1; i < normalPath.length; i++) {
-    print(normalPath[i].folderName);
     docRef = docRef.collection("folders").doc(normalPath[i].folderName);
   }
 
@@ -171,9 +169,8 @@ Future<void> attachPermissionRulesToFolder(
 
 Future<void> attachPermissionRulesToGroup(
     PermissionEntity permissionEntity, Group group) async {
-  DocumentReference groupReference = FirebaseFirestore.instance
-      .collection("groups")
-      .doc(group.groupName);
+  DocumentReference groupReference =
+      FirebaseFirestore.instance.collection("groups").doc(group.groupName);
 
   await groupReference.set({
     "allow_all": permissionEntity.allowAll,
