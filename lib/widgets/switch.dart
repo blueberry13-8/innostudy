@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class FolderTypeSwitch extends StatefulWidget {
-  FolderTypeSwitch({Key? key, required this.callback}) : super(key: key);
-
-  bool withFolder = false;
+  const FolderTypeSwitch({Key? key, required this.callback}) : super(key: key);
 
   final Function(bool) callback;
 
@@ -12,18 +10,20 @@ class FolderTypeSwitch extends StatefulWidget {
 }
 
 class _FolderTypeSwitchState extends State<FolderTypeSwitch> {
+  bool withFolder = false;
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         const Text('With Files'),
         CupertinoSwitch(
-            value: widget.withFolder,
+            value: withFolder,
             onChanged: (value) {
-              widget.withFolder = !widget.withFolder;
+              withFolder = !withFolder;
               //debugPrint(withFolder.toString());
               setState(() {});
-              widget.callback(widget.withFolder);
+              widget.callback(withFolder);
             }),
         const Text('With Folders'),
       ],
