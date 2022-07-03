@@ -2,13 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:work/widgets/switch.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
-import 'firebase/additional_firebase_functions.dart';
 import 'permission_system/permission_dialog.dart';
 import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
@@ -17,11 +15,11 @@ import 'pessimistic_toast.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
-  const FoldersPage({required this.openedGroup, Key? key, required this.path})
+  const FoldersPage(
+      {required this.openedGroup, required this.parentPermissions, Key? key})
       : super(key: key);
 
   final Group openedGroup;
-  final List<Folder> path;
   final PermissionEntity parentPermissions;
 
   @override
@@ -35,62 +33,42 @@ class _FoldersPageState extends State<FoldersPage> {
 
   String _lastFolderName = '';
 
-  bool withFolder = false;
-
   ///Adds new folder to widget
-  Future<void> _addFolder(Folder folder) async {
-    await addFolder(widget.openedGroup, folder, widget.path);
-    // setState(() {
-    //   //_folderList.add(folder);
-    //   if (widget.path.isEmpty) {
-    //     widget.openedGroup.folders.add(folder);
-    //   } else {
-    //     widget.path.last.parentFolder!.folders!.add(folder);
-    //   }
-    // });
+  void _addFolder(Folder folder) {
+    setState(() {
+      _folderList.add(folder);
+      //widget.openedGroup.folders.add(folder);
+      //deleteGroup(group);
+      //addGroup(group);
+      addFolderInGroup(widget.openedGroup, folder);
+    });
   }
 
   ///Removes folder from widget
-  Future<void> _deleteFolder(Folder folder) async {
-    await deleteFolder(widget.openedGroup, folder, widget.path);
-    // setState(() {
-      // if (widget.path.isEmpty) {
-      //   widget.openedGroup.folders.remove(folder);
-      // } else {
-      //   widget.path.last.parentFolder!.folders!.remove(folder);
-      // }
-    // });
+  void _removeFolder(Folder folder) {
+    setState(() {
+      _folderList.remove(folder);
+      //widget.openedGroup.folders.remove(folder);
+      deleteFolderFromGroup(widget.openedGroup, folder);
+    });
   }
 
-  void openFolder(Folder folder, PermissionEntity permissionEntity) {
+  void openFolder(int index, PermissionEntity permissionEntity) {
     if (kDebugMode) {
-      print('${folder.folderName} is opened');
+      print('${_folderList[index].folderName} is opened');
     }
-    List<Folder> newPath = List.from(widget.path);
-    newPath.add(folder);
-    if (folder.withFolders) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FoldersPage(
-            openedGroup: widget.openedGroup,
-            path: newPath,
-            parentPermissionsFolder: permissionEntity,
-            parentPermissionsGroup: widget.parentPermissions,
-          ),
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FilesPage(
+          openedFolder: _folderList[index],
+          openedGroup: widget.openedGroup,
+          parentPermissionsFolder: permissionEntity,
+          parentPermissionsGroup: widget.parentPermissions,
         ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FilesPage(
-            path: newPath,
-            openedGroup: widget.openedGroup,
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _showAlertDialog(BuildContext context, int index) async {
@@ -163,39 +141,30 @@ class _FoldersPageState extends State<FoldersPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = widget.openedGroup.groupName;
-    if (widget.path.isNotEmpty) {
-      title = widget.path.last.folderName;
-    }
-    var ref = FirebaseFirestore.instance
-        .collection('slave_groups')
-        .doc(widget.openedGroup.groupName)
-        .collection('folders');
-    var listOfFolders = widget.openedGroup.folders;
-    for (var folder in widget.path) {
-      ref = ref.doc(folder.folderName).collection('folders');
-      listOfFolders = folder.folders!;
-    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.openedGroup.groupName),
         centerTitle: true,
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: ref.snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('groups_normalnie')
+              .doc(widget.openedGroup.groupName)
+              .collection('folders')
+              .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) {
               return const Text("Error");
             } else if (snapshot.hasData) {
-              listOfFolders = querySnapshotToFoldersList(
+              _folderList = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
               widget.openedGroup.folders = _folderList;
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
-                itemCount: listOfFolders.length + 1,
+                itemCount: _folderList.length + 1,
                 padding: const EdgeInsets.all(5),
                 itemBuilder: (context, index) {
                   if (index == _folderList.length) {
@@ -211,7 +180,7 @@ class _FoldersPageState extends State<FoldersPage> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
                       title: Text(
-                        listOfFolders[index].folderName,
+                        _folderList[index].folderName,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       leading: Icon(
@@ -324,7 +293,7 @@ class _FoldersPageState extends State<FoldersPage> {
                             ),
                       onTap: () {
                         if (rights.seeFiles) {
-                          openFolder(listOfFolders[index], permissionEntitites[index]);
+                          openFolder(index, permissionEntitites[index]);
                         } else {
                           pessimisticToast(
                               "You don't have rights for this action.", 1);
@@ -346,58 +315,46 @@ class _FoldersPageState extends State<FoldersPage> {
           if (checkRightsForGroup(widget.openedGroup, widget.parentPermissions)
               .addFolders) {
             showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      onChanged: (value) {
-                        _lastFolderName = value;
-                      },
-                    ),
-                    FolderTypeSwitch(
-                      callback: (value) {
-                        withFolder = value;
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_textController.text != '') {
-                          if (!withFolder) {
-                            _addFolder(Folder(
-                              folderName: _textController.text,
-                              files: [],
-                              withFolders: false,
-                            ));
-                          } else {
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: 15,
+                      left: 15,
+                      right: 15,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _textController,
+                        autofocus: true,
+                        onChanged: (value) {
+                          _lastFolderName = value;
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_textController.text != '') {
                             _addFolder(Folder(
                                 folderName: _textController.text,
-                                folders: [],
-                                withFolders: true));
+                                files: [],
+                                creator:
+                                    FirebaseAuth.instance.currentUser!.email!));
+                            Navigator.pop(context);
+                            _textController.text = '';
+                            _lastFolderName = '';
                           }
-                          Navigator.pop(context);
-                          _textController.text = '';
-                          _lastFolderName = '';
-                        }
-                      },
-                      child: const Text('Add'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+                        },
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           } else {
             pessimisticToast("You don't have rights for this action.", 1);
           }
