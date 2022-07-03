@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/switch.dart';
@@ -17,7 +16,11 @@ import 'pessimistic_toast.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
-  const FoldersPage({required this.openedGroup, Key? key, required this.path})
+  const FoldersPage(
+      {required this.openedGroup,
+      Key? key,
+      required this.path,
+      required this.parentPermissions})
       : super(key: key);
 
   final Group openedGroup;
@@ -54,11 +57,11 @@ class _FoldersPageState extends State<FoldersPage> {
   Future<void> _deleteFolder(Folder folder) async {
     await deleteFolder(widget.openedGroup, folder, widget.path);
     // setState(() {
-      // if (widget.path.isEmpty) {
-      //   widget.openedGroup.folders.remove(folder);
-      // } else {
-      //   widget.path.last.parentFolder!.folders!.remove(folder);
-      // }
+    // if (widget.path.isEmpty) {
+    //   widget.openedGroup.folders.remove(folder);
+    // } else {
+    //   widget.path.last.parentFolder!.folders!.remove(folder);
+    // }
     // });
   }
 
@@ -123,7 +126,7 @@ class _FoldersPageState extends State<FoldersPage> {
             if (kDebugMode) {
               print('Confirmed');
             }
-            _removeFolder(widget.openedGroup.folders[index]);
+            _deleteFolder(widget.openedGroup.folders[index]);
             Navigator.of(context).pop();
             setState(() {});
           },
@@ -318,13 +321,14 @@ class _FoldersPageState extends State<FoldersPage> {
                                           _folderList[index]),
                                       context);
                                 } else {
-                                  openFolder(index, permissionEntitites[index]);
+                                  openFolder(listOfFolders[index], permissionEntitites[index]);
                                 }
                               },
                             ),
                       onTap: () {
                         if (rights.seeFiles) {
-                          openFolder(listOfFolders[index], permissionEntitites[index]);
+                          openFolder(
+                              listOfFolders[index], permissionEntitites[index]);
                         } else {
                           pessimisticToast(
                               "You don't have rights for this action.", 1);
@@ -346,58 +350,58 @@ class _FoldersPageState extends State<FoldersPage> {
           if (checkRightsForGroup(widget.openedGroup, widget.parentPermissions)
               .addFolders) {
             showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      onChanged: (value) {
-                        _lastFolderName = value;
-                      },
-                    ),
-                    FolderTypeSwitch(
-                      callback: (value) {
-                        withFolder = value;
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_textController.text != '') {
-                          if (!withFolder) {
-                            _addFolder(Folder(
-                              folderName: _textController.text,
-                              files: [],
-                              withFolders: false,
-                            ));
-                          } else {
-                            _addFolder(Folder(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                      top: 15,
+                      left: 15,
+                      right: 15,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _textController,
+                        autofocus: true,
+                        onChanged: (value) {
+                          _lastFolderName = value;
+                        },
+                      ),
+                      FolderTypeSwitch(
+                        callback: (value) {
+                          withFolder = value;
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_textController.text != '') {
+                            if (!withFolder) {
+                              _addFolder(Folder(
                                 folderName: _textController.text,
-                                folders: [],
-                                withFolders: true));
+                                files: [],
+                                withFolders: false,
+                              ));
+                            } else {
+                              _addFolder(Folder(
+                                  folderName: _textController.text,
+                                  folders: [],
+                                  withFolders: true));
+                            }
+                            Navigator.pop(context);
+                            _textController.text = '';
+                            _lastFolderName = '';
                           }
-                          Navigator.pop(context);
-                          _textController.text = '';
-                          _lastFolderName = '';
-                        }
-                      },
-                      child: const Text('Add'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+                        },
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           } else {
             pessimisticToast("You don't have rights for this action.", 1);
           }

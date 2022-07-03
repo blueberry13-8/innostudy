@@ -89,7 +89,7 @@ Future<void> deleteFolder(
 }
 
 Future<void> addFileToFolderNEW(
-    Group group, List<Folder> path, String filePath, String name) async {
+    Group group, List<Folder> path, InnoFile innoFile) async {
   for (var folder in path){
     debugPrint(folder.folderName);
   }
@@ -113,13 +113,10 @@ Future<void> addFileToFolderNEW(
       return;
     }
   }
-  docRef = docRef.collection('files').doc(name);
+  docRef = docRef.collection('files').doc(innoFile.fileName);
   docRef.get().then((value) {
     if (!value.exists) {
-      docRef.set(InnoFile(
-              fileName: name,
-              path: '$storagePath$name')
-          .toJson());
+      docRef.set(innoFile.toJson());
     }
   });
   final filePool = (await FirebaseStorage.instance
@@ -128,18 +125,16 @@ Future<void> addFileToFolderNEW(
           .listAll())
       .items;
   for (var file in filePool) {
-    if (file.name == name) {
+    if (file.name == innoFile.fileName) {
       debugPrint('addFileToFolder: File with such name already exists');
       return;
     }
   }
-  docRef.update(InnoFile(
-          fileName: name, path: '$storagePath$name')
-      .toJson());
+  docRef.update(innoFile.toJson());
   final ref = FirebaseStorage.instance
       .ref()
-      .child('$storagePath$name');
-  final file = File(filePath);
+      .child('$storagePath${innoFile.fileName}');
+  final file = innoFile.realFile!;
   await ref.putFile(file);
 }
 

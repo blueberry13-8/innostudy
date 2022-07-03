@@ -22,15 +22,13 @@ import 'pessimistic_toast.dart';
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
   const FilesPage(
-      {required this.openedFolder,
-      required this.openedGroup,
+      {required this.openedGroup,
       required this.parentPermissionsGroup,
       required this.parentPermissionsFolder,
-      Key? key})
+      Key? key, required this.path})
       : super(key: key);
 
   final Group openedGroup;
-
   final List<Folder> path;
   final PermissionEntity parentPermissionsFolder;
   final PermissionEntity parentPermissionsGroup;
@@ -44,9 +42,8 @@ class _FilesPageState extends State<FilesPage> {
 
   ///Adds new folder to widget
   Future<void> _addFile(InnoFile innoFile) async {
-    await addFileToFolderNEW(widget.openedGroup, widget.path,
-        innoFile.realFile!.path, innoFile.fileName);
-    innoFile.parentFolder = widget.openedFolder;
+    await addFileToFolderNEW(widget.openedGroup, widget.path, innoFile);
+    innoFile.parentFolder = widget.path.last;
     // setState(() {
     //   _filesList.add(innoFile);
     // });
@@ -160,7 +157,7 @@ class _FilesPageState extends State<FilesPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _filesList = querySnapshotToInnoFileList(snapshot.data!);
-              widget.openedFolder.files = _filesList;
+              widget.path.last.files = _filesList;
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               return ListView.builder(
@@ -172,7 +169,7 @@ class _FilesPageState extends State<FilesPage> {
                       height: 80,
                     );
                   }
-                  _filesList[index].parentFolder = widget.openedFolder;
+                  _filesList[index].parentFolder = widget.path.last;
                   RightsEntity rights = checkRightsForFile(
                       _filesList[index],
                       widget.parentPermissionsFolder,
@@ -354,7 +351,7 @@ class _FilesPageState extends State<FilesPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "files page",
         onPressed: () async {
-          if (!checkRightsForFolder(widget.openedFolder,
+          if (!checkRightsForFolder(widget.path.last,
                   widget.parentPermissionsFolder, widget.parentPermissionsGroup)
               .addFiles) {
             pessimisticToast("You don't have rights for this action.", 1);

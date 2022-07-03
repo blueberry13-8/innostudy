@@ -31,7 +31,8 @@ class Folder {
       this.parentGroup,
       this.folders,
       required this.withFolders,
-      this.parentFolder}) {
+      this.parentFolder,
+      required this.creator}) {
     if (!withFolders) {
       for (var file in files!) {
         file.parentFolder = this;
@@ -44,7 +45,7 @@ class Folder {
   }
 
   factory Folder.fromJson(Map<String, dynamic> loadedJson) {
-    bool  nested = loadedJson['withFolders'];
+    bool nested = loadedJson['withFolders'];
     if (!nested) {
       List<InnoFile> innoFiles = [];
       List<dynamic> notParsed = loadedJson["files"];
@@ -53,11 +54,10 @@ class Folder {
         innoFiles.add(InnoFile.fromJson(json.decode(notParsed[i])));
       }
       return Folder(
-        folderName: loadedJson['folderName'],
-        files: innoFiles,
-        withFolders: loadedJson['withFolders'],
-        creator: loadedJson['creator']);
-      );
+          folderName: loadedJson['folderName'],
+          files: innoFiles,
+          withFolders: loadedJson['withFolders'],
+          creator: loadedJson['creator']);
     } else {
       List<Folder> folders = [];
       List<dynamic> notParsed = loadedJson["folders"];
@@ -66,11 +66,10 @@ class Folder {
         folders.add(Folder.fromJson(json.decode(notParsed[i])));
       }
       return Folder(
-        folderName: loadedJson['folderName'],
-        folders: folders,
-        withFolders: loadedJson['withFolders'],
-        creator: loadedJson['creator']);
-      );
+          folderName: loadedJson['folderName'],
+          folders: folders,
+          withFolders: loadedJson['withFolders'],
+          creator: loadedJson['creator']);
     }
   }
 
