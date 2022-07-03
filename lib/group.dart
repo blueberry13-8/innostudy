@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:work/permission_system/permissions_entity.dart';
+
 import 'folder.dart';
 
 ///Class that represent all information about groups in application
@@ -6,6 +8,9 @@ class Group {
   //Name of group
   String groupName;
   String creator = 'undefined';
+
+  //Permissions
+  late PermissionEntity permissions;
 
   //All folders in this group
   List<Folder> folders;

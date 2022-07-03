@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'group.dart';
 import 'inno_file.dart';
+import 'permission_system/permissions_entity.dart';
 
 ///Class that represent all information about folder in application
 class Folder {
@@ -24,6 +25,9 @@ class Folder {
 
   //The name of the folder
   String folderName;
+
+  //Folder permissions
+  late PermissionEntity permissions;
 
   Folder(
       {required this.folderName,

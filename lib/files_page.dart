@@ -18,20 +18,15 @@ import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
 import 'permission_system/permissions_page.dart';
 import 'pessimistic_toast.dart';
+import 'permission_system/permission_object.dart';
 
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
-  const FilesPage(
-      {required this.openedGroup,
-      required this.parentPermissionsGroup,
-      required this.parentPermissionsFolder,
-      Key? key, required this.path})
+  const FilesPage({required this.openedGroup, Key? key, required this.path})
       : super(key: key);
 
   final Group openedGroup;
   final List<Folder> path;
-  final PermissionEntity parentPermissionsFolder;
-  final PermissionEntity parentPermissionsGroup;
 
   @override
   State<FilesPage> createState() => _FilesPageState();
@@ -170,10 +165,7 @@ class _FilesPageState extends State<FilesPage> {
                     );
                   }
                   _filesList[index].parentFolder = widget.path.last;
-                  RightsEntity rights = checkRightsForFile(
-                      _filesList[index],
-                      widget.parentPermissionsFolder,
-                      widget.parentPermissionsGroup);
+                  RightsEntity rights = checkRightsForFile(_filesList[index]);
                   return Card(
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
@@ -247,6 +239,7 @@ class _FilesPageState extends State<FilesPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => PermissionsPage(
+                                            path: widget.path,
                                             permissionEntity:
                                                 permissionEntitites[index],
                                             permissionableObject:
@@ -282,6 +275,7 @@ class _FilesPageState extends State<FilesPage> {
                                     permissionEntitites[index],
                                     PermissionableObject.fromInnoFile(
                                         _filesList[index]),
+                                    widget.path,
                                     context);
                               },
                             ),
@@ -330,6 +324,7 @@ class _FilesPageState extends State<FilesPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => PermissionsPage(
+                              path: widget.path,
                               permissionEntity: permissionEntitites[index],
                               permissionableObject:
                                   PermissionableObject.fromInnoFile(
@@ -351,9 +346,7 @@ class _FilesPageState extends State<FilesPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "files page",
         onPressed: () async {
-          if (!checkRightsForFolder(widget.path.last,
-                  widget.parentPermissionsFolder, widget.parentPermissionsGroup)
-              .addFiles) {
+          if (!checkRightsForFolder(widget.path.last).addFiles) {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
           }

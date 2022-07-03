@@ -3,15 +3,19 @@ import 'package:textfield_search/textfield_search.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/pessimistic_toast.dart';
+import '../folder.dart';
+import 'permission_object.dart';
 
 class PermissionsPage extends StatefulWidget {
+  final List<Folder> path;
   final PermissionEntity permissionEntity;
   final PermissionableObject permissionableObject;
 
   const PermissionsPage(
       {Key? key,
       required this.permissionEntity,
-      required this.permissionableObject})
+      required this.permissionableObject,
+      required this.path})
       : super(key: key);
 
   @override
@@ -68,7 +72,7 @@ class _PermissionsPage extends State<PermissionsPage> {
                       if (_userList.contains(controller.text)) {
                         widget.permissionEntity.owners.add(controller.text);
                         attachPermissionRules(widget.permissionEntity,
-                            widget.permissionableObject);
+                            widget.permissionableObject, widget.path);
                         setState(() {});
                       } else {
                         pessimisticToast("This user does not exists", 1);
@@ -96,8 +100,8 @@ class _PermissionsPage extends State<PermissionsPage> {
                   onPressed: () {
                     widget.permissionEntity.owners
                         .remove(widget.permissionEntity.owners[index]);
-                    attachPermissionRules(
-                        widget.permissionEntity, widget.permissionableObject);
+                    attachPermissionRules(widget.permissionEntity,
+                        widget.permissionableObject, widget.path);
                     setState(() {});
                   },
                 ),
@@ -136,7 +140,7 @@ class _PermissionsPage extends State<PermissionsPage> {
                                   widget.permissionEntity.password =
                                       passwordController.text;
                                   attachPermissionRules(widget.permissionEntity,
-                                      widget.permissionableObject);
+                                      widget.permissionableObject, widget.path);
                                   setState(() {});
                                   Navigator.pop(context);
                                 }
@@ -180,7 +184,7 @@ class _PermissionsPage extends State<PermissionsPage> {
                             !widget.permissionEntity.allowAll;
 
                         attachPermissionRules(widget.permissionEntity,
-                            widget.permissionableObject);
+                            widget.permissionableObject, widget.path);
                         setState(() {});
                       }),
                   Text(

@@ -11,6 +11,7 @@ import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'permission_system/permission_object.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -47,9 +48,6 @@ class _GroupsPage extends State<GroupsPage> {
   ///Adds new group to widget
   Future<void> _addGroup(Group group) async {
     await addGroup(group);
-    setState(() {
-      _groupList.add(group);
-    });
   }
 
   ///Removes group from widget
@@ -69,7 +67,6 @@ class _GroupsPage extends State<GroupsPage> {
       MaterialPageRoute(
         builder: (context) => FoldersPage(
           openedGroup: _groupList[index],
-          parentPermissions: inheritedPermissions,
           path: const [],
         ),
       ),
@@ -162,8 +159,8 @@ class _GroupsPage extends State<GroupsPage> {
                 itemCount: _groupList.length,
                 padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
                 itemBuilder: (BuildContext context, int index) {
-                  RightsEntity rights = checkRightsForGroup(
-                      _groupList[index], permissionEntitites[index]);
+                  _groupList[index].permissions = permissionEntitites[index];
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
                   return index < _groupList.length
                       ? Card(
                           elevation: 4,
@@ -196,6 +193,7 @@ class _GroupsPage extends State<GroupsPage> {
                             ),
                             trailing: rights.openGroupSettings
                                 ? PopupMenuButton<int>(
+                                    onSelected: (value) {},
                                     icon: Icon(
                                       Icons.more_vert,
                                       color: Theme.of(context).primaryColor,
@@ -264,6 +262,7 @@ class _GroupsPage extends State<GroupsPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     PermissionsPage(
+                                                  path: [],
                                                   permissionEntity:
                                                       permissionEntitites[
                                                           index],
@@ -303,9 +302,11 @@ class _GroupsPage extends State<GroupsPage> {
                                             permissionEntitites[index],
                                             PermissionableObject.fromGroup(
                                                 _groupList[index]),
+                                            [],
                                             context);
                                       } else {
-                                        openGroup(index, permissionEntitites[index]);
+                                        openGroup(
+                                            index, permissionEntitites[index]);
                                       }
                                     },
                                   ),

@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work/folder.dart';
 import 'package:work/group.dart';
 import 'package:work/inno_file.dart';
-import 'package:work/permission_system/permissions_entity.dart';
 
 ///Class contains the rights that user have
 class RightsEntity {
@@ -31,8 +30,20 @@ class RightsEntity {
   });
 }
 
-RightsEntity checkRightsForGroup(
-    Group group, PermissionEntity permissionEntity) {
+RightsEntity getDefaultRights() {
+  return RightsEntity(
+      deleteFiles: false,
+      deleteFolders: false,
+      addFiles: false,
+      addFolders: false,
+      seeFiles: true,
+      seeFolders: true,
+      openGroupSettings: false,
+      openFoldersSettings: false,
+      openFileSettings: false);
+}
+
+RightsEntity checkRightsForGroup(Group group) {
   String userEmail = FirebaseAuth.instance.currentUser!.email!;
 
   if (group.creator == userEmail) {
@@ -48,8 +59,8 @@ RightsEntity checkRightsForGroup(
         openFileSettings: true);
   }
 
-  if (permissionEntity.owners.contains(userEmail) ||
-      permissionEntity.allowAll) {
+  if (group.permissions.owners.contains(userEmail) ||
+      group.permissions.allowAll) {
     return RightsEntity(
         deleteFiles: false,
         deleteFolders: false,
@@ -74,11 +85,18 @@ RightsEntity checkRightsForGroup(
       openFileSettings: false);
 }
 
-RightsEntity checkRightsForFolder(Folder folder,
-    PermissionEntity permissionEntity, PermissionEntity permissionEntityGroup) {
+RightsEntity checkRightsForFolder(Folder folder) {
   String userEmail = FirebaseAuth.instance.currentUser!.email!;
-  RightsEntity upperRights =
-      checkRightsForGroup(folder.parentGroup!, permissionEntityGroup);
+
+  RightsEntity upperRights = getDefaultRights();
+
+  if (folder.parentFolder != null) {
+    upperRights = checkRightsForFolder(folder.parentFolder!);
+  } else if (folder.parentGroup != null) {
+    upperRights = checkRightsForGroup(folder.parentGroup!);
+  } else {
+    throw Exception("Impossible situation");
+  }
 
   if (folder.creator == userEmail) {
     upperRights.addFiles = true;
@@ -86,22 +104,18 @@ RightsEntity checkRightsForFolder(Folder folder,
     upperRights.deleteFiles = true;
   }
 
-  if (permissionEntity.owners.contains(userEmail) ||
-      permissionEntity.allowAll) {
+  if (folder.permissions.owners.contains(userEmail) ||
+      folder.permissions.allowAll) {
     upperRights.addFiles = true;
   }
 
   return upperRights;
 }
 
-RightsEntity checkRightsForFile(
-    InnoFile innoFile,
-    PermissionEntity permissionEntityFolder,
-    PermissionEntity permissionEntityGroup) {
+RightsEntity checkRightsForFile(InnoFile innoFile) {
   String userEmail = FirebaseAuth.instance.currentUser!.email!;
 
-  RightsEntity upperRights = checkRightsForFolder(
-      innoFile.parentFolder!, permissionEntityFolder, permissionEntityGroup);
+  RightsEntity upperRights = checkRightsForFolder(innoFile.parentFolder!);
 
   if (innoFile.creator == userEmail) {
     upperRights.openFileSettings = true;

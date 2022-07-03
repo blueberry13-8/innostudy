@@ -4,8 +4,14 @@ import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/pessimistic_toast.dart';
 
-void showPermissionDialog(PermissionEntity permissionEntity,
-    PermissionableObject permissionableObject, BuildContext context) {
+import '../folder.dart';
+import 'permission_object.dart';
+
+void showPermissionDialog(
+    PermissionEntity permissionEntity,
+    PermissionableObject permissionableObject,
+    List<Folder> path,
+    BuildContext context) {
   showDialog(
       context: context,
       builder: (context) {
@@ -26,7 +32,7 @@ void showPermissionDialog(PermissionEntity permissionEntity,
                       permissionEntity.owners
                           .add(FirebaseAuth.instance.currentUser!.email!);
                       attachPermissionRules(
-                          permissionEntity, permissionableObject);
+                          permissionEntity, permissionableObject, path);
                     } else {
                       pessimisticToast("This password is not right.", 1);
                     }

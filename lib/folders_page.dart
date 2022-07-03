@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/switch.dart';
@@ -13,19 +14,15 @@ import 'permission_system/permissions_entity.dart';
 import 'permission_system/permissions_functions.dart';
 import 'permission_system/permissions_page.dart';
 import 'pessimistic_toast.dart';
+import 'permission_system/permission_object.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {
-  const FoldersPage(
-      {required this.openedGroup,
-      Key? key,
-      required this.path,
-      required this.parentPermissions})
+  const FoldersPage({required this.openedGroup, Key? key, required this.path})
       : super(key: key);
 
   final Group openedGroup;
   final List<Folder> path;
-  final PermissionEntity parentPermissions;
 
   @override
   State<FoldersPage> createState() => _FoldersPageState();
@@ -78,8 +75,6 @@ class _FoldersPageState extends State<FoldersPage> {
           builder: (context) => FoldersPage(
             openedGroup: widget.openedGroup,
             path: newPath,
-            parentPermissionsFolder: permissionEntity,
-            parentPermissionsGroup: widget.parentPermissions,
           ),
         ),
       );
@@ -134,7 +129,7 @@ class _FoldersPageState extends State<FoldersPage> {
         var alertDialog = AlertDialog(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
-            'Deleting of folder ${widget.openedGroup.folders[index].folderName}',
+            'Deleting of folder ${_folderList[index].folderName}',
             style: TextStyle(
               color: Theme.of(context).primaryColor,
             ),
@@ -159,7 +154,7 @@ class _FoldersPageState extends State<FoldersPage> {
   void initState() {
     super.initState();
 
-    //_folderList = super.widget.openedGroup.folders;
+    _folderList = super.widget.openedGroup.folders;
 
     _textController.text = _lastFolderName;
   }
@@ -194,6 +189,7 @@ class _FoldersPageState extends State<FoldersPage> {
             } else if (snapshot.hasData) {
               listOfFolders = querySnapshotToFoldersList(
                   snapshot.data!, widget.openedGroup);
+              _folderList = List.from(listOfFolders);
               widget.openedGroup.folders = _folderList;
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
@@ -206,9 +202,12 @@ class _FoldersPageState extends State<FoldersPage> {
                       height: 80,
                     );
                   }
+                  //if (index >= _folderList.length) return SizedBox();
+
                   _folderList[index].parentGroup = widget.openedGroup;
-                  RightsEntity rights = checkRightsForFolder(_folderList[index],
-                      permissionEntitites[index], widget.parentPermissions);
+                  _folderList[index].permissions = permissionEntitites[index];
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
                   return Card(
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(vertical: 4),
@@ -282,6 +281,7 @@ class _FoldersPageState extends State<FoldersPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => PermissionsPage(
+                                            path: widget.path,
                                             permissionEntity:
                                                 permissionEntitites[index],
                                             permissionableObject:
@@ -319,9 +319,11 @@ class _FoldersPageState extends State<FoldersPage> {
                                       permissionEntitites[index],
                                       PermissionableObject.fromFolder(
                                           _folderList[index]),
+                                      widget.path,
                                       context);
                                 } else {
-                                  openFolder(listOfFolders[index], permissionEntitites[index]);
+                                  openFolder(listOfFolders[index],
+                                      permissionEntitites[index]);
                                 }
                               },
                             ),
@@ -347,8 +349,7 @@ class _FoldersPageState extends State<FoldersPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "folders page",
         onPressed: () {
-          if (checkRightsForGroup(widget.openedGroup, widget.parentPermissions)
-              .addFolders) {
+          if (checkRightsForGroup(widget.openedGroup).addFolders) {
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -380,15 +381,18 @@ class _FoldersPageState extends State<FoldersPage> {
                           if (_textController.text != '') {
                             if (!withFolder) {
                               _addFolder(Folder(
-                                folderName: _textController.text,
-                                files: [],
-                                withFolders: false,
-                              ));
+                                  folderName: _textController.text,
+                                  files: [],
+                                  withFolders: false,
+                                  creator: FirebaseAuth
+                                      .instance.currentUser!.email!));
                             } else {
                               _addFolder(Folder(
                                   folderName: _textController.text,
                                   folders: [],
-                                  withFolders: true));
+                                  withFolders: true,
+                                  creator: FirebaseAuth
+                                      .instance.currentUser!.email!));
                             }
                             Navigator.pop(context);
                             _textController.text = '';

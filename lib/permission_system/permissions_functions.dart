@@ -4,6 +4,8 @@ import 'package:work/group.dart';
 import 'package:work/inno_file.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 
+import 'permission_object.dart';
+
 Future<List<String>> getUsersEmails() async {
   List<String> userEmails = [];
 
@@ -39,16 +41,19 @@ Future<void> addRegisteredUser(String userEmail) async {
       .set({"number": registeredUsers});
 }
 
-Future<PermissionEntity> getPermissionsOfFile(InnoFile innoFile) async {
-  Map<String, dynamic> data = (await FirebaseFirestore.instance
-          .collection("groups_normalnie")
-          .doc(innoFile.parentFolder!.parentGroup!.groupName)
-          .collection("folders")
-          .doc(innoFile.parentFolder!.folderName)
-          .collection("files")
-          .doc(innoFile.fileName)
-          .get())
-      .data()!;
+Future<PermissionEntity> getPermissionsOfFile(
+    InnoFile innoFile, List<Folder> path) async {
+  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+      .collection("slave_groups")
+      .doc(path[0].parentGroup!.groupName)
+      .collection("folders")
+      .doc(path[0].folderName);
+  for (int i = 1; i < path.length; i++) {
+    docRef = docRef.collection("folders").doc(path[i].folderName);
+  }
+
+  Map<String, dynamic> data =
+      (await docRef.collection("files").doc(innoFile.fileName).get()).data()!;
   if (data.containsKey("allow_all")) {
     List<String> owners = [];
     for (int i = 0; i < data["owners"].length; i++) {
@@ -56,19 +61,24 @@ Future<PermissionEntity> getPermissionsOfFile(InnoFile innoFile) async {
     }
     return PermissionEntity(data["allow_all"], owners, data["password"]);
   } else {
-    attachPermissionRulesToFile(getStandartPermissionSet(), innoFile);
+    attachPermissionRulesToFile(getStandartPermissionSet(), innoFile, path);
     return getStandartPermissionSet();
   }
 }
 
-Future<PermissionEntity> getPermissionsOfFolder(Folder folder) async {
-  Map<String, dynamic> data = (await FirebaseFirestore.instance
-          .collection("groups_normalnie")
-          .doc(folder.parentGroup!.groupName)
-          .collection("folders")
-          .doc(folder.folderName)
-          .get())
-      .data()!;
+Future<PermissionEntity> getPermissionsOfFolder(
+    Folder folder, List<Folder> path) async {
+  List<Folder> normalPath = List.from(path);
+
+  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+      .collection("slave_groups")
+      .doc(normalPath[0].parentGroup!.groupName)
+      .collection("folders")
+      .doc(normalPath[0].folderName);
+  for (int i = 1; i < normalPath.length; i++) {
+    docRef = docRef.collection("folders").doc(normalPath[i].folderName);
+  }
+  Map<String, dynamic> data = (await docRef.get()).data()!;
   if (data.containsKey("allow_all")) {
     List<String> owners = [];
     for (int i = 0; i < data["owners"].length; i++) {
@@ -76,14 +86,14 @@ Future<PermissionEntity> getPermissionsOfFolder(Folder folder) async {
     }
     return PermissionEntity(data["allow_all"], owners, data["password"]);
   } else {
-    attachPermissionRulesToFolder(getStandartPermissionSet(), folder);
+    attachPermissionRulesToFolder(getStandartPermissionSet(), folder, path);
     return getStandartPermissionSet();
   }
 }
 
 Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
   Map<String, dynamic> data = (await FirebaseFirestore.instance
-          .collection("groups_normalnie")
+          .collection("slave_groups")
           .doc(group.groupName)
           .get())
       .data()!;
@@ -100,15 +110,15 @@ Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
 }
 
 Future<void> attachPermissionRules(PermissionEntity permissionEntity,
-    PermissionableObject permissionableObject) async {
+    PermissionableObject permissionableObject, List<Folder> path) async {
   switch (permissionableObject.type) {
     case PermissionableType.file:
       await attachPermissionRulesToFile(
-          permissionEntity, permissionableObject.getFile());
+          permissionEntity, permissionableObject.getFile(), path);
       break;
     case PermissionableType.folder:
       await attachPermissionRulesToFolder(
-          permissionEntity, permissionableObject.getFolder());
+          permissionEntity, permissionableObject.getFolder(), path);
       break;
     case PermissionableType.group:
       await attachPermissionRulesToGroup(
@@ -117,15 +127,19 @@ Future<void> attachPermissionRules(PermissionEntity permissionEntity,
   }
 }
 
-Future<void> attachPermissionRulesToFile(
-    PermissionEntity permissionEntity, InnoFile innoFile) async {
-  DocumentReference fileReference = FirebaseFirestore.instance
-      .collection("groups_normalnie")
-      .doc(innoFile.parentFolder!.parentGroup!.groupName)
+Future<void> attachPermissionRulesToFile(PermissionEntity permissionEntity,
+    InnoFile innoFile, List<Folder> path) async {
+  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+      .collection("slave_groups")
+      .doc(path[0].parentGroup!.groupName)
       .collection("folders")
-      .doc(innoFile.parentFolder!.folderName)
-      .collection("files")
-      .doc(innoFile.fileName);
+      .doc(path[0].folderName);
+  for (int i = 1; i < path.length; i++) {
+    docRef = docRef.collection("folders").doc(path[i].folderName);
+  }
+
+  DocumentReference fileReference =
+      docRef.collection("files").doc(innoFile.fileName);
   await fileReference.set({
     "allow_all": permissionEntity.allowAll,
     "owners": permissionEntity.owners,
@@ -134,13 +148,21 @@ Future<void> attachPermissionRulesToFile(
 }
 
 Future<void> attachPermissionRulesToFolder(
-    PermissionEntity permissionEntity, Folder folder) async {
-  DocumentReference folderReference = FirebaseFirestore.instance
-      .collection("groups_normalnie")
-      .doc(folder.parentGroup!.groupName)
+    PermissionEntity permissionEntity, Folder folder, List<Folder> path) async {
+  List<Folder> normalPath = List.from(path);
+  normalPath.add(folder);
+  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+      .collection("slave_groups")
+      .doc(normalPath[0].parentGroup!.groupName)
       .collection("folders")
-      .doc(folder.folderName);
-  await folderReference.set({
+      .doc(normalPath[0].folderName);
+  print(normalPath[0].folderName);
+  for (int i = 1; i < normalPath.length; i++) {
+    print(normalPath[i].folderName);
+    docRef = docRef.collection("folders").doc(normalPath[i].folderName);
+  }
+
+  await docRef.set({
     "allow_all": permissionEntity.allowAll,
     "owners": permissionEntity.owners,
     "password": permissionEntity.password
@@ -150,7 +172,7 @@ Future<void> attachPermissionRulesToFolder(
 Future<void> attachPermissionRulesToGroup(
     PermissionEntity permissionEntity, Group group) async {
   DocumentReference groupReference = FirebaseFirestore.instance
-      .collection("groups_normalnie")
+      .collection("slave_groups")
       .doc(group.groupName);
 
   await groupReference.set({
