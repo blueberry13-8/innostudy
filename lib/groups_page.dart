@@ -45,18 +45,18 @@ class _GroupsPage extends State<GroupsPage> {
   final TextEditingController _textController = TextEditingController();
 
   ///Adds new group to widget
-  Future<void> _addGroup(Group group) async {
-    await addGroup(group);
+  void _addGroup(Group group) {
     setState(() {
       _groupList.add(group);
+      addGroup(group);
     });
   }
 
   ///Removes group from widget
-  Future<void> _removeGroup(Group group) async {
-    await deleteGroup(group);
+  void _removeGroup(Group group) {
     setState(() {
       _groupList.remove(group);
+      deleteGroup(group);
     });
   }
 
@@ -70,7 +70,6 @@ class _GroupsPage extends State<GroupsPage> {
         builder: (context) => FoldersPage(
           openedGroup: _groupList[index],
           parentPermissions: inheritedPermissions,
-          path: const [],
         ),
       ),
     );

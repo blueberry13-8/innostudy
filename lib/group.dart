@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'folder.dart';
 
 ///Class that represent all information about groups in application
@@ -18,8 +19,10 @@ class Group {
   }
 
   factory Group.fromJson(Map<String, dynamic> loadedJson) {
+    debugPrint("!");
     List<Folder> groupFolders = [];
     List<dynamic> notParsed = loadedJson["folders"];
+    debugPrint("!");
     for (int i = 0; i < notParsed.length; i++) {
       groupFolders.add(Folder.fromJson(json
           .decode(notParsed[i]))); // serious thing think a lot in future on it
