@@ -349,66 +349,77 @@ class _FoldersPageState extends State<FoldersPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: "folders page",
         onPressed: () {
-          if (checkRightsForGroup(widget.openedGroup).addFolders) {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                      top: 15,
-                      left: 15,
-                      right: 15,
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: _textController,
-                        autofocus: true,
-                        onChanged: (value) {
-                          _lastFolderName = value;
-                        },
-                      ),
-                      FolderTypeSwitch(
-                        callback: (value) {
-                          withFolder = value;
-                        },
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_textController.text != '') {
-                            if (!withFolder) {
-                              _addFolder(Folder(
-                                  folderName: _textController.text,
-                                  files: [],
-                                  withFolders: false,
-                                  creator: FirebaseAuth
-                                      .instance.currentUser!.email!));
-                            } else {
-                              _addFolder(Folder(
-                                  folderName: _textController.text,
-                                  folders: [],
-                                  withFolders: true,
-                                  creator: FirebaseAuth
-                                      .instance.currentUser!.email!));
-                            }
-                            Navigator.pop(context);
-                            _textController.text = '';
-                            _lastFolderName = '';
-                          }
-                        },
-                        child: const Text('Add'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          } else {
+          if (widget.path.isEmpty &&
+              !checkRightsForGroup(widget.openedGroup).addFolders) {
             pessimisticToast("You don't have rights for this action.", 1);
+            return;
           }
+          if (widget.path.last.withFolders &&
+              !checkRightsForFolder(widget.path.last).addFolders) {
+            pessimisticToast("You don't have rights for this action.", 1);
+            return;
+          }
+          if (!widget.path.last.withFolders &&
+              !checkRightsForFolder(widget.path.last).addFiles) {
+            pessimisticToast("You don't have rights for this action.", 1);
+            return;
+          }
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _textController,
+                      autofocus: true,
+                      onChanged: (value) {
+                        _lastFolderName = value;
+                      },
+                    ),
+                    FolderTypeSwitch(
+                      callback: (value) {
+                        withFolder = value;
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_textController.text != '') {
+                          if (!withFolder) {
+                            _addFolder(Folder(
+                                folderName: _textController.text,
+                                files: [],
+                                withFolders: false,
+                                creator:
+                                    FirebaseAuth.instance.currentUser!.email!));
+                          } else {
+                            _addFolder(Folder(
+                                folderName: _textController.text,
+                                folders: [],
+                                withFolders: true,
+                                creator:
+                                    FirebaseAuth.instance.currentUser!.email!));
+                          }
+                          Navigator.pop(context);
+                          _textController.text = '';
+                          _lastFolderName = '';
+                        }
+                      },
+                      child: const Text('Add'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
         child: const Icon(Icons.add),
       ),

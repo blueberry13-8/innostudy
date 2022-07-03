@@ -107,6 +107,9 @@ RightsEntity checkRightsForFolder(Folder folder) {
   if (folder.permissions.owners.contains(userEmail) ||
       folder.permissions.allowAll) {
     upperRights.addFiles = true;
+    if (folder.withFolders) {
+      upperRights.addFolders = true;
+    }
   }
 
   return upperRights;
