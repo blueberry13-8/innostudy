@@ -354,12 +354,12 @@ class _FoldersPageState extends State<FoldersPage> {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
           }
-          if (widget.path.last.withFolders &&
+          if (widget.path.isNotEmpty && widget.path.last.withFolders &&
               !checkRightsForFolder(widget.path.last).addFolders) {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
           }
-          if (!widget.path.last.withFolders &&
+          if (widget.path.isNotEmpty && !widget.path.last.withFolders &&
               !checkRightsForFolder(widget.path.last).addFiles) {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
