@@ -27,6 +27,8 @@ class _FoldersPageState extends State<FoldersPage> {
 
   String _lastFolderName = '';
 
+  late bool withFolder;
+
   ///Adds new folder to widget
   Future<void> _addFolder(Folder folder) async {
     await addFolder(widget.openedGroup, folder, widget.path);
@@ -88,6 +90,8 @@ class _FoldersPageState extends State<FoldersPage> {
     //_folderList = super.widget.openedGroup.folders;
 
     _textController.text = _lastFolderName;
+
+    withFolder = false;
   }
 
   @override
@@ -169,8 +173,6 @@ class _FoldersPageState extends State<FoldersPage> {
             context: context,
             isScrollControlled: true,
             builder: (context) {
-              //var _isSelected = [false];
-              bool withFolder = false;
               return Padding(
                 padding: EdgeInsets.only(
                     top: 15,
@@ -192,12 +194,14 @@ class _FoldersPageState extends State<FoldersPage> {
                       children: [
                         const Text('With Files'),
                         CupertinoSwitch(
-                            value: withFolder,
+                            value: false,
                             onChanged: (value) {
                               withFolder = value;
                               debugPrint(withFolder.toString());
                               setState(() {});
-                              super.setState(() {});
+                              super.setState(() {
+
+                              });
                             }),
                         const Text('With Folders'),
                       ],
