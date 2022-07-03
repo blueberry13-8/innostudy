@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/widgets/switch.dart';
 import 'files_page.dart';
 import 'folder.dart';
 import 'group.dart';
@@ -27,7 +28,7 @@ class _FoldersPageState extends State<FoldersPage> {
 
   String _lastFolderName = '';
 
-  late bool withFolder;
+  bool withFolder = false;
 
   ///Adds new folder to widget
   Future<void> _addFolder(Folder folder) async {
@@ -90,8 +91,6 @@ class _FoldersPageState extends State<FoldersPage> {
     //_folderList = super.widget.openedGroup.folders;
 
     _textController.text = _lastFolderName;
-
-    withFolder = false;
   }
 
   @override
@@ -190,35 +189,11 @@ class _FoldersPageState extends State<FoldersPage> {
                         _lastFolderName = value;
                       },
                     ),
-                    Row(
-                      children: [
-                        const Text('With Files'),
-                        CupertinoSwitch(
-                            value: false,
-                            onChanged: (value) {
-                              withFolder = value;
-                              debugPrint(withFolder.toString());
-                              setState(() {});
-                              super.setState(() {
-
-                              });
-                            }),
-                        const Text('With Folders'),
-                      ],
+                    FolderTypeSwitch(
+                      callback: (value) {
+                        withFolder = value;
+                      },
                     ),
-                    // ToggleButtons(
-                    //   isSelected: _isSelected,
-                    //   onPressed: (int index) {
-                    //     _isSelected[index] = !_isSelected[index];
-                    //     debugPrint(_isSelected.toString());
-                    //     setState((){});
-                    //   },
-                    //   children: <Widget>[
-                    //     Icon(Icons.folder_copy),
-                    //   ],
-                    //   selectedColor: Colors.red,
-                    // ),
-
                     ElevatedButton(
                       onPressed: () {
                         if (_textController.text != '') {
