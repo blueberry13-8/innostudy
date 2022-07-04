@@ -43,15 +43,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 onValueChanged: (value) async {
                   if (value == 0) {
                     selectedTheme = 0;
-                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.system);
                     EasyDynamicTheme.of(context).changeTheme(dynamic: true);
                   } else if (value == 1) {
                     selectedTheme = 1;
-                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.light);
                     EasyDynamicTheme.of(context).changeTheme(dark: false);
                   } else if (value == 2) {
                     selectedTheme = 2;
-                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.dark);
                     EasyDynamicTheme.of(context).changeTheme(dark: true);
                   }
                   setState(() {});
