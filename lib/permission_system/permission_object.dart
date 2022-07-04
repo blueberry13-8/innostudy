@@ -1,6 +1,7 @@
 import 'package:work/core/folder.dart';
 import 'package:work/core/group.dart';
 import 'package:work/core/inno_file.dart';
+import 'package:work/permission_system/permissions_entity.dart';
 
 enum PermissionableType { group, folder, file }
 
@@ -38,5 +39,27 @@ class PermissionableObject {
       return _innoFile!;
     }
     throw Exception("This permissionable object is NOT for file!");
+  }
+
+  String getCreator() {
+    if (type == PermissionableType.file) {
+      return _innoFile!.creator;
+    } else if (type == PermissionableType.folder) {
+      return _folder!.creator;
+    } else if (type == PermissionableType.group) {
+      return _group!.creator;
+    }
+    throw Exception("Impossible situation");
+  }
+
+  String getName() {
+    if (type == PermissionableType.file) {
+      return _innoFile!.fileName;
+    } else if (type == PermissionableType.folder) {
+      return _folder!.folderName;
+    } else if (type == PermissionableType.group) {
+      return _group!.groupName;
+    }
+    throw Exception("Impossible situation");
   }
 }

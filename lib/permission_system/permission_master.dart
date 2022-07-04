@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work/core/folder.dart';
 import 'package:work/core/group.dart';
 import 'package:work/core/inno_file.dart';
+import 'package:work/permission_system/permission_object.dart';
 
 ///Class contains the rights that user have
 class RightsEntity {
@@ -92,6 +93,7 @@ RightsEntity checkRightsForFolder(Folder folder) {
 
   if (folder.parentFolder != null) {
     upperRights = checkRightsForFolder(folder.parentFolder!);
+    print(folder.folderName);
   } else if (folder.parentGroup != null) {
     upperRights = checkRightsForGroup(folder.parentGroup!);
   } else {

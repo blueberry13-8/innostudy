@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:work/permission_system/permissions_entity.dart';
+
 import 'folder.dart';
 
 ///The class that represents file in our application

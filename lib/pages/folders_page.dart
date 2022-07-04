@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/action_progress.dart';
+import 'package:work/widgets/explorer_list_widget.dart';
 import 'package:work/widgets/switch.dart';
 import 'package:work/permission_system/permission_master.dart';
+import '../widgets/vladislav_alert.dart';
 import 'files_page.dart';
 import '../core/folder.dart';
 import '../core/group.dart';
@@ -52,7 +54,7 @@ class _FoldersPageState extends State<FoldersPage> {
   }
 
   ///Removes folder from widget
-  Future<void> _deleteFolder(Folder folder) async {
+  Future<void> _removeFolder(Folder folder) async {
     await deleteFolder(widget.openedGroup, folder, widget.path);
     // setState(() {
     // if (widget.path.isEmpty) {
@@ -90,73 +92,6 @@ class _FoldersPageState extends State<FoldersPage> {
         ),
       );
     }
-  }
-
-  Future<void> _showAlertDialog(BuildContext context, int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        var cancelButton = TextButton(
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Canceled');
-            }
-            Navigator.of(context).pop();
-          },
-        );
-        var confirmButton = TextButton(
-          child: Text(
-            'Confirm',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () async {
-            if (kDebugMode) {
-              print('Confirmed');
-            }
-            Navigator.of(context).pop();
-            showDialog(
-              barrierDismissible: false,
-              context: this.context,
-              builder: (context) {
-                return ActionProgress(parentContext: this.context);
-              },
-            );
-            _deleteFolder(widget.openedGroup.folders[index]).then((value) {
-              Navigator.of(this.context).pop();
-            });
-          },
-        );
-        var alertDialog = AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'Deleting of folder ${_folderList[index].folderName}',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          content: Text(
-            'Are you sure about deleting this folder? It will be deleted without ability to restore.',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            cancelButton,
-            confirmButton,
-          ],
-        );
-        return alertDialog;
-      },
-    );
   }
 
   @override
@@ -202,153 +137,101 @@ class _FoldersPageState extends State<FoldersPage> {
               widget.openedGroup.folders = _folderList;
               List<PermissionEntity> permissionEntitites =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
-              return ListView.builder(
-                itemCount: listOfFolders.length + 1,
-                padding: const EdgeInsets.all(5),
-                itemBuilder: (context, index) {
-                  if (index == _folderList.length) {
-                    return const SizedBox(
-                      height: 80,
+              List<PermissionableObject> listObjects = [];
+              for (int i = 0; i < _folderList.length; i++) {
+                _folderList[i].parentGroup = widget.openedGroup;
+                if (widget.path.isNotEmpty) {
+                  _folderList[i].parentFolder = widget.path.last;
+                }
+                _folderList[i].permissions = permissionEntitites[i];
+                listObjects
+                    .add(PermissionableObject.fromFolder(_folderList[i]));
+              }
+              return ExplorerList(
+                  listObjects: listObjects,
+                  objectIcon: Icons.folder,
+                  openSettingsCondition: (index) {
+                    RightsEntity rights =
+                        checkRightsForFolder(_folderList[index]);
+                    return rights.openFoldersSettings;
+                  },
+                  readactorCondition: (index) {
+                    RightsEntity rights =
+                        checkRightsForFolder(_folderList[index]);
+                    return _folderList[index].withFolders
+                        ? rights.addFolders
+                        : rights.addFiles;
+                  },
+                  onOpen: (index) {
+                    RightsEntity rights =
+                        checkRightsForFolder(_folderList[index]);
+                    bool canSee = _folderList[index].withFolders
+                        ? rights.seeFolders
+                        : rights.seeFiles;
+                    if (canSee) {
+                      openFolder(
+                          _folderList[index], permissionEntitites[index]);
+                    } else {
+                      pessimisticToast(
+                          "You don't have rights for this action.", 1);
+                    }
+                  },
+                  onDelete: (index) {
+                    RightsEntity rights =
+                        checkRightsForFolder(_folderList[index]);
+                    if (rights.openGroupSettings) {
+                      showVladanchik(context, _folderList[index].folderName,
+                          () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: this.context,
+                          builder: (context) {
+                            return ActionProgress(parentContext: this.context);
+                          },
+                        );
+                        _removeFolder(_folderList[index]).then((value) {
+                          Navigator.of(this.context).pop();
+                        });
+                      });
+                    } else {
+                      pessimisticToast(
+                          "You don't have rights for this action.", 1);
+                    }
+                  },
+                  onOpenSettings: (index) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PermissionsPage(
+                          path: const [],
+                          permissionEntity: permissionEntitites[index],
+                          permissionableObject: PermissionableObject.fromFolder(
+                              _folderList[index]),
+                        ),
+                      ),
                     );
-                  }
-                  //if (index >= _folderList.length) return SizedBox();
+                  },
+                  onEyePressed: (index) {
+                    RightsEntity rights =
+                        checkRightsForFolder(_folderList[index]);
+                    bool flag = _folderList[index].withFolders
+                        ? rights.addFolders
+                        : rights.addFiles;
 
-                  _folderList[index].parentGroup = widget.openedGroup;
-                  _folderList[index].permissions = permissionEntitites[index];
-                  RightsEntity rights =
-                      checkRightsForFolder(_folderList[index]);
-                  return Card(
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    child: ListTile(
-                      title: Text(
-                        listOfFolders[index].folderName,
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                      leading: Icon(
-                        Icons.folder,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      trailing: rights.openFoldersSettings
-                          ? PopupMenuButton<int>(
-                              icon: Icon(
-                                Icons.more_vert,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: GestureDetector(
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.delete_forever,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Delete folder',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () async {
-                                      Navigator.of(context).pop();
-                                      _showAlertDialog(context, index);
-                                    },
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 2,
-                                  child: GestureDetector(
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.settings,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Settings',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => PermissionsPage(
-                                            path: widget.path,
-                                            permissionEntity:
-                                                permissionEntitites[index],
-                                            permissionableObject:
-                                                PermissionableObject.fromFolder(
-                                                    _folderList[index]),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                              offset: const Offset(0, 50),
-                              color: Theme.of(context).backgroundColor,
-                              elevation: 3,
-                            )
-                          : IconButton(
-                              icon: Icon(
-                                rights.addFiles
-                                    ? Icons.edit
-                                    : Icons.remove_red_eye_outlined,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              onPressed: () {
-                                if (!rights.addFiles) {
-                                  if (permissionEntitites[index]
-                                      .password
-                                      .isEmpty) {
-                                    pessimisticToast(
-                                        "Only creator can invite you to manage this folder.",
-                                        1);
-                                    return;
-                                  }
-                                  showPermissionDialog(
-                                      permissionEntitites[index],
-                                      PermissionableObject.fromFolder(
-                                          _folderList[index]),
-                                      widget.path,
-                                      context);
-                                } else {
-                                  openFolder(listOfFolders[index],
-                                      permissionEntitites[index]);
-                                }
-                              },
-                            ),
-                      onTap: () {
-                        if (rights.seeFiles) {
-                          openFolder(
-                              listOfFolders[index], permissionEntitites[index]);
-                        } else {
-                          pessimisticToast(
-                              "You don't have rights for this action.", 1);
-                        }
-                      },
-                    ),
-                  );
-                },
-              );
+                    if (!flag) {
+                      if (permissionEntitites[index].password.isEmpty) {
+                        pessimisticToast(
+                            "Only creator can invite you to manage this folder.",
+                            1);
+                      } else {
+                        showPermissionDialog(
+                            permissionEntitites[index],
+                            PermissionableObject.fromFolder(_folderList[index]),
+                            [],
+                            context);
+                      }
+                    }
+                  });
             } else {
               return ActionProgress(parentContext: this.context);
             }
