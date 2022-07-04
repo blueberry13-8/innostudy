@@ -7,6 +7,7 @@ import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/pessimistic_toast.dart';
+import 'package:work/settings_page.dart';
 import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
@@ -26,21 +27,6 @@ class _GroupsPage extends State<GroupsPage> {
   late List<Group> _groupList;
 
   String _lastGroupName = '';
-
-  var topAppBar = AppBar(
-    elevation: 0.1,
-    // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
-    title: const Text('Group page'),
-    centerTitle: true,
-
-    /// Here we can add button to change mode from light to dark and vice versa or a search button
-    // actions: <Widget>[
-    //   IconButton(
-    //     icon: const Icon(Icons.light_mode),
-    //     onPressed: () {},
-    //   )
-    // ],
-  );
 
   ///Controller to get text from user for new group name
   final TextEditingController _textController = TextEditingController();
@@ -141,7 +127,26 @@ class _GroupsPage extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: topAppBar,
+        appBar: AppBar(
+          elevation: 0.1,
+          title: const Text('Group page'),
+          centerTitle: true,
+
+          /// Here we can add button to change mode from light to dark and vice versa or a search button
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
+              },
+            )
+          ],
+        ),
         //Dynamically build widget
         body: SafeArea(
             child: StreamBuilder(
