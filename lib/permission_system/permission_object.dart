@@ -1,7 +1,6 @@
 import 'package:work/core/folder.dart';
 import 'package:work/core/group.dart';
 import 'package:work/core/inno_file.dart';
-import 'package:work/permission_system/permissions_entity.dart';
 
 enum PermissionableType { group, folder, file }
 
