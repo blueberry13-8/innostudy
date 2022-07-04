@@ -6,6 +6,12 @@ import 'folder.dart';
 import 'group.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+late FirebaseFirestore appFirebase;
+
+void loadAppFirebase() {
+  appFirebase = FirebaseFirestore.instance;
+}
+
 /// Add group to the DB if it doesn't exist.
 Future<void> addGroup(Group group) async {
   final data = group.toJson();
