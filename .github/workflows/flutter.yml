@@ -38,6 +38,10 @@ jobs:
       - name: analyze the code
         run: flutter analyze
       
+      #Running tests
+      - name: running tests
+        run: flutter test
+      
       # Run unit-tests
       #- name: run tests
       #  run: flutter test --platform chrome
