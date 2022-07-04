@@ -1,7 +1,8 @@
-import 'package:dynamic_themes/dynamic_themes.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:work/theme_switcher.dart';
+
+int selectedTheme = 0;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -11,13 +12,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late int selectedTheme;
-
-  @override
-  void initState() {
-    selectedTheme = DynamicTheme.of(context)!.themeId;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +23,18 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Center(
           child: Column(
             children: [
+              const SizedBox(
+                height: 10,
+              ),
               Text(
                 'Choose theme of App',
                 style: TextStyle(
+                  fontSize: 25,
                   color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
               CupertinoSlidingSegmentedControl(
                 backgroundColor: Theme.of(context).backgroundColor,
@@ -45,15 +43,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 onValueChanged: (value) async {
                   if (value == 0) {
                     selectedTheme = 0;
-                    ThemeSwitcher.of(context).switchThemeMode(ThemeMode.system);
+                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.system);
+                    EasyDynamicTheme.of(context).changeTheme(dynamic: true);
                   } else if (value == 1) {
                     selectedTheme = 1;
-                    ThemeSwitcher.of(context).switchThemeMode(ThemeMode.light);
+                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.light);
+                    EasyDynamicTheme.of(context).changeTheme(dark: false);
                   } else if (value == 2) {
                     selectedTheme = 2;
-                    ThemeSwitcher.of(context).switchThemeMode(ThemeMode.dark);
+                    //ThemeSwitcher.of(context).switchThemeMode(ThemeMode.dark);
+                    EasyDynamicTheme.of(context).changeTheme(dark: true);
                   }
-                  await DynamicTheme.of(context)!.setTheme(selectedTheme);
                   setState(() {});
                 },
                 children: <int, Widget>{
