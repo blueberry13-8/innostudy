@@ -5,6 +5,9 @@ import 'package:work/firebase_functions.dart';
 import 'package:work/folder.dart';
 import 'package:work/group.dart';
 
+//This module contains tests for adding/removing folders and groups from database
+//Also tests the parsing system
+
 void main() {
   //Setup firestore for testing
   appFirebase = FakeFirebaseFirestore();
@@ -76,5 +79,23 @@ void main() {
     folders = querySnapshotToFoldersList(await ref.get(), testGroup1);
 
     expect(folders[0].folderName, "internal");
+  });
+
+  test("Deleting groups, folders", () async {
+    await deleteFolder(testGroup1, testFolderNested, []);
+    List<Folder> folders = querySnapshotToFoldersList(
+        await appFirebase
+            .collection('groups')
+            .doc(testGroup1.groupName)
+            .collection('folders')
+            .get(),
+        testGroup1);
+
+    expect(folders.length, 1);
+
+    await deleteGroup(testGroup1);
+    List<Group> groups =
+        querySnapshotToGroupList(await appFirebase.collection('groups').get());
+    expect(groups.length, 1);
   });
 }
