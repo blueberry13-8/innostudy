@@ -25,6 +25,17 @@ Future<List<String>> getUsersEmails() async {
 }
 
 Future<void> addRegisteredUser(String userEmail) async {
+  if (!(await appFirebase
+          .collection("users_emails")
+          .doc("registered_users")
+          .get())
+      .exists) {
+    await appFirebase
+        .collection("users_emails")
+        .doc("registered_users")
+        .set({"number": 0});
+  }
+
   int registeredUsers = (await appFirebase
       .collection("users_emails")
       .doc("registered_users")
@@ -40,72 +51,6 @@ Future<void> addRegisteredUser(String userEmail) async {
       .collection("users_emails")
       .doc("registered_users")
       .set({"number": registeredUsers});
-}
-
-Future<PermissionEntity> getPermissionsOfFile(
-    InnoFile innoFile, List<Folder> path) async {
-  DocumentReference<Map<String, dynamic>> docRef = appFirebase
-      .collection("groups")
-      .doc(path[0].parentGroup!.groupName)
-      .collection("folders")
-      .doc(path[0].folderName);
-  for (int i = 1; i < path.length; i++) {
-    docRef = docRef.collection("folders").doc(path[i].folderName);
-  }
-
-  Map<String, dynamic> data =
-      (await docRef.collection("files").doc(innoFile.fileName).get()).data()!;
-  if (data.containsKey("allow_all")) {
-    List<String> owners = [];
-    for (int i = 0; i < data["owners"].length; i++) {
-      owners.add(data["owners"][i]);
-    }
-    return PermissionEntity(data["allow_all"], owners, data["password"]);
-  } else {
-    attachPermissionRulesToFile(getStandartPermissionSet(), innoFile, path);
-    return getStandartPermissionSet();
-  }
-}
-
-Future<PermissionEntity> getPermissionsOfFolder(
-    Folder folder, List<Folder> path) async {
-  List<Folder> normalPath = List.from(path);
-
-  DocumentReference<Map<String, dynamic>> docRef = appFirebase
-      .collection("groups")
-      .doc(normalPath[0].parentGroup!.groupName)
-      .collection("folders")
-      .doc(normalPath[0].folderName);
-  for (int i = 1; i < normalPath.length; i++) {
-    docRef = docRef.collection("folders").doc(normalPath[i].folderName);
-  }
-  Map<String, dynamic> data = (await docRef.get()).data()!;
-  if (data.containsKey("allow_all")) {
-    List<String> owners = [];
-    for (int i = 0; i < data["owners"].length; i++) {
-      owners.add(data["owners"][i]);
-    }
-    return PermissionEntity(data["allow_all"], owners, data["password"]);
-  } else {
-    attachPermissionRulesToFolder(getStandartPermissionSet(), folder, path);
-    return getStandartPermissionSet();
-  }
-}
-
-Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
-  Map<String, dynamic> data =
-      (await appFirebase.collection("groups").doc(group.groupName).get())
-          .data()!;
-  if (data.containsKey("allow_all")) {
-    List<String> owners = [];
-    for (int i = 0; i < data["owners"].length; i++) {
-      owners.add(data["owners"][i]);
-    }
-    return PermissionEntity(data["allow_all"], owners, data["password"]);
-  } else {
-    attachPermissionRulesToGroup(getStandartPermissionSet(), group);
-    return getStandartPermissionSet();
-  }
 }
 
 Future<void> attachPermissionRules(PermissionEntity permissionEntity,
