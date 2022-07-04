@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:work/firebase_functions.dart';
 import 'package:work/folder.dart';
 import 'package:work/group.dart';
 import 'package:work/inno_file.dart';
@@ -9,7 +10,7 @@ import 'permission_object.dart';
 Future<List<String>> getUsersEmails() async {
   List<String> userEmails = [];
 
-  var documentedEmails = (await FirebaseFirestore.instance
+  var documentedEmails = (await appFirebase
           .collection("users_emails")
           .doc("users")
           .collection("emails")
@@ -24,18 +25,18 @@ Future<List<String>> getUsersEmails() async {
 }
 
 Future<void> addRegisteredUser(String userEmail) async {
-  int registeredUsers = (await FirebaseFirestore.instance
+  int registeredUsers = (await appFirebase
       .collection("users_emails")
       .doc("registered_users")
       .get())["number"];
   registeredUsers++;
-  await FirebaseFirestore.instance
+  await appFirebase
       .collection("users_emails")
       .doc("users")
       .collection("emails")
       .doc("user$registeredUsers")
       .set({"email": userEmail});
-  await FirebaseFirestore.instance
+  await appFirebase
       .collection("users_emails")
       .doc("registered_users")
       .set({"number": registeredUsers});
@@ -43,7 +44,7 @@ Future<void> addRegisteredUser(String userEmail) async {
 
 Future<PermissionEntity> getPermissionsOfFile(
     InnoFile innoFile, List<Folder> path) async {
-  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+  DocumentReference<Map<String, dynamic>> docRef = appFirebase
       .collection("groups")
       .doc(path[0].parentGroup!.groupName)
       .collection("folders")
@@ -70,7 +71,7 @@ Future<PermissionEntity> getPermissionsOfFolder(
     Folder folder, List<Folder> path) async {
   List<Folder> normalPath = List.from(path);
 
-  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+  DocumentReference<Map<String, dynamic>> docRef = appFirebase
       .collection("groups")
       .doc(normalPath[0].parentGroup!.groupName)
       .collection("folders")
@@ -92,11 +93,9 @@ Future<PermissionEntity> getPermissionsOfFolder(
 }
 
 Future<PermissionEntity> getPermissionsOfGroup(Group group) async {
-  Map<String, dynamic> data = (await FirebaseFirestore.instance
-          .collection("groups")
-          .doc(group.groupName)
-          .get())
-      .data()!;
+  Map<String, dynamic> data =
+      (await appFirebase.collection("groups").doc(group.groupName).get())
+          .data()!;
   if (data.containsKey("allow_all")) {
     List<String> owners = [];
     for (int i = 0; i < data["owners"].length; i++) {
@@ -129,7 +128,7 @@ Future<void> attachPermissionRules(PermissionEntity permissionEntity,
 
 Future<void> attachPermissionRulesToFile(PermissionEntity permissionEntity,
     InnoFile innoFile, List<Folder> path) async {
-  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+  DocumentReference<Map<String, dynamic>> docRef = appFirebase
       .collection("groups")
       .doc(path[0].parentGroup!.groupName)
       .collection("folders")
@@ -151,7 +150,7 @@ Future<void> attachPermissionRulesToFolder(
     PermissionEntity permissionEntity, Folder folder, List<Folder> path) async {
   List<Folder> normalPath = List.from(path);
   normalPath.add(folder);
-  DocumentReference<Map<String, dynamic>> docRef = FirebaseFirestore.instance
+  DocumentReference<Map<String, dynamic>> docRef = appFirebase
       .collection("groups")
       .doc(normalPath[0].parentGroup!.groupName)
       .collection("folders")
@@ -170,7 +169,7 @@ Future<void> attachPermissionRulesToFolder(
 Future<void> attachPermissionRulesToGroup(
     PermissionEntity permissionEntity, Group group) async {
   DocumentReference groupReference =
-      FirebaseFirestore.instance.collection("groups").doc(group.groupName);
+      appFirebase.collection("groups").doc(group.groupName);
 
   await groupReference.set({
     "allow_all": permissionEntity.allowAll,

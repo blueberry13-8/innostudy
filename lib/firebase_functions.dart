@@ -6,19 +6,21 @@ import 'folder.dart';
 import 'group.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+late FirebaseFirestore appFirebase;
+
+void loadAppFirebase() {
+  appFirebase = FirebaseFirestore.instance;
+}
+
 /// Add group to the DB if it doesn't exist.
 Future<void> addGroup(Group group) async {
   final data = group.toJson();
-  var database = FirebaseFirestore.instance;
-  var doc =
-      await database.collection('groups').doc(group.groupName).get();
+  var database = appFirebase;
+  var doc = await database.collection('groups').doc(group.groupName).get();
   if (doc.exists) {
     debugPrint('Group with name - ${group.groupName} exists.');
   } else {
-    await database
-        .collection('groups')
-        .doc(group.groupName)
-        .set(data);
+    await database.collection('groups').doc(group.groupName).set(data);
     // for (var folder in group.folders) {
     //   addFolderInGroup(group, folder);
     // }
@@ -29,9 +31,8 @@ Future<void> addGroup(Group group) async {
 
 /// Delete group form DB if it exists.
 Future<void> deleteGroup(Group group) async {
-  var database = FirebaseFirestore.instance;
-  var doc =
-      await database.collection('groups').doc(group.groupName).get();
+  var database = appFirebase;
+  var doc = await database.collection('groups').doc(group.groupName).get();
   if (doc.exists) {
     var foldersForDelete = await database
         .collection('groups')
@@ -54,7 +55,7 @@ Future<void> deleteGroup(Group group) async {
 /// Stream for watching changes into groups' collection.
 /// Use it for dynamic rendering Group List.
 final Stream<QuerySnapshot> groupsStream =
-    FirebaseFirestore.instance.collection('groups').snapshots();
+    appFirebase.collection('groups').snapshots();
 
 final Stream<User?> consumerStream = FirebaseAuth.instance.authStateChanges();
 
@@ -74,7 +75,6 @@ List<Group> querySnapshotToGroupList(QuerySnapshot snapshot) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['groupName'] != null) {
-      debugPrint("!");
       groups.add(Group.fromJson(data));
     }
   }
@@ -86,7 +86,6 @@ List<InnoFile> querySnapshotToInnoFileList(QuerySnapshot snapshot) {
   for (var document in snapshot.docs) {
     var data = document.data()! as Map<String, dynamic>;
     if (data['fileName'] != null) {
-      //debugPrint("!");
       files.add(InnoFile.fromJson(data));
     }
   }

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import '../firebase_functions.dart';
 import '../folder.dart';
 import '../group.dart';
 import '../inno_file.dart';
 
 Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
-  var database = FirebaseFirestore.instance;
+  var database = appFirebase;
   var data = newFolder.toJson();
   var ref = database.collection('groups').doc(group.groupName);
   if (!(await ref.get()).exists) {
@@ -39,7 +40,7 @@ Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
 
 Future<void> deleteFolder(
     Group group, Folder folderForDelete, List<Folder> path) async {
-  var database = FirebaseFirestore.instance;
+  var database = appFirebase;
   var ref = database.collection('groups').doc(group.groupName);
   if (!(await ref.get()).exists) {
     debugPrint('addFolder: Group ${group.groupName} does not exist!');
@@ -90,20 +91,17 @@ Future<void> deleteFolder(
 
 Future<void> addFileToFolderNEW(
     Group group, List<Folder> path, InnoFile innoFile) async {
-  for (var folder in path){
+  for (var folder in path) {
     debugPrint(folder.folderName);
   }
-  dynamic curDoc = await FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName)
-      .get();
+  dynamic curDoc =
+      await appFirebase.collection('groups').doc(group.groupName).get();
   if (!curDoc.exists) {
     debugPrint('addFileToFolder: Group does not exist');
     return;
   }
-  DocumentReference docRef = FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName);
+  DocumentReference docRef =
+      appFirebase.collection('groups').doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {
     docRef = docRef.collection('folders').doc(folder.folderName);
@@ -119,11 +117,8 @@ Future<void> addFileToFolderNEW(
       docRef.set(innoFile.toJson());
     }
   });
-  final filePool = (await FirebaseStorage.instance
-          .ref()
-          .child(storagePath)
-          .listAll())
-      .items;
+  final filePool =
+      (await FirebaseStorage.instance.ref().child(storagePath).listAll()).items;
   for (var file in filePool) {
     if (file.name == innoFile.fileName) {
       debugPrint('addFileToFolder: File with such name already exists');
@@ -131,27 +126,23 @@ Future<void> addFileToFolderNEW(
     }
   }
   docRef.update(innoFile.toJson());
-  final ref = FirebaseStorage.instance
-      .ref()
-      .child('$storagePath${innoFile.fileName}');
+  final ref =
+      FirebaseStorage.instance.ref().child('$storagePath${innoFile.fileName}');
   final file = innoFile.realFile!;
   await ref.putFile(file);
 }
 
 Future<void> deleteFileFromFolderNEW(
     Group group, List<Folder> path, String fileName) async {
-  final curDoc = await FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName)
-      .get();
+  final curDoc =
+      await appFirebase.collection('groups').doc(group.groupName).get();
 
   if (curDoc.exists == false) {
     debugPrint('deleteFileFromFolder: Group does not exist');
     return;
   }
-  DocumentReference docRef = FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName);
+  DocumentReference docRef =
+      appFirebase.collection('groups').doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {
     docRef = docRef.collection('folders').doc(folder.folderName);
@@ -163,25 +154,21 @@ Future<void> deleteFileFromFolderNEW(
   }
   docRef = docRef.collection('files').doc(fileName);
   docRef.delete();
-  final ref = FirebaseStorage.instance
-      .ref()
-      .child('$storagePath$fileName');
+  final ref = FirebaseStorage.instance.ref().child('$storagePath$fileName');
   ref.delete();
 }
 
-Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) async {
-  final curDoc = await FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName)
-      .get();
+Future<File> getFromStorageNEW(
+    Group group, List<Folder> path, String name) async {
+  final curDoc =
+      await appFirebase.collection('groups').doc(group.groupName).get();
 
   if (curDoc.exists == false) {
     debugPrint('deleteFileFromFolder: Group does not exist');
     //TODO: return error file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
-  DocumentReference docRef = FirebaseFirestore.instance
-      .collection('groups')
-      .doc(group.groupName);
+  DocumentReference docRef =
+      appFirebase.collection('groups').doc(group.groupName);
   String storagePath = '${group.groupName}/';
   for (var folder in path) {
     docRef = docRef.collection('folders').doc(folder.folderName);
@@ -193,9 +180,7 @@ Future<File> getFromStorageNEW(Group group, List<Folder> path, String name) asyn
   }
   docRef = docRef.collection('files').doc(name);
 
-  final ref = FirebaseStorage.instance
-      .ref()
-      .child('$storagePath$name');
+  final ref = FirebaseStorage.instance.ref().child('$storagePath$name');
   final dir = await getApplicationDocumentsDirectory();
   final file = File('${dir.path}/$name');
   await ref.writeToFile(file);
