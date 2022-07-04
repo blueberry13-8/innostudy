@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:work/group.dart';
+import 'package:work/widgets/action_progress.dart';
 import 'firebase/additional_firebase_functions.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'firebase_functions.dart';
@@ -95,9 +96,18 @@ class _FilesPageState extends State<FilesPage> {
             if (kDebugMode) {
               print('Confirmed');
             }
-            _removeFile(_filesList[index]);
             Navigator.of(context).pop();
-            setState(() {});
+            showDialog(
+              barrierDismissible: false,
+              context: this.context,
+              builder: (context) {
+                return ActionProgress(parentContext: this.context);
+              },
+            );
+            _removeFile(_filesList[index]).then((value) {
+              Navigator.of(this.context).pop();
+            });
+            // setState(() {});
           },
         );
         var alertDialog = AlertDialog(
@@ -307,7 +317,17 @@ class _FilesPageState extends State<FilesPage> {
                       // ),
                       onTap: () {
                         if (rights.seeFiles) {
-                          openFile(index);
+                          showDialog(
+                            barrierDismissible: false,
+                            context: this.context,
+                            builder: (context) {
+                              return ActionProgress(
+                                  parentContext: this.context);
+                            },
+                          );
+                          openFile(index).then((value) {
+                            Navigator.of(this.context).pop();
+                          });
                         } else {
                           pessimisticToast(
                               "You don't have rights for this action.", 1);
@@ -319,7 +339,6 @@ class _FilesPageState extends State<FilesPage> {
                               "You don't have rights for this action.", 1);
                           return;
                         }
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -338,7 +357,7 @@ class _FilesPageState extends State<FilesPage> {
                 },
               );
             } else {
-              return const CircularProgressIndicator();
+              return ActionProgress(parentContext: this.context);
             }
           },
         ),
@@ -357,11 +376,21 @@ class _FilesPageState extends State<FilesPage> {
           if (result == null) return;
 
           for (PlatformFile file in result.files) {
+            showDialog(
+              barrierDismissible: false,
+              context: this.context,
+              builder: (context) {
+                return ActionProgress(parentContext: this.context);
+              },
+            );
             _addFile(InnoFile(
-                realFile: File(file.path!),
-                fileName: basename(file.path!),
-                path: file.path!,
-                creator: FirebaseAuth.instance.currentUser!.email!));
+                    realFile: File(file.path!),
+                    fileName: basename(file.path!),
+                    path: file.path!,
+                    creator: FirebaseAuth.instance.currentUser!.email!))
+                .then((value) {
+              Navigator.of(this.context).pop();
+            });
           }
         },
         child: const Icon(Icons.add),

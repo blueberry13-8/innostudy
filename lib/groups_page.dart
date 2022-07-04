@@ -7,6 +7,7 @@ import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/pessimistic_toast.dart';
+import 'package:work/widgets/action_progress.dart';
 import 'folders_page.dart';
 import 'group.dart';
 import 'firebase_functions.dart';
@@ -103,9 +104,17 @@ class _GroupsPage extends State<GroupsPage> {
             if (kDebugMode) {
               print('Confirmed');
             }
-            _removeGroup(_groupList[index]);
             Navigator.of(context).pop();
-            setState(() {});
+            showDialog(
+              barrierDismissible: false,
+              context: this.context,
+              builder: (context) {
+                return ActionProgress(parentContext: this.context);
+              },
+            );
+            _removeGroup(_groupList[index]).then((value) {
+              Navigator.of(this.context).pop();
+            });
           },
         );
         var alertDialog = AlertDialog(
@@ -327,9 +336,7 @@ class _GroupsPage extends State<GroupsPage> {
                 },
               );
             } else {
-              return CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
-              );
+              return ActionProgress(parentContext: this.context);
             }
           },
         )),
@@ -383,14 +390,23 @@ class _GroupsPage extends State<GroupsPage> {
                               ElevatedButton(
                                 onPressed: () {
                                   if (_textController.text != "") {
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //       builder: (context) =>
+                                    //           const ActionProgress()),
+                                    // );
                                     _addGroup(Group(
-                                        groupName: _textController.text,
-                                        folders: [],
-                                        creator: FirebaseAuth
-                                            .instance.currentUser!.email!));
-                                    Navigator.pop(context);
+                                            groupName: _textController.text,
+                                            folders: [],
+                                            creator: FirebaseAuth
+                                                .instance.currentUser!.email!))
+                                        .then((value) {
+                                      //Navigator.pop(context);
+                                    });
                                     _textController.text = '';
                                     _lastGroupName = '';
+                                    Navigator.pop(context);
                                   }
                                 },
                                 child: const Text("Add"),
