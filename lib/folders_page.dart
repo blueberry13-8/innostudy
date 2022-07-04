@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/widgets/action_progress.dart';
 import 'package:work/widgets/switch.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'files_page.dart';
@@ -121,9 +122,17 @@ class _FoldersPageState extends State<FoldersPage> {
             if (kDebugMode) {
               print('Confirmed');
             }
-            _deleteFolder(widget.openedGroup.folders[index]);
             Navigator.of(context).pop();
-            setState(() {});
+            showDialog(
+              barrierDismissible: false,
+              context: this.context,
+              builder: (context) {
+                return ActionProgress(parentContext: this.context);
+              },
+            );
+            _deleteFolder(widget.openedGroup.folders[index]).then((value) {
+              Navigator.of(this.context).pop();
+            });
           },
         );
         var alertDialog = AlertDialog(
@@ -341,7 +350,7 @@ class _FoldersPageState extends State<FoldersPage> {
                 },
               );
             } else {
-              return const CircularProgressIndicator();
+              return ActionProgress(parentContext: this.context);
             }
           },
         ),
