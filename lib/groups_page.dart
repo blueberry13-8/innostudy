@@ -273,8 +273,9 @@ class _GroupsPage extends State<GroupsPage> {
                                                           index],
                                                   permissionableObject:
                                                       PermissionableObject
-                                                          .fromGroup(_groupList[
-                                                              index]),
+                                                          .fromGroup(
+                                                    _groupList[index],
+                                                  ),
                                                 ),
                                               ),
                                             );

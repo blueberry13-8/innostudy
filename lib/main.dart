@@ -8,19 +8,20 @@ import 'firebase_options.dart';
 import 'hello_page.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    loadAppFirebase();
-    runApp(EasyDynamicThemeWidget(
-      child: const InnoStudyApp(),
-    ));
-  },
-      ((error, stack) =>
-          FirebaseCrashlytics.instance.recordError(error, stack)));
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      loadAppFirebase();
+      runApp(EasyDynamicThemeWidget(
+        child: const InnoStudyApp(),
+      ));
+    },
+    ((error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)),
+  );
 }
 
 class InnoStudyApp extends StatelessWidget {
@@ -32,7 +33,7 @@ class InnoStudyApp extends StatelessWidget {
       title: 'InnoStudy',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white70,
         primaryColor: Colors.black87,
         appBarTheme: AppBarTheme(
           color: Colors.lightGreen[300],

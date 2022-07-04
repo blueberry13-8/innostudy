@@ -1,6 +1,9 @@
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:work/consumer.dart';
+import 'package:work/info_page.dart';
 
 int selectedTheme = 0;
 
@@ -12,19 +15,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Center(
           child: Column(
             children: [
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
               Text(
                 'Choose theme of App',
@@ -39,7 +42,8 @@ class _SettingsPageState extends State<SettingsPage> {
               CupertinoSlidingSegmentedControl(
                 backgroundColor: Theme.of(context).backgroundColor,
                 groupValue: selectedTheme,
-                thumbColor: Colors.purple,
+                //thumbColor: Colors.purple,
+                thumbColor: const Color(0xFFBCAAA4),
                 onValueChanged: (value) async {
                   if (value == 0) {
                     selectedTheme = 0;
@@ -81,6 +85,70 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                   ),
+                },
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Text(
+                'Account information',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 25,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Your e-mail',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 23,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: 300,
+                child: Text(
+                  Consumer.data.email!,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: const Color(0xFFBCAAA4),
+                ),
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pop(context);
+                  //setState(() {});
+                },
+                child: const Text('Log out'),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: const Color(0xFFBCAAA4),
+                ),
+                child: const Text('About this app'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const InfoPage(),
+                    ),
+                  );
                 },
               ),
             ],
