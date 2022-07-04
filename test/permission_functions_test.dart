@@ -8,6 +8,8 @@ import 'package:work/permission_system/permission_object.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 
+//This module checks our permission system
+
 void main() {
   //Setup firestore for testing
   appFirebase = FakeFirebaseFirestore();
