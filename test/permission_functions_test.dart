@@ -1,9 +1,9 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:work/firebase/additional_firebase_functions.dart';
-import 'package:work/firebase_functions.dart';
-import 'package:work/folder.dart';
-import 'package:work/group.dart';
+import 'package:work/firebase/firebase_functions.dart';
+import 'package:work/core/folder.dart';
+import 'package:work/core/group.dart';
 import 'package:work/permission_system/permission_object.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
-import 'package:work/pessimistic_toast.dart';
+import 'package:work/utils/pessimistic_toast.dart';
 
-import '../folder.dart';
+import '../core/folder.dart';
 import 'permission_object.dart';
 
 void showPermissionDialog(

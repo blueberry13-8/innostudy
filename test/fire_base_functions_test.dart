@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:work/firebase/additional_firebase_functions.dart';
-import 'package:work/firebase_functions.dart';
-import 'package:work/folder.dart';
-import 'package:work/group.dart';
+import 'package:work/firebase/firebase_functions.dart';
+import 'package:work/core/folder.dart';
+import 'package:work/core/group.dart';
 
 //This module contains tests for adding/removing folders and groups from database
 //Also tests the parsing system
