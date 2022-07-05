@@ -42,7 +42,6 @@ class _SettingsPageState extends State<SettingsPage> {
               CupertinoSlidingSegmentedControl(
                 backgroundColor: Theme.of(context).backgroundColor,
                 groupValue: selectedTheme,
-                //thumbColor: Colors.purple,
                 thumbColor: const Color(0xFFBCAAA4),
                 onValueChanged: (value) async {
                   if (value == 0) {

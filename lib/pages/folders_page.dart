@@ -136,7 +136,7 @@ class _FoldersPageState extends State<FoldersPage> {
               _folderList = List.from(listOfFolders);
               widget.openedGroup.folders = _folderList;
               List<PermissionEntity> permissionEntitites =
-              querySnapshotToListOfPermissionEntities(snapshot.data!);
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
               List<PermissionableObject> listObjects = [];
               for (int i = 0; i < _folderList.length; i++) {
                 _folderList[i].parentGroup = widget.openedGroup;
@@ -144,94 +144,100 @@ class _FoldersPageState extends State<FoldersPage> {
                   _folderList[i].parentFolder = widget.path.last;
                 }
                 _folderList[i].permissions = permissionEntitites[i];
-                listObjects
-                    .add(PermissionableObject.fromFolder(_folderList[i]));
+                listObjects.add(
+                  PermissionableObject.fromFolder(_folderList[i]),
+                );
               }
               return ExplorerList(
-                  listObjects: listObjects,
-                  objectIcon: Icons.folder,
-                  openSettingsCondition: (index) {
-                    RightsEntity rights =
-                    checkRightsForFolder(_folderList[index]);
-                    return rights.openFoldersSettings;
-                  },
-                  readactorCondition: (index) {
-                    RightsEntity rights =
-                    checkRightsForFolder(_folderList[index]);
-                    return _folderList[index].withFolders
-                        ? rights.addFolders
-                        : rights.addFiles;
-                  },
-                  onOpen: (index) {
-                    RightsEntity rights =
-                    checkRightsForFolder(_folderList[index]);
-                    bool canSee = _folderList[index].withFolders
-                        ? rights.seeFolders
-                        : rights.seeFiles;
-                    if (canSee) {
-                      openFolder(
-                          _folderList[index], permissionEntitites[index]);
-                    } else {
-                      pessimisticToast(
-                          "You don't have rights for this action.", 1);
-                    }
-                  },
-                  onDelete: (index) {
-                    RightsEntity rights =
-                    checkRightsForFolder(_folderList[index]);
-                    if (rights.openGroupSettings) {
-                      showVladanchik(context, _folderList[index].folderName,
-                              () {
-                            showDialog(
-                              barrierDismissible: false,
-                              context: this.context,
-                              builder: (context) {
-                                return ActionProgress(parentContext: this.context);
-                              },
-                            );
-                            _removeFolder(_folderList[index]).then((value) {
-                              Navigator.of(this.context).pop();
-                            });
-                          });
-                    } else {
-                      pessimisticToast(
-                          "You don't have rights for this action.", 1);
-                    }
-                  },
-                  onOpenSettings: (index) {
-                    Navigator.push(
+                listObjects: listObjects,
+                objectIcon: Icons.folder,
+                openSettingsCondition: (index) {
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
+                  return rights.openFoldersSettings;
+                },
+                readactorCondition: (index) {
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
+                  return _folderList[index].withFolders
+                      ? rights.addFolders
+                      : rights.addFiles;
+                },
+                onOpen: (index) {
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
+                  bool canSee = _folderList[index].withFolders
+                      ? rights.seeFolders
+                      : rights.seeFiles;
+                  if (canSee) {
+                    openFolder(_folderList[index], permissionEntitites[index]);
+                  } else {
+                    pessimisticToast(
+                        "You don't have rights for this action.", 1);
+                  }
+                },
+                onDelete: (index) {
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
+                  if (rights.openGroupSettings) {
+                    showVladanchik(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => PermissionsPage(
-                          path: const [],
-                          permissionEntity: permissionEntitites[index],
-                          permissionableObject: PermissionableObject.fromFolder(
-                              _folderList[index]),
-                        ),
-                      ),
+                      _folderList[index].folderName,
+                      () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: this.context,
+                          builder: (context) {
+                            return ActionProgress(parentContext: this.context);
+                          },
+                        );
+                        _removeFolder(_folderList[index]).then(
+                          (value) {
+                            Navigator.of(this.context).pop();
+                          },
+                        );
+                      },
                     );
-                  },
-                  onEyePressed: (index) {
-                    RightsEntity rights =
-                    checkRightsForFolder(_folderList[index]);
-                    bool flag = _folderList[index].withFolders
-                        ? rights.addFolders
-                        : rights.addFiles;
-
-                    if (!flag) {
-                      if (permissionEntitites[index].password.isEmpty) {
-                        pessimisticToast(
-                            "Only creator can invite you to manage this folder.",
-                            1);
-                      } else {
-                        showPermissionDialog(
-                            permissionEntitites[index],
+                  } else {
+                    pessimisticToast(
+                        "You don't have rights for this action.", 1);
+                  }
+                },
+                onOpenSettings: (index) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PermissionsPage(
+                        path: const [],
+                        permissionEntity: permissionEntitites[index],
+                        permissionableObject:
                             PermissionableObject.fromFolder(_folderList[index]),
-                            [],
-                            context);
-                      }
+                      ),
+                    ),
+                  );
+                },
+                onEyePressed: (index) {
+                  RightsEntity rights =
+                      checkRightsForFolder(_folderList[index]);
+                  bool flag = _folderList[index].withFolders
+                      ? rights.addFolders
+                      : rights.addFiles;
+
+                  if (!flag) {
+                    if (permissionEntitites[index].password.isEmpty) {
+                      pessimisticToast(
+                          "Only creator can invite you to manage this folder.",
+                          1);
+                    } else {
+                      showPermissionDialog(
+                          permissionEntitites[index],
+                          PermissionableObject.fromFolder(_folderList[index]),
+                          [],
+                          context);
                     }
-                  });
+                  }
+                },
+              );
             } else {
               return ActionProgress(parentContext: this.context);
             }
@@ -293,14 +299,14 @@ class _FoldersPageState extends State<FoldersPage> {
                                 files: [],
                                 withFolders: false,
                                 creator:
-                                FirebaseAuth.instance.currentUser!.email!));
+                                    FirebaseAuth.instance.currentUser!.email!));
                           } else {
                             _addFolder(Folder(
                                 folderName: _textController.text,
                                 folders: [],
                                 withFolders: true,
                                 creator:
-                                FirebaseAuth.instance.currentUser!.email!));
+                                    FirebaseAuth.instance.currentUser!.email!));
                           }
                           Navigator.pop(context);
                           _textController.text = '';

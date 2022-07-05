@@ -15,9 +15,11 @@ void main() async {
     );
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     loadAppFirebase();
-    runApp(EasyDynamicThemeWidget(
-      child: const InnoStudyApp(),
-    ));
+    runApp(
+      EasyDynamicThemeWidget(
+        child: const InnoStudyApp(),
+      ),
+    );
   },
       ((error, stack) =>
           FirebaseCrashlytics.instance.recordError(error, stack)));
