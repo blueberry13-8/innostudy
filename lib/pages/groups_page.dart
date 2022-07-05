@@ -7,6 +7,7 @@ import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/utils/pessimistic_toast.dart';
+import 'package:work/pages/settings_page.dart';
 import 'package:work/widgets/action_progress.dart';
 import 'package:work/widgets/explorer_list_widget.dart';
 import '../widgets/vladislav_alert.dart';
@@ -29,21 +30,6 @@ class _GroupsPage extends State<GroupsPage> {
   late List<Group> _groupList;
 
   String _lastGroupName = '';
-
-  var topAppBar = AppBar(
-    elevation: 0.1,
-    // backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
-    title: const Text('Group page'),
-    centerTitle: true,
-
-    /// Here we can add button to change mode from light to dark and vice versa or a search button
-    // actions: <Widget>[
-    //   IconButton(
-    //     icon: const Icon(Icons.light_mode),
-    //     onPressed: () {},
-    //   )
-    // ],
-  );
 
   ///Controller to get text from user for new group name
   final TextEditingController _textController = TextEditingController();
@@ -85,7 +71,26 @@ class _GroupsPage extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: topAppBar,
+        appBar: AppBar(
+          elevation: 0.1,
+          title: const Text('Group page'),
+          centerTitle: true,
+
+          /// Here we can add button to change mode from light to dark and vice versa or a search button
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
         //Dynamically build widget
         body: SafeArea(
             child: StreamBuilder(
@@ -182,86 +187,52 @@ class _GroupsPage extends State<GroupsPage> {
             }
           },
         )),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned(
-              left: 30,
-              bottom: 10,
-              child: FloatingActionButton(
-                heroTag: "btn1",
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                },
-                child: const Icon(Icons.exit_to_app),
-              ),
-            ),
-            // const SizedBox(
-            //   width: 10,
-            // ),
-            Positioned(
-              right: 30,
-              bottom: 10,
-              child: FloatingActionButton(
-                heroTag: "groups page",
-                onPressed: () {
-                  //Bottom menu for adding new groups
-                  showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (BuildContext context) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                              top: 15,
-                              left: 15,
-                              right: 15,
-                              bottom: MediaQuery.of(context).viewInsets.bottom +
-                                  15),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextField(
-                                controller: _textController,
-                                autofocus: true,
-                                onChanged: (value) {
-                                  _lastGroupName = value;
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (_textController.text != "") {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //       builder: (context) =>
-                                    //           const ActionProgress()),
-                                    // );
-                                    _addGroup(Group(
-                                            groupName: _textController.text,
-                                            folders: [],
-                                            creator: FirebaseAuth
-                                                .instance.currentUser!.email!))
-                                        .then((value) {
-                                      //Navigator.pop(context);
-                                    });
-                                    _textController.text = '';
-                                    _lastGroupName = '';
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text("Add"),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                },
-                child: const Icon(Icons.add),
-              ),
-            ),
-          ],
+        floatingActionButton: FloatingActionButton(
+          heroTag: "groups page",
+          onPressed: () {
+            //Bottom menu for adding new groups
+            showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        top: 15,
+                        left: 15,
+                        right: 15,
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          controller: _textController,
+                          autofocus: true,
+                          onChanged: (value) {
+                            _lastGroupName = value;
+                          },
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_textController.text != "") {
+                              _addGroup(Group(
+                                  groupName: _textController.text,
+                                  folders: [],
+                                  creator: FirebaseAuth
+                                      .instance.currentUser!.email!));
+                              Navigator.pop(context);
+                              _textController.text = '';
+                              _lastGroupName = '';
+                            }
+                          },
+                          child: const Text("Add"),
+                        ),
+                      ],
+                    ),
+                  );
+                });
+          },
+          child: const Icon(Icons.add),
         ));
   }
 }

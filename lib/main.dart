@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,7 +15,11 @@ void main() async {
     );
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     loadAppFirebase();
-    runApp(const InnoStudyApp());
+    runApp(
+      EasyDynamicThemeWidget(
+        child: const InnoStudyApp(),
+      ),
+    );
   },
       ((error, stack) =>
           FirebaseCrashlytics.instance.recordError(error, stack)));
@@ -29,7 +34,7 @@ class InnoStudyApp extends StatelessWidget {
       title: 'InnoStudy',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white70,
         primaryColor: Colors.black87,
         appBarTheme: AppBarTheme(
           color: Colors.lightGreen[300],
@@ -81,7 +86,7 @@ class InnoStudyApp extends StatelessWidget {
           ),
         ),
       ),
-      themeMode: ThemeMode.system,
+      themeMode: EasyDynamicTheme.of(context).themeMode,
       home: const HelloPage(),
     );
   }
