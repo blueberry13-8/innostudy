@@ -1,11 +1,10 @@
-//Test for the most complicated widget in our application.
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:work/core/group.dart';
 import 'package:work/permission_system/permission_object.dart';
 import 'package:work/widgets/explorer_list_widget.dart';
+
+//Test for the most complicated widget in our application.
 
 void main() {
   testWidgets("Full test of explorer list widget", (widgetTester) async {
