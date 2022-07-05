@@ -3,7 +3,7 @@ import 'package:open_file/open_file.dart';
 import 'package:work/core/group.dart';
 import 'dart:io' show Platform;
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:universal_html/html.dart' as html;
 
 import 'package:work/core/inno_file.dart';
 
