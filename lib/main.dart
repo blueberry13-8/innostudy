@@ -33,6 +33,8 @@ class InnoStudyApp extends StatelessWidget {
     return MaterialApp(
       title: 'InnoStudy',
       theme: ThemeData(
+        hoverColor: Colors.lightGreen[100],
+        focusColor: Colors.lime[200],
         scaffoldBackgroundColor: Colors.white,
         backgroundColor: Colors.white,
         primaryColor: Colors.black87,
@@ -57,12 +59,18 @@ class InnoStudyApp extends StatelessWidget {
             fontSize: 18,
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.lime[200],
+          ),
+        ),
       ),
       darkTheme: ThemeData(
         primaryColor: Colors.white,
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
         backgroundColor: Colors.blueGrey,
-        focusColor: Colors.indigo,
+        hoverColor: Colors.blueGrey,
+        focusColor: Colors.blueGrey[300],
         appBarTheme: const AppBarTheme(
           color: Color.fromRGBO(45, 80, 115, 1.0),
           shadowColor: Color.fromRGBO(50, 85, 120, 1.0),
@@ -83,6 +91,11 @@ class InnoStudyApp extends StatelessWidget {
           bodyText1: TextStyle(
             color: Colors.white,
             fontSize: 18,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.blueGrey[300],
           ),
         ),
       ),

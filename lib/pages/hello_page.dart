@@ -121,8 +121,6 @@ class _HelloPageState extends State<HelloPage> {
                       child: SizedBox(
                         height: 40,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: const Color(0xFFBCAAA4)),
                           onPressed: () async {
                             try {
                               await FirebaseAuth.instance
@@ -161,8 +159,6 @@ class _HelloPageState extends State<HelloPage> {
                       child: SizedBox(
                         height: 40,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: const Color(0xFFBCAAA4)),
                           onPressed: () async {
                             try {
                               await FirebaseAuth.instance

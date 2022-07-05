@@ -28,14 +28,14 @@ class GroupsPage extends StatefulWidget {
 class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   //List of existing groups
   late List<Group> _groupList;
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 2),
-    vsync: this,
-  )..repeat(reverse: true);
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeIn,
-  );
+  // late final AnimationController _controller = AnimationController(
+  //   duration: const Duration(seconds: 2),
+  //   vsync: this,
+  // )..repeat(reverse: true);
+  // late final Animation<double> _animation = CurvedAnimation(
+  //   parent: _controller,
+  //   curve: Curves.easeIn,
+  // );
 
   String _lastGroupName = '';
 
@@ -79,8 +79,8 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
               ),
             );
           },
-          reverseTransitionDuration:  Duration(milliseconds: 100),
-          transitionDuration: Duration(milliseconds: 250),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          transitionDuration: const Duration(milliseconds: 250),
           pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
             openedGroup: _groupList[index],
             path: const [],
@@ -102,29 +102,29 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0.1,
-          title: const Text('Group page'),
-          centerTitle: true,
+      appBar: AppBar(
+        elevation: 0.1,
+        title: const Text('Group page'),
+        centerTitle: true,
 
-          /// Here we can add button to change mode from light to dark and vice versa or a search button
-          actions: <Widget>[
-            IconButton(
-
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
+        /// Here we can add button to change mode from light to dark and vice versa or a search button
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
                   context,
-                    PageRouteBuilder(
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  PageRouteBuilder(
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
                         const begin = Offset(1.0, 0.0);
                         const end = Offset.zero;
                         const curve = Curves.ease;
 
-                        var tween =
-                        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        animation =
-                            CurvedAnimation(curve: Curves.decelerate, parent: animation);
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        animation = CurvedAnimation(
+                            curve: Curves.decelerate, parent: animation);
                         return SlideTransition(
                           position: animation.drive(tween),
                           child: FadeTransition(
@@ -133,18 +133,17 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                           ),
                         );
                       },
-                      reverseTransitionDuration:  Duration(milliseconds: 100),
-                      transitionDuration: Duration(milliseconds: 250),
-                      pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage()
-                    )
-                );
-              },
-            ),
-          ],
-        ),
-        //Dynamically build widget
-        body: SafeArea(
-            child: StreamBuilder(
+                      reverseTransitionDuration: const Duration(milliseconds: 100),
+                      transitionDuration: const Duration(milliseconds: 250),
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const SettingsPage()));
+            },
+          ),
+        ],
+      ),
+      //Dynamically build widget
+      body: SafeArea(
+        child: StreamBuilder(
           stream: groupsStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -160,33 +159,32 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                 listObjects.add(PermissionableObject.fromGroup(_groupList[i]));
               }
               return ExplorerList(
-                  listObjects: listObjects,
-                  objectIcon: Icons.group,
-                  openSettingsCondition: (index) {
-                    RightsEntity rights =
-                        checkRightsForGroup(_groupList[index]);
-                    return rights.openGroupSettings;
-                  },
-                  readactorCondition: (index) {
-                    RightsEntity rights =
-                        checkRightsForGroup(_groupList[index]);
-                    return rights.addFolders;
-                  },
-                  onOpen: (index) {
-                    RightsEntity rights =
-                        checkRightsForGroup(_groupList[index]);
-                    if (rights.seeFolders) {
-                      openGroup(index, permissionEntitites[index]);
-                    } else {
-                      pessimisticToast(
-                          "You don't have rights for this action.", 1);
-                    }
-                  },
-                  onDelete: (index) {
-                    RightsEntity rights =
-                        checkRightsForGroup(_groupList[index]);
-                    if (rights.openGroupSettings) {
-                      showVladanchik(context, _groupList[index].groupName, () {
+                listObjects: listObjects,
+                objectIcon: Icons.group,
+                openSettingsCondition: (index) {
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
+                  return rights.openGroupSettings;
+                },
+                readactorCondition: (index) {
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
+                  return rights.addFolders;
+                },
+                onOpen: (index) {
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
+                  if (rights.seeFolders) {
+                    openGroup(index, permissionEntitites[index]);
+                  } else {
+                    pessimisticToast(
+                        "You don't have rights for this action.", 1);
+                  }
+                },
+                onDelete: (index) {
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
+                  if (rights.openGroupSettings) {
+                    showVladanchik(
+                      context,
+                      _groupList[index].groupName,
+                      () {
                         showDialog(
                           barrierDismissible: false,
                           context: this.context,
@@ -194,96 +192,105 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                             return ActionProgress(parentContext: this.context);
                           },
                         );
-                        _removeGroup(_groupList[index]).then((value) {
-                          Navigator.of(this.context).pop();
-                        });
-                      });
-                    } else {
-                      pessimisticToast(
-                          "You don't have rights for this action.", 1);
-                    }
-                  },
-                  onOpenSettings: (index) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PermissionsPage(
-                          path: const [],
-                          permissionEntity: permissionEntitites[index],
-                          permissionableObject:
-                              PermissionableObject.fromGroup(_groupList[index]),
-                        ),
-                      ),
+                        _removeGroup(_groupList[index]).then(
+                          (value) {
+                            Navigator.of(this.context).pop();
+                          },
+                        );
+                      },
                     );
-                  },
-                  onEyePressed: (index) {
-                    RightsEntity rights =
-                        checkRightsForGroup(_groupList[index]);
-                    if (!rights.addFolders) {
-                      if (permissionEntitites[index].password.isEmpty) {
-                        pessimisticToast(
-                            "Only creator can invite you to manage this group.",
-                            1);
-                      } else {
-                        showPermissionDialog(
-                            permissionEntitites[index],
+                  } else {
+                    pessimisticToast(
+                        "You don't have rights for this action.", 1);
+                  }
+                },
+                onOpenSettings: (index) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PermissionsPage(
+                        path: const [],
+                        permissionEntity: permissionEntitites[index],
+                        permissionableObject:
                             PermissionableObject.fromGroup(_groupList[index]),
-                            [],
-                            context);
-                      }
+                      ),
+                    ),
+                  );
+                },
+                onEyePressed: (index) {
+                  RightsEntity rights = checkRightsForGroup(_groupList[index]);
+                  if (!rights.addFolders) {
+                    if (permissionEntitites[index].password.isEmpty) {
+                      pessimisticToast(
+                          "Only creator can invite you to manage this group.",
+                          1);
+                    } else {
+                      showPermissionDialog(
+                          permissionEntitites[index],
+                          PermissionableObject.fromGroup(_groupList[index]),
+                          [],
+                          context);
                     }
-                  });
+                  }
+                },
+              );
             } else {
               return ActionProgress(parentContext: this.context);
             }
           },
-        )),
-        floatingActionButton: FloatingActionButton(
-          heroTag: "groups page",
-          onPressed: () {
-            //Bottom menu for adding new groups
-            showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (BuildContext context) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                        top: 15,
-                        left: 15,
-                        right: 15,
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(
-                          controller: _textController,
-                          autofocus: true,
-                          onChanged: (value) {
-                            _lastGroupName = value;
-                          },
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_textController.text != "") {
-                              _addGroup(Group(
-                                  groupName: _textController.text,
-                                  folders: [],
-                                  creator: FirebaseAuth
-                                      .instance.currentUser!.email!));
-                              Navigator.pop(context);
-                              _textController.text = '';
-                              _lastGroupName = '';
-                            }
-                          },
-                          child: const Text("Add"),
-                        ),
-                      ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "groups page",
+        onPressed: () {
+          //Bottom menu for adding new groups
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _textController,
+                      autofocus: true,
+                      onChanged: (value) {
+                        _lastGroupName = value;
+                      },
                     ),
-                  );
-                });
-          },
-          child: const Icon(Icons.add),
-        ));
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                      ),
+                      onPressed: () {
+                        if (_textController.text != "") {
+                          _addGroup(Group(
+                              groupName: _textController.text,
+                              folders: [],
+                              creator:
+                                  FirebaseAuth.instance.currentUser!.email!));
+                          Navigator.pop(context);
+                          _textController.text = '';
+                          _lastGroupName = '';
+                        }
+                      },
+                      child: const Text("Add"),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }

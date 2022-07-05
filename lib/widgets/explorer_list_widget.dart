@@ -41,10 +41,11 @@ class ExplorerList extends StatelessWidget {
                 listObjects[index].getName(),
                 style: Theme.of(context).textTheme.bodyText1,
               ),
-              subtitle: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFBCAAA4),
-                  borderRadius: BorderRadius.all(
+              subtitle: Container(
+                margin: const EdgeInsets.only(top: 3),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).focusColor,
+                  borderRadius: const BorderRadius.all(
                     Radius.circular(7), //<--- border radius here
                   ),
                 ),
