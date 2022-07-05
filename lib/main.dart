@@ -34,7 +34,7 @@ class InnoStudyApp extends StatelessWidget {
       title: 'InnoStudy',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
-        backgroundColor: Colors.white70,
+        backgroundColor: Colors.white,
         primaryColor: Colors.black87,
         appBarTheme: AppBarTheme(
           color: Colors.lightGreen[300],
