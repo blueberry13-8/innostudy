@@ -1,19 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:work/core/group.dart';
+import 'package:work/utils/file_creator.dart';
+import 'package:work/utils/file_opener.dart';
 import 'package:work/widgets/action_progress.dart';
 import '../firebase/additional_firebase_functions.dart';
 import 'package:work/permission_system/permission_master.dart';
 import '../firebase/firebase_functions.dart';
 import '../core/inno_file.dart';
 import '../core/folder.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:open_file/open_file.dart';
-import 'dart:io';
-
 import '../permission_system/permission_dialog.dart';
 import '../permission_system/permissions_entity.dart';
 import '../permission_system/permissions_functions.dart';
@@ -38,16 +34,6 @@ class FilesPage extends StatefulWidget {
 class _FilesPageState extends State<FilesPage> {
   late List<InnoFile> _filesList;
 
-  ///Adds new folder to widget
-  Future<void> _addFile(InnoFile innoFile) async {
-    await addFileToFolderNEW(widget.openedGroup, widget.path, innoFile);
-    innoFile.parentFolder = widget.path.last;
-    // setState(() {
-    //   _filesList.add(innoFile);
-    // });
-    //debugPrint(widget.openedFolder.files.toString());
-  }
-
   ///Removes folder from widget
   Future<void> _removeFile(InnoFile innoFile) async {
     //debugPrint(widget.openedFolder.folderName);
@@ -63,9 +49,7 @@ class _FilesPageState extends State<FilesPage> {
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    OpenFile.open((await getFromStorageNEW(
-            widget.openedGroup, widget.path, _filesList[index].fileName))
-        .path);
+    openInnoFile(_filesList[index], widget.path, widget.openedGroup);
   }
 
   @override
@@ -105,23 +89,26 @@ class _FilesPageState extends State<FilesPage> {
                     .add(PermissionableObject.fromInnoFile(_filesList[i]));
               }
               return ExplorerList(
-                  listObjects: listObjects,
-                  objectIcon: Icons.group,
-                  openSettingsCondition: (index) {
-                    RightsEntity rights = checkRightsForFile(_filesList[index]);
-                    return rights.openFileSettings;
-                  },
-                  readactorCondition: (index) {
-                    RightsEntity rights = checkRightsForFile(_filesList[index]);
-                    return rights.openFileSettings;
-                  },
-                  onOpen: (index) {
-                    openFile(index);
-                  },
-                  onDelete: (index) {
-                    RightsEntity rights = checkRightsForFile(_filesList[index]);
-                    if (rights.openFileSettings) {
-                      showVladanchik(context, _filesList[index].fileName, () {
+                listObjects: listObjects,
+                objectIcon: Icons.group,
+                openSettingsCondition: (index) {
+                  RightsEntity rights = checkRightsForFile(_filesList[index]);
+                  return rights.openFileSettings;
+                },
+                readactorCondition: (index) {
+                  RightsEntity rights = checkRightsForFile(_filesList[index]);
+                  return rights.openFileSettings;
+                },
+                onOpen: (index) {
+                  openFile(index);
+                },
+                onDelete: (index) {
+                  RightsEntity rights = checkRightsForFile(_filesList[index]);
+                  if (rights.openFileSettings) {
+                    showVladanchik(
+                      context,
+                      _filesList[index].fileName,
+                      () {
                         showDialog(
                           barrierDismissible: false,
                           context: this.context,
@@ -129,46 +116,50 @@ class _FilesPageState extends State<FilesPage> {
                             return ActionProgress(parentContext: this.context);
                           },
                         );
-                        _removeFile(_filesList[index]).then((value) {
-                          Navigator.of(this.context).pop();
-                        });
-                      });
-                    } else {
-                      pessimisticToast(
-                          "You don't have rights for this action.", 1);
-                    }
-                  },
-                  onOpenSettings: (index) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PermissionsPage(
-                          path: const [],
-                          permissionEntity: permissionEntitites[index],
-                          permissionableObject:
-                              PermissionableObject.fromInnoFile(
-                                  _filesList[index]),
+                        _removeFile(_filesList[index]).then(
+                          (value) {
+                            Navigator.of(this.context).pop();
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    pessimisticToast(
+                        "You don't have rights for this action.", 1);
+                  }
+                },
+                onOpenSettings: (index) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PermissionsPage(
+                        path: const [],
+                        permissionEntity: permissionEntitites[index],
+                        permissionableObject: PermissionableObject.fromInnoFile(
+                          _filesList[index],
                         ),
                       ),
-                    );
-                  },
-                  onEyePressed: (index) {
-                    RightsEntity rights = checkRightsForFile(_filesList[index]);
-                    if (!rights.openFileSettings) {
-                      if (permissionEntitites[index].password.isEmpty) {
-                        pessimisticToast(
-                            "Only creator can invite you to manage this file.",
-                            1);
-                      } else {
-                        showPermissionDialog(
-                            permissionEntitites[index],
-                            PermissionableObject.fromInnoFile(
-                                _filesList[index]),
-                            [],
-                            context);
-                      }
+                    ),
+                  );
+                },
+                onEyePressed: (index) {
+                  RightsEntity rights = checkRightsForFile(_filesList[index]);
+                  if (!rights.openFileSettings) {
+                    if (permissionEntitites[index].password.isEmpty) {
+                      pessimisticToast(
+                        "Only creator can invite you to manage this file.",
+                        1,
+                      );
+                    } else {
+                      showPermissionDialog(
+                          permissionEntitites[index],
+                          PermissionableObject.fromInnoFile(_filesList[index]),
+                          [],
+                          context);
                     }
-                  });
+                  }
+                },
+              );
             } else {
               return ActionProgress(parentContext: this.context);
             }
@@ -182,29 +173,16 @@ class _FilesPageState extends State<FilesPage> {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
           }
-
-          FilePickerResult? result =
-              await FilePicker.platform.pickFiles(allowMultiple: true);
-
-          if (result == null) return;
-
-          for (PlatformFile file in result.files) {
-            showDialog(
-              barrierDismissible: false,
-              context: this.context,
-              builder: (context) {
-                return ActionProgress(parentContext: this.context);
-              },
-            );
-            _addFile(InnoFile(
-                    realFile: File(file.path!),
-                    fileName: basename(file.path!),
-                    path: file.path!,
-                    creator: FirebaseAuth.instance.currentUser!.email!))
-                .then((value) {
-              Navigator.of(this.context).pop();
-            });
-          }
+          showDialog(
+            barrierDismissible: false,
+            context: this.context,
+            builder: (context) {
+              return ActionProgress(parentContext: this.context);
+            },
+          );
+          createInnoFile(widget.openedGroup, widget.path).then((value) {
+            Navigator.of(this.context).pop();
+          });
         },
         child: const Icon(Icons.add),
       ),

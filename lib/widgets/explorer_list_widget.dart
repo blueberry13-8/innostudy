@@ -83,38 +83,50 @@ class ExplorerList extends StatelessWidget {
                                 value: 1,
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      Icons.delete_forever,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'Delete',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                    Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Icon(
+                                            Icons.delete_forever,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        )),
+                                    Expanded(
+                                      flex: 8,
+                                      child: Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       ),
-                                    ),
+                                    )
                                   ],
                                 )),
                             PopupMenuItem(
                                 value: 2,
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      Icons.settings,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'Privacy settings',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                    Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Icon(
+                                            Icons.settings,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        )),
+                                    Expanded(
+                                      flex: 8,
+                                      child: Text(
+                                        'Privacy settings',
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       ),
-                                    ),
+                                    )
                                   ],
                                 ))
                           ])
