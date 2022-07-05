@@ -49,3 +49,7 @@ jobs:
       #Test apk build
       - name: build apk
         run: flutter build apk
+
+      #Test build web
+      - name: builing for web
+        run: flutter build web
