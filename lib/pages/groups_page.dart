@@ -8,6 +8,9 @@ import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/utils/pessimistic_toast.dart';
 import 'package:work/pages/settings_page.dart';
+import 'package:work/widgets/action_progress.dart';
+import 'package:work/widgets/explorer_list_widget.dart';
+import '../widgets/vladislav_alert.dart';
 import 'folders_page.dart';
 import '../core/group.dart';
 import '../firebase/firebase_functions.dart';
@@ -59,65 +62,6 @@ class _GroupsPage extends State<GroupsPage> {
     );
   }
 
-  Future<void> _showAlertDialog(BuildContext context, int index) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        var cancelButton = TextButton(
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () {
-            if (kDebugMode) {
-              print('Canceled');
-            }
-            Navigator.of(context).pop();
-          },
-        );
-        var confirmButton = TextButton(
-          child: Text(
-            'Confirm',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          onPressed: () async {
-            if (kDebugMode) {
-              print('Confirmed');
-            }
-            _removeGroup(_groupList[index]);
-            Navigator.of(context).pop();
-            setState(() {});
-          },
-        );
-        var alertDialog = AlertDialog(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'Deleting of group ${_groupList[index].groupName}',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          content: Text(
-            'Are you sure about deleting this group? It will be deleted without ability to restore.',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          actions: [
-            cancelButton,
-            confirmButton,
-          ],
-        );
-        return alertDialog;
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -149,201 +93,100 @@ class _GroupsPage extends State<GroupsPage> {
         ),
         //Dynamically build widget
         body: SafeArea(
-          child: StreamBuilder(
-            stream: groupsStream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return const Text("Error");
-              } else if (snapshot.hasData) {
-                _groupList = querySnapshotToGroupList(snapshot.data!);
-                List<PermissionEntity> permissionEntitites =
-                    querySnapshotToListOfPermissionEntities(snapshot.data!);
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: _groupList.length,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-                  itemBuilder: (BuildContext context, int index) {
-                    _groupList[index].permissions = permissionEntitites[index];
+            child: StreamBuilder(
+          stream: groupsStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return const Text("Error");
+            } else if (snapshot.hasData) {
+              _groupList = querySnapshotToGroupList(snapshot.data!);
+              List<PermissionEntity> permissionEntitites =
+                  querySnapshotToListOfPermissionEntities(snapshot.data!);
+              List<PermissionableObject> listObjects = [];
+              for (int i = 0; i < _groupList.length; i++) {
+                _groupList[i].permissions = permissionEntitites[i];
+                listObjects.add(PermissionableObject.fromGroup(_groupList[i]));
+              }
+              return ExplorerList(
+                  listObjects: listObjects,
+                  objectIcon: Icons.group,
+                  openSettingsCondition: (index) {
                     RightsEntity rights =
                         checkRightsForGroup(_groupList[index]);
-                    return index < _groupList.length
-                        ? Card(
-                            elevation: 4,
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            child: ListTile(
-                              title: Text(
-                                _groupList[index].groupName,
-                                style: Theme.of(context).textTheme.bodyText1,
-                              ),
-                              subtitle: DecoratedBox(
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFBCAAA4),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(
-                                        7), //<--- border radius here
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 2, horizontal: 5),
-                                  child: Text(
-                                    _groupList[index].creator,
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                              ),
-                              leading: Icon(
-                                Icons.group,
-                                color: Theme.of(context).primaryColor,
-                                //color: Colors.black87,
-                              ),
-                              trailing: rights.openGroupSettings
-                                  ? PopupMenuButton<int>(
-                                      onSelected: (value) {},
-                                      icon: Icon(
-                                        Icons.more_vert,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                          value: 1,
-                                          child: GestureDetector(
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.delete_forever,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  'Delete group',
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            onTap: () async {
-                                              if (rights.openGroupSettings) {
-                                                Navigator.of(context).pop();
-                                                _showAlertDialog(
-                                                    context, index);
-                                              } else {
-                                                pessimisticToast(
-                                                    "You don't have rights for this action.",
-                                                    1);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 2,
-                                          child: GestureDetector(
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.settings,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Text(
-                                                  'Group settings',
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context).pop();
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PermissionsPage(
-                                                    path: const [],
-                                                    permissionEntity:
-                                                        permissionEntitites[
-                                                            index],
-                                                    permissionableObject:
-                                                        PermissionableObject
-                                                            .fromGroup(
-                                                      _groupList[index],
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                      offset: const Offset(0, 50),
-                                      color: Theme.of(context).backgroundColor,
-                                      elevation: 3,
-                                    )
-                                  : IconButton(
-                                      icon: Icon(
-                                        rights.addFolders
-                                            ? Icons.edit
-                                            : Icons.remove_red_eye_outlined,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      onPressed: () {
-                                        if (!rights.addFolders) {
-                                          if (permissionEntitites[index]
-                                              .password
-                                              .isEmpty) {
-                                            pessimisticToast(
-                                                "Only creator can invite you to manage this group.",
-                                                1);
-                                            return;
-                                          }
-                                          showPermissionDialog(
-                                              permissionEntitites[index],
-                                              PermissionableObject.fromGroup(
-                                                  _groupList[index]),
-                                              [],
-                                              context);
-                                        } else {
-                                          openGroup(index,
-                                              permissionEntitites[index]);
-                                        }
-                                      },
-                                    ),
-                              onTap: () {
-                                if (rights.seeFolders) {
-                                  openGroup(index, permissionEntitites[index]);
-                                } else {
-                                  pessimisticToast(
-                                      "You don't have rights for this action.",
-                                      1);
-                                }
-                              },
-                            ),
-                          )
-                        : const SizedBox(
-                            height: 80,
-                          );
+                    return rights.openGroupSettings;
                   },
-                );
-              } else {
-                return CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                );
-              }
-            },
-          ),
-        ),
+                  readactorCondition: (index) {
+                    RightsEntity rights =
+                        checkRightsForGroup(_groupList[index]);
+                    return rights.addFolders;
+                  },
+                  onOpen: (index) {
+                    RightsEntity rights =
+                        checkRightsForGroup(_groupList[index]);
+                    if (rights.seeFolders) {
+                      openGroup(index, permissionEntitites[index]);
+                    } else {
+                      pessimisticToast(
+                          "You don't have rights for this action.", 1);
+                    }
+                  },
+                  onDelete: (index) {
+                    RightsEntity rights =
+                        checkRightsForGroup(_groupList[index]);
+                    if (rights.openGroupSettings) {
+                      showVladanchik(context, _groupList[index].groupName, () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: this.context,
+                          builder: (context) {
+                            return ActionProgress(parentContext: this.context);
+                          },
+                        );
+                        _removeGroup(_groupList[index]).then((value) {
+                          Navigator.of(this.context).pop();
+                        });
+                      });
+                    } else {
+                      pessimisticToast(
+                          "You don't have rights for this action.", 1);
+                    }
+                  },
+                  onOpenSettings: (index) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PermissionsPage(
+                          path: const [],
+                          permissionEntity: permissionEntitites[index],
+                          permissionableObject:
+                              PermissionableObject.fromGroup(_groupList[index]),
+                        ),
+                      ),
+                    );
+                  },
+                  onEyePressed: (index) {
+                    RightsEntity rights =
+                        checkRightsForGroup(_groupList[index]);
+                    if (!rights.addFolders) {
+                      if (permissionEntitites[index].password.isEmpty) {
+                        pessimisticToast(
+                            "Only creator can invite you to manage this group.",
+                            1);
+                      } else {
+                        showPermissionDialog(
+                            permissionEntitites[index],
+                            PermissionableObject.fromGroup(_groupList[index]),
+                            [],
+                            context);
+                      }
+                    }
+                  });
+            } else {
+              return ActionProgress(parentContext: this.context);
+            }
+          },
+        )),
         floatingActionButton: FloatingActionButton(
           heroTag: "groups page",
           onPressed: () {

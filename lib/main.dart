@@ -8,20 +8,19 @@ import 'firebase/firebase_options.dart';
 import 'pages/hello_page.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-      loadAppFirebase();
-      runApp(EasyDynamicThemeWidget(
-        child: const InnoStudyApp(),
-      ));
-    },
-    ((error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)),
-  );
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    loadAppFirebase();
+    runApp(EasyDynamicThemeWidget(
+      child: const InnoStudyApp(),
+    ));
+  },
+      ((error, stack) =>
+          FirebaseCrashlytics.instance.recordError(error, stack)));
 }
 
 class InnoStudyApp extends StatelessWidget {
