@@ -2,8 +2,8 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'consumer.dart';
-import 'package:work/info_page.dart';
+import '../utils/consumer.dart';
+import 'package:work/pages/info_page.dart';
 
 int selectedTheme = 0;
 

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'firebase/additional_firebase_functions.dart';
-import 'inno_file.dart';
-import 'folder.dart';
-import 'group.dart';
+import 'additional_firebase_functions.dart';
+import '../core/inno_file.dart';
+import '../core/folder.dart';
+import '../core/group.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 late FirebaseFirestore appFirebase;

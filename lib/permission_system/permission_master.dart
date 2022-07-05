@@ -1,9 +1,9 @@
 //This module helps to understand the system which rights current user have
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:work/folder.dart';
-import 'package:work/group.dart';
-import 'package:work/inno_file.dart';
+import 'package:work/core/folder.dart';
+import 'package:work/core/group.dart';
+import 'package:work/core/inno_file.dart';
 
 ///Class contains the rights that user have
 class RightsEntity {

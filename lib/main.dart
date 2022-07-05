@@ -3,9 +3,9 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:work/firebase_functions.dart';
-import 'firebase_options.dart';
-import 'hello_page.dart';
+import 'package:work/firebase/firebase_functions.dart';
+import 'firebase/firebase_options.dart';
+import 'pages/hello_page.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(

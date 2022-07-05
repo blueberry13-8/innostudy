@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work/permission_system/permissions_functions.dart';
-import 'package:work/pessimistic_toast.dart';
-import 'firebase_functions.dart';
+import 'package:work/utils/pessimistic_toast.dart';
+import '../firebase/firebase_functions.dart';
 import 'groups_page.dart';
-import 'consumer.dart';
+import '../utils/consumer.dart';
 
 class HelloPage extends StatefulWidget {
   const HelloPage({Key? key}) : super(key: key);

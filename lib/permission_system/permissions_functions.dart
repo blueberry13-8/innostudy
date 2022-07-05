@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:work/folder.dart';
-import 'package:work/group.dart';
-import 'package:work/inno_file.dart';
+import 'package:work/core/folder.dart';
+import 'package:work/core/group.dart';
+import 'package:work/core/inno_file.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 
 import 'permission_object.dart';

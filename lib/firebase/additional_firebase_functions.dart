@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import '../folder.dart';
-import '../group.dart';
-import '../inno_file.dart';
+import '../core/folder.dart';
+import '../core/group.dart';
+import '../core/inno_file.dart';
 
 Future<void> addFolder(Group group, Folder newFolder, List<Folder> path) async {
   var database = FirebaseFirestore.instance;

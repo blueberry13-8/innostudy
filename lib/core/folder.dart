@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'group.dart';
 import 'inno_file.dart';
-import 'permission_system/permissions_entity.dart';
+import '../permission_system/permissions_entity.dart';
 
 ///Class that represent all information about folder in application
 class Folder {

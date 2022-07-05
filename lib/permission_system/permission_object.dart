@@ -1,6 +1,6 @@
-import 'package:work/folder.dart';
-import 'package:work/group.dart';
-import 'package:work/inno_file.dart';
+import 'package:work/core/folder.dart';
+import 'package:work/core/group.dart';
+import 'package:work/core/inno_file.dart';
 
 enum PermissionableType { group, folder, file }
 

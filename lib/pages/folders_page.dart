@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:work/widgets/switch.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'files_page.dart';
-import 'folder.dart';
-import 'group.dart';
-import 'firebase_functions.dart';
-import 'firebase/additional_firebase_functions.dart';
-import 'permission_system/permission_dialog.dart';
-import 'permission_system/permissions_entity.dart';
-import 'permission_system/permissions_functions.dart';
-import 'permission_system/permissions_page.dart';
-import 'pessimistic_toast.dart';
-import 'permission_system/permission_object.dart';
+import '../core/folder.dart';
+import '../core/group.dart';
+import '../firebase/firebase_functions.dart';
+import '../firebase/additional_firebase_functions.dart';
+import '../permission_system/permission_dialog.dart';
+import '../permission_system/permissions_entity.dart';
+import '../permission_system/permissions_functions.dart';
+import '../permission_system/permissions_page.dart';
+import '../utils/pessimistic_toast.dart';
+import '../permission_system/permission_object.dart';
 
 ///Widget that represent folders page
 class FoldersPage extends StatefulWidget {

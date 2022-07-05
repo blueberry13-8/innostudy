@@ -6,13 +6,13 @@ import 'package:work/permission_system/permission_master.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
-import 'package:work/pessimistic_toast.dart';
-import 'package:work/settings_page.dart';
+import 'package:work/utils/pessimistic_toast.dart';
+import 'package:work/pages/settings_page.dart';
 import 'folders_page.dart';
-import 'group.dart';
-import 'firebase_functions.dart';
+import '../core/group.dart';
+import '../firebase/firebase_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'permission_system/permission_object.dart';
+import '../permission_system/permission_object.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {

@@ -3,22 +3,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:work/group.dart';
-import 'firebase/additional_firebase_functions.dart';
+import 'package:work/core/group.dart';
+import '../firebase/additional_firebase_functions.dart';
 import 'package:work/permission_system/permission_master.dart';
-import 'firebase_functions.dart';
-import 'inno_file.dart';
-import 'folder.dart';
+import '../firebase/firebase_functions.dart';
+import '../core/inno_file.dart';
+import '../core/folder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'dart:io';
 
-import 'permission_system/permission_dialog.dart';
-import 'permission_system/permissions_entity.dart';
-import 'permission_system/permissions_functions.dart';
-import 'permission_system/permissions_page.dart';
-import 'pessimistic_toast.dart';
-import 'permission_system/permission_object.dart';
+import '../permission_system/permission_dialog.dart';
+import '../permission_system/permissions_entity.dart';
+import '../permission_system/permissions_functions.dart';
+import '../permission_system/permissions_page.dart';
+import '../utils/pessimistic_toast.dart';
+import '../permission_system/permission_object.dart';
 
 ///Widget that represent folders page
 class FilesPage extends StatefulWidget {
