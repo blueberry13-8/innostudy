@@ -26,9 +26,9 @@ class _InfoPageState extends State<InfoPage> {
         child: PageView(
           controller: controller,
           children: <Widget>[
-            PatricularInfo('InnoStudy App', 'assets/texts/inno_study_app.txt'),
-            PatricularInfo('Structure', 'assets/texts/structure.txt'),
-            PatricularInfo(
+            ParticularInfo('InnoStudy App', 'assets/texts/inno_study_app.txt'),
+            ParticularInfo('Structure', 'assets/texts/structure.txt'),
+            ParticularInfo(
                 'Permissions system', 'assets/texts/permission_system.txt'),
           ],
         ),
@@ -49,12 +49,12 @@ class _InfoPageState extends State<InfoPage> {
   }
 }
 
-class PatricularInfo extends StatelessWidget {
+class ParticularInfo extends StatelessWidget {
   final String title;
   final String path;
-  late Future<String> data = rootBundle.loadString(path);
+  late final Future<String> data = rootBundle.loadString(path);
 
-  PatricularInfo(this.title, this.path, {Key? key}) : super(key: key);
+  ParticularInfo(this.title, this.path, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
