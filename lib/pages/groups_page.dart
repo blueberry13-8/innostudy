@@ -24,9 +24,17 @@ class GroupsPage extends StatefulWidget {
   State<GroupsPage> createState() => _GroupsPage();
 }
 
-class _GroupsPage extends State<GroupsPage> {
+class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   //List of existing groups
   late List<Group> _groupList;
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 2),
+    vsync: this,
+  )..repeat(reverse: true);
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeIn,
+  );
 
   String _lastGroupName = '';
 
@@ -66,20 +74,43 @@ class _GroupsPage extends State<GroupsPage> {
       print("${_groupList[index].groupName} is opened");
     }
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FoldersPage(
-          openedGroup: _groupList[index],
-          path: const [],
-        ),
-      ),
-    );
+        context,
+        PageRouteBuilder(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            animation =
+                CurvedAnimation(curve: Curves.decelerate, parent: animation);
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+            );
+          },
+          reverseTransitionDuration:  Duration(milliseconds: 100),
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
+            openedGroup: _groupList[index],
+            path: const [],
+          ),
+        ));
   }
 
   @override
   void initState() {
     super.initState();
     _textController.text = _lastGroupName;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
