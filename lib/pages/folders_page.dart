@@ -92,8 +92,8 @@ class _FoldersPageState extends State<FoldersPage> {
                 ),
               );
             },
-            reverseTransitionDuration:  Duration(milliseconds: 100),
-            transitionDuration: Duration(milliseconds: 200),
+            reverseTransitionDuration:  const Duration(milliseconds: 100),
+            transitionDuration: const Duration(milliseconds: 200),
             pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
               openedGroup: widget.openedGroup,
               path:newPath,
@@ -122,8 +122,8 @@ class _FoldersPageState extends State<FoldersPage> {
                 ),
               );
             },
-            reverseTransitionDuration:  Duration(milliseconds: 100),
-            transitionDuration: Duration(milliseconds: 250),
+            reverseTransitionDuration:  const Duration(milliseconds: 100),
+            transitionDuration: const Duration(milliseconds: 250),
             pageBuilder: (context, animation, secondaryAnimation) => FilesPage(
               openedGroup: widget.openedGroup,
               path:newPath,

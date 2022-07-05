@@ -28,14 +28,8 @@ class GroupsPage extends StatefulWidget {
 class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   //List of existing groups
   late List<Group> _groupList;
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 2),
-    vsync: this,
-  )..repeat(reverse: true);
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeIn,
-  );
+
+
 
   String _lastGroupName = '';
 
@@ -79,8 +73,8 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
               ),
             );
           },
-          reverseTransitionDuration:  Duration(milliseconds: 100),
-          transitionDuration: Duration(milliseconds: 250),
+          reverseTransitionDuration:  const Duration(milliseconds: 100),
+          transitionDuration: const Duration(milliseconds: 250),
           pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
             openedGroup: _groupList[index],
             path: const [],
@@ -133,8 +127,8 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                           ),
                         );
                       },
-                      reverseTransitionDuration:  Duration(milliseconds: 100),
-                      transitionDuration: Duration(milliseconds: 250),
+                      reverseTransitionDuration:  const Duration(milliseconds: 100),
+                      transitionDuration: const Duration(milliseconds: 250),
                       pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage()
                     )
                 );

@@ -1,18 +1,1 @@
-    Our app has a permission system for users and has following aspects:
-  1. All users can:
-    - See content of all created groups in app
-    - Create and manage their own group
-  2. Group creator can:
-    - Add/delete any folders/files inside created group
-    - Delete group
-    - Add other people to manage group
-  3. Manager of the group can:
-    - Add folders/files inside group
-  4. Creator of folder can:
-    - Add folders/files inside this folder
-    - Delete created folder
-    - Add other people to manage folder
-  5. Manager of folder can:
-    - Add folders/files inside this folder
-  6. Creator of file can:
-    - Delete created file
+    First screen of app is Login page. To use this app you need to register new account or log in into existing one. The main screen of our app is the screen with groups. In groups you can find shared folders and files. In the bottom of each page you can see button Add to add group/folder/file. On settings page you can find and theme mode and your login. Also here you can log out from account.
