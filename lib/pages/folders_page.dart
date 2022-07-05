@@ -123,7 +123,7 @@ class _FoldersPageState extends State<FoldersPage> {
               );
             },
             reverseTransitionDuration:  Duration(milliseconds: 100),
-            transitionDuration: Duration(milliseconds: 200),
+            transitionDuration: Duration(milliseconds: 250),
             pageBuilder: (context, animation, secondaryAnimation) => FilesPage(
               openedGroup: widget.openedGroup,
               path:newPath,

@@ -80,7 +80,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
             );
           },
           reverseTransitionDuration:  Duration(milliseconds: 100),
-          transitionDuration: Duration(milliseconds: 200),
+          transitionDuration: Duration(milliseconds: 250),
           pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
             openedGroup: _groupList[index],
             path: const [],
@@ -110,13 +110,33 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
           /// Here we can add button to change mode from light to dark and vice versa or a search button
           actions: <Widget>[
             IconButton(
+
               icon: const Icon(Icons.settings),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
+                    PageRouteBuilder(
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+
+                        var tween =
+                        Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        animation =
+                            CurvedAnimation(curve: Curves.decelerate, parent: animation);
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          ),
+                        );
+                      },
+                      reverseTransitionDuration:  Duration(milliseconds: 100),
+                      transitionDuration: Duration(milliseconds: 250),
+                      pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage()
+                    )
                 );
               },
             ),
