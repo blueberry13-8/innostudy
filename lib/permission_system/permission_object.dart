@@ -61,4 +61,15 @@ class PermissionableObject {
     }
     throw Exception("Impossible situation");
   }
+
+  String getDescription() {
+    if (type == PermissionableType.file) {
+      return _innoFile!.description;
+    } else if (type == PermissionableType.folder) {
+      return _folder!.description;
+    } else if (type == PermissionableType.group) {
+      return _group!.description;
+    }
+    throw Exception("Impossible situation");
+  }
 }

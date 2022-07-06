@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/widgets/action_progress.dart';
 import 'package:work/widgets/explorer_list_widget.dart';
-import 'package:work/widgets/switch.dart';
 import 'package:work/permission_system/permission_master.dart';
+import '../widgets/pop_up_add_object.dart';
 import '../widgets/vladislav_alert.dart';
 import 'files_page.dart';
 import '../core/folder.dart';
@@ -36,12 +35,12 @@ class _FoldersPageState extends State<FoldersPage> {
 
   final TextEditingController _textController = TextEditingController();
 
-  String _lastFolderName = '';
+  late final String _lastFolderName = ''; // mb
 
   bool withFolder = false;
 
   ///Adds new folder to widget
-  Future<void> _addFolder(Folder folder) async {
+  /*Future<void> _addFolder(Folder folder) async {
     await addFolder(widget.openedGroup, folder, widget.path);
     // setState(() {
     //   //_folderList.add(folder);
@@ -51,7 +50,7 @@ class _FoldersPageState extends State<FoldersPage> {
     //     widget.path.last.parentFolder!.folders!.add(folder);
     //   }
     // });
-  }
+  } */
 
   ///Removes folder from widget
   Future<void> _removeFolder(Folder folder) async {
@@ -102,33 +101,33 @@ class _FoldersPageState extends State<FoldersPage> {
       );
     } else {
       Navigator.push(
-        context,
-        PageRouteBuilder(
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.ease;
+          context,
+          PageRouteBuilder(
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const begin = Offset(1.0, 0.0);
+              const end = Offset.zero;
+              const curve = Curves.ease;
 
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            animation =
-                CurvedAnimation(curve: Curves.decelerate, parent: animation);
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-            );
-          },
-          reverseTransitionDuration: const Duration(milliseconds: 100),
-          transitionDuration: const Duration(milliseconds: 250),
-          pageBuilder: (context, animation, secondaryAnimation) => FilesPage(
-            openedGroup: widget.openedGroup,
-            path: newPath,
-          ),
-        ),
-      );
+              var tween =
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+              animation =
+                  CurvedAnimation(curve: Curves.decelerate, parent: animation);
+              return SlideTransition(
+                position: animation.drive(tween),
+                child: FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
+              );
+            },
+            reverseTransitionDuration: const Duration(milliseconds: 100),
+            transitionDuration: const Duration(milliseconds: 250),
+            pageBuilder: (context, animation, secondaryAnimation) => FilesPage(
+              openedGroup: widget.openedGroup,
+              path: newPath,
+            ),
+          ));
     }
   }
 
@@ -284,7 +283,7 @@ class _FoldersPageState extends State<FoldersPage> {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: "folders page",
-        onPressed: () {
+        onPressed: () async {
           if (widget.path.isEmpty &&
               !checkRightsForGroup(widget.openedGroup).addFolders) {
             pessimisticToast("You don't have rights for this action.", 1);
@@ -302,64 +301,13 @@ class _FoldersPageState extends State<FoldersPage> {
             pessimisticToast("You don't have rights for this action.", 1);
             return;
           }
-          showModalBottomSheet(
+          await showDialog(
             context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      onChanged: (value) {
-                        _lastFolderName = value;
-                      },
-                    ),
-                    FolderTypeSwitch(
-                      callback: (value) {
-                        withFolder = value;
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                      ),
-                      onPressed: () {
-                        if (_textController.text != '') {
-                          if (!withFolder) {
-                            _addFolder(Folder(
-                                folderName: _textController.text,
-                                files: [],
-                                withFolders: false,
-                                creator:
-                                    FirebaseAuth.instance.currentUser!.email!));
-                          } else {
-                            _addFolder(Folder(
-                                folderName: _textController.text,
-                                folders: [],
-                                withFolders: true,
-                                creator:
-                                    FirebaseAuth.instance.currentUser!.email!));
-                          }
-                          Navigator.pop(context);
-                          _textController.text = '';
-                          _lastFolderName = '';
-                        }
-                      },
-                      child: const Text('Add'),
-                    ),
-                  ],
-                ),
-              );
-            },
+            builder: (BuildContext context) => PopUpObject(
+              type: PermissionableType.folder,
+              parentGroup: widget.openedGroup,
+              path: widget.path,
+            ),
           );
         },
         child: const Icon(Icons.add),

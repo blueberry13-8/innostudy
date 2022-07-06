@@ -26,6 +26,8 @@ class Folder {
   //The name of the folder
   String folderName;
 
+  String description = 'undefined';
+
   //Folder permissions
   late PermissionEntity permissions;
 
@@ -36,7 +38,8 @@ class Folder {
       this.folders,
       required this.withFolders,
       this.parentFolder,
-      required this.creator}) {
+      required this.creator,
+      this.description = 'undefined'}) {
     if (!withFolders) {
       for (var file in files!) {
         file.parentFolder = this;
@@ -50,6 +53,9 @@ class Folder {
 
   factory Folder.fromJson(Map<String, dynamic> loadedJson) {
     bool nested = loadedJson['withFolders'];
+    if (loadedJson.containsKey('description') == false) {
+      loadedJson['description'] = 'undefined';
+    }
     if (!nested) {
       List<InnoFile> innoFiles = [];
       List<dynamic> notParsed = loadedJson["files"];
@@ -61,7 +67,8 @@ class Folder {
           folderName: loadedJson['folderName'],
           files: innoFiles,
           withFolders: loadedJson['withFolders'],
-          creator: loadedJson['creator']);
+          creator: loadedJson['creator'],
+          description: loadedJson['description']);
     } else {
       List<Folder> folders = [];
       List<dynamic> notParsed = loadedJson["folders"];
@@ -73,7 +80,8 @@ class Folder {
           folderName: loadedJson['folderName'],
           folders: folders,
           withFolders: loadedJson['withFolders'],
-          creator: loadedJson['creator']);
+          creator: loadedJson['creator'],
+          description: loadedJson['description']);
     }
   }
 
@@ -88,7 +96,8 @@ class Folder {
         'folderName': folderName,
         'files': notParsed,
         'withFolders': withFolders,
-        'creator': creator
+        'creator': creator,
+        'description': description,
       };
     } else {
       for (int i = 0; i < folders!.length; i++) {

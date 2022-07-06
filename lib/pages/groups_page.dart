@@ -1,21 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/pages/settings_page.dart';
 import 'package:work/permission_system/permission_dialog.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/utils/pessimistic_toast.dart';
-import 'package:work/pages/settings_page.dart';
 import 'package:work/widgets/action_progress.dart';
 import 'package:work/widgets/explorer_list_widget.dart';
-import '../widgets/vladislav_alert.dart';
-import 'folders_page.dart';
+
 import '../core/group.dart';
 import '../firebase/firebase_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../permission_system/permission_object.dart';
+import '../widgets/pop_up_add_object.dart';
+import '../widgets/vladislav_alert.dart';
+import 'folders_page.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -29,15 +30,10 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   //List of existing groups
   late List<Group> _groupList;
 
-  String _lastGroupName = '';
+  late final String _lastGroupName = '';
 
   ///Controller to get text from user for new group name
   final TextEditingController _textController = TextEditingController();
-
-  ///Adds new group to widget
-  Future<void> _addGroup(Group group) async {
-    await addGroup(group);
-  }
 
   ///Removes group from widget
   Future<void> _removeGroup(Group group) async {
@@ -234,52 +230,13 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: "groups page",
-        onPressed: () {
-          //Bottom menu for adding new groups
-          showModalBottomSheet(
+        heroTag: 'but',
+        onPressed: () async {
+          await showDialog(
             context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _textController,
-                      autofocus: true,
-                      onChanged: (value) {
-                        _lastGroupName = value;
-                      },
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                      ),
-                      onPressed: () {
-                        if (_textController.text != "") {
-                          _addGroup(Group(
-                              groupName: _textController.text,
-                              folders: [],
-                              creator:
-                                  FirebaseAuth.instance.currentUser!.email!));
-                          Navigator.pop(context);
-                          _textController.text = '';
-                          _lastGroupName = '';
-                        }
-                      },
-                      child: const Text("Add"),
-                    ),
-                  ],
-                ),
-              );
-            },
+            builder: (BuildContext context) => const PopUpObject(
+              type: PermissionableType.group,
+            ),
           );
         },
         child: const Icon(Icons.add),
