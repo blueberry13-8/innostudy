@@ -49,7 +49,6 @@ dependencies:
   fake_cloud_firestore: ^1.2.4
   easy_dynamic_theme: ^2.2.0
   universal_html: ^2.0.8
-  connectivity_plus: ^2.3.5
 
 dev_dependencies:
   flutter_test:

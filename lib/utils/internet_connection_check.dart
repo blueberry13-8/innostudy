@@ -1,33 +1,37 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-bool _isInternetListening = false;
 bool _isInternetLost = false;
+late BuildContext _mainContext;
 
-void startListeningInternet(BuildContext context) {
-  if (_isInternetListening) {
-    return;
-  }
+void setMainContext(BuildContext context) {
+  _mainContext = context;
+}
 
-  _isInternetListening = true;
-
-  Connectivity connectivity = Connectivity();
-  connectivity.onConnectivityChanged.listen((result) {
-    if (result == ConnectivityResult.none) {
-      debugPrint("Не появлюсь больше онлайн");
-      _isInternetLost = true;
-      showConnectionErrorAndCloseApp(context);
-    } else {
-      if (_isInternetLost) {
-        _isInternetLost = false;
-        Navigator.of(context).pop();
-      }
-      debugPrint("Привет Артём! Давай попьём чай");
+void checkInternet() async {
+  try {
+    await http.get(Uri.parse("https://api.chucknorris.io/jokes/random"));
+    if (_isInternetLost) {
+      _isInternetLost = false;
+      // ignore: use_build_context_synchronously
+      Navigator.of(_mainContext).pop();
     }
-  }, onError: (error) {
-    debugPrint("Ну чё там с деньгами");
-    showConnectionErrorAndCloseApp(context);
-  });
+  } catch (_) {
+    debugPrint("Не появлюсь больше онлайн");
+    if (_isInternetLost == false) {
+      _isInternetLost = true;
+      showConnectionErrorAndCloseApp(_mainContext);
+    }
+  }
+}
+
+Future<bool> checkInternetBool() async {
+  try {
+    await http.get(Uri.parse("https://api.chucknorris.io/jokes/random"));
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 void showConnectionErrorAndCloseApp(BuildContext upContext) {

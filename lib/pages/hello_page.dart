@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +25,10 @@ class _HelloPageState extends State<HelloPage> {
   @override
   void initState() {
     super.initState();
-    startListeningInternet(context);
+    setMainContext(context);
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      checkInternet();
+    });
   }
 
   @override
