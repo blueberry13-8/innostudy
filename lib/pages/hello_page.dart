@@ -26,7 +26,7 @@ class _HelloPageState extends State<HelloPage> {
   void initState() {
     super.initState();
     setMainContext(context);
-    Timer.periodic(Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
       checkInternet();
     });
   }
