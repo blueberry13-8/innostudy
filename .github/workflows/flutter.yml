@@ -36,7 +36,7 @@ jobs:
       
       # Check code format by Flutter format
       - name: formatting check
-      - run: flutter format lib --set-exit-if-changed .
+        run: flutter format lib --set-exit-if-changed .
       
       # Analyze code by flutter_lints
       - name: analyze the code
