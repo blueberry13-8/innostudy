@@ -1,21 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/pages/settings_page.dart';
 import 'package:work/permission_system/permission_dialog.dart';
 import 'package:work/permission_system/permission_master.dart';
 import 'package:work/permission_system/permissions_entity.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/permission_system/permissions_page.dart';
 import 'package:work/utils/pessimistic_toast.dart';
-import 'package:work/pages/settings_page.dart';
 import 'package:work/widgets/action_progress.dart';
 import 'package:work/widgets/explorer_list_widget.dart';
-import '../widgets/pop_up_add_object.dart';
-import '../widgets/vladislav_alert.dart';
-import 'folders_page.dart';
+
 import '../core/group.dart';
 import '../firebase/firebase_functions.dart';
 import '../permission_system/permission_object.dart';
+import '../widgets/pop_up_add_object.dart';
+import '../widgets/vladislav_alert.dart';
+import 'folders_page.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
@@ -239,7 +240,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
           );
         },
         child: const Icon(Icons.add),
-        ),
+      ),
     );
   }
 }
