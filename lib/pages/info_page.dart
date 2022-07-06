@@ -36,14 +36,29 @@ class _InfoPageState extends State<InfoPage> {
       bottomSheet: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 100),
-          child: Text(
-            'Swipe right to see more ',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 100),
+            child: GestureDetector(
+              onTap: () async {
+                if (controller.page == 2) {
+                  await controller.previousPage(
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.linear);
+                  await controller.previousPage(
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.linear);
+                } else {
+                  await controller.nextPage(
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.easeInOutSine);
+                }
+              },
+              child: Text(
+                'Swipe right to see more (or click here)',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            )),
       ),
     );
   }
