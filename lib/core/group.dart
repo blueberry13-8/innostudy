@@ -33,7 +33,7 @@ class Group {
       groupFolders.add(Folder.fromJson(json
           .decode(notParsed[i]))); // serious thing think a lot in future on it
     }
-    if (loadedJson.containsKey('description') == false){
+    if (loadedJson.containsKey('description') == false) {
       loadedJson['description'] = 'undefined';
     }
     return Group(

@@ -2,7 +2,6 @@ import 'package:work/core/folder.dart';
 import 'package:work/core/group.dart';
 import 'package:work/core/inno_file.dart';
 
-
 enum PermissionableType { group, folder, file }
 
 class PermissionableObject {
@@ -63,7 +62,7 @@ class PermissionableObject {
     throw Exception("Impossible situation");
   }
 
-  String getDescription(){
+  String getDescription() {
     if (type == PermissionableType.file) {
       return _innoFile!.description;
     } else if (type == PermissionableType.folder) {
