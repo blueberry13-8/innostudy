@@ -5,7 +5,7 @@ InnoStudy - is the application that helps students of Innopolis University with 
 ## Description
 
 Our application is the storing system for sharing abstracts, problem solutions and other stuff related to study. 
-Students can create their own groups where they can share the content <i>(video, images, documents etc.)</i> with other people.
+Students can create their own groups where they can share the content <i>(video, images, documents etc.)</i> with each other.
 
 ## Demonstration
 
