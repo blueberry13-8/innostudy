@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:work/permission_system/permissions_functions.dart';
 import 'package:work/utils/pessimistic_toast.dart';
 import '../firebase/firebase_functions.dart';
+import '../utils/internet_connection_check.dart';
 import 'groups_page.dart';
 import '../utils/consumer.dart';
 
@@ -18,6 +21,15 @@ class HelloPage extends StatefulWidget {
 class _HelloPageState extends State<HelloPage> {
   String curPass = "";
   String curNick = "";
+
+  @override
+  void initState() {
+    super.initState();
+    setMainContext(context);
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      checkInternet();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

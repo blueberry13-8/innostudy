@@ -35,30 +35,30 @@ class _InfoPageState extends State<InfoPage> {
       ),
       bottomSheet: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 100),
-            child: GestureDetector(
-              onTap: () async {
-                if (controller.page == 2) {
-                  await controller.previousPage(
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.linear);
-                  await controller.previousPage(
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.linear);
-                } else {
-                  await controller.nextPage(
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeInOutSine);
-                }
-              },
-              child: Text(
-                'Swipe right to see more (or click here)',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            )),
+        height: 60,
+        alignment: Alignment.bottomCenter,
+        child: ElevatedButton(
+          onPressed: () async {
+            if (controller.page == 2) {
+              await controller.previousPage(
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.linear);
+              await controller.previousPage(
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.linear);
+            } else {
+              await controller.nextPage(
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.easeInOutSine);
+            }
+          },
+          child: Text(
+            'Next',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -90,22 +90,33 @@ class ParticularInfo extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            Builder(
-              builder: (BuildContext context) => snapshot.hasData
-                  ? Text(
-                      snapshot.data!,
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 15,
+            Container(
+              padding: const EdgeInsets.only(
+                  top: 10, bottom: 10, left: 10, right: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).hoverColor,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              child: Builder(
+                builder: (BuildContext context) => snapshot.hasData
+                    ? Text(
+                        snapshot.data!,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 17,
+                        ),
+                      )
+                    : Text(
+                        "Something went wrong...",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 17,
+                        ),
                       ),
-                    )
-                  : Text(
-                      "Something went wrong...",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 15,
-                      ),
-                    ),
+              ),
             ),
           ],
         );

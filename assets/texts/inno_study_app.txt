@@ -1,1 +1,2 @@
-    Hi, we are glad to see you at InnoStudy App. InnoStudy - is an mobile application that helps students of Innopolis University with education.\n Our application is a storing system for sharing abstracts, problem solutions and other stuff related to study. In this app students can create groups where they can share the content like images, documents, video etc. with other students.
+    Hi, we are glad to see you at InnoStudy App. InnoStudy - is an mobile application that helps students of Innopolis University with education.
+    Our application is a storing system for sharing abstracts, problem solutions and other stuff related to study. In this app students can create groups where they can share the content like images, documents, video etc. with other students.
