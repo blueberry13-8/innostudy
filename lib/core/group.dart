@@ -8,6 +8,7 @@ class Group {
   //Name of group
   String groupName;
   String creator = 'undefined';
+  String description = 'undefined';
 
   //Permissions
   late PermissionEntity permissions;
@@ -16,7 +17,10 @@ class Group {
   List<Folder> folders;
 
   Group(
-      {required this.groupName, required this.folders, required this.creator}) {
+      {required this.groupName,
+      required this.folders,
+      required this.creator,
+      this.description = 'undefined'}) {
     for (var folder in folders) {
       folder.parentGroup = this;
     }
@@ -29,11 +33,14 @@ class Group {
       groupFolders.add(Folder.fromJson(json
           .decode(notParsed[i]))); // serious thing think a lot in future on it
     }
-
+    if (loadedJson.containsKey('description') == false){
+      loadedJson['description'] = 'undefined';
+    }
     return Group(
         groupName: loadedJson['groupName'],
         folders: groupFolders,
-        creator: loadedJson['creator']);
+        creator: loadedJson['creator'],
+        description: loadedJson['description']);
   }
 
   Map<String, dynamic> toJson() {
@@ -47,6 +54,7 @@ class Group {
       'groupName': groupName,
       'folders': notParsed,
       'creator': creator,
+      'description': description,
     };
   }
 }
