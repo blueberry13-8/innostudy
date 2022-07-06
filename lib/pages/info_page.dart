@@ -41,9 +41,11 @@ class _InfoPageState extends State<InfoPage> {
           onPressed: () async {
             if (controller.page == 2) {
               await controller.previousPage(
-                  duration: const Duration(milliseconds: 700), curve: Curves.linear);
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.linear);
               await controller.previousPage(
-                  duration: const Duration(milliseconds: 700), curve: Curves.linear);
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.linear);
             } else {
               await controller.nextPage(
                   duration: const Duration(milliseconds: 700),
