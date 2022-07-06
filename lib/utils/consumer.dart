@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-class Consumer{
+
+class Consumer {
   static User data = FirebaseAuth.instance.currentUser!;
   Consumer();
 }

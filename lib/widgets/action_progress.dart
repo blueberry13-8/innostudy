@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ActionProgress extends StatelessWidget {
-  const ActionProgress({required this.parentContext, Key? key}) : super(key: key);
+  const ActionProgress({required this.parentContext, Key? key})
+      : super(key: key);
   final BuildContext parentContext;
   @override
   Widget build(BuildContext context) {

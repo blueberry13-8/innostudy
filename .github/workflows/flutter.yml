@@ -34,6 +34,10 @@ jobs:
       - name: get dependencies
         run: flutter pub get
       
+      # Check code format by Flutter format
+      - name: formatting check
+      - run: flutter format --set-exit-if-changed .
+      
       # Analyze code by flutter_lints
       - name: analyze the code
         run: flutter analyze

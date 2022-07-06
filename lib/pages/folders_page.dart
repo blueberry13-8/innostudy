@@ -74,44 +74,44 @@ class _FoldersPageState extends State<FoldersPage> {
     if (folder.withFolders) {
       Navigator.push(
         context,
-          PageRouteBuilder(
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0);
-              const end = Offset.zero;
-              const curve = Curves.ease;
+        PageRouteBuilder(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
 
-              var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              animation =
-                  CurvedAnimation(curve: Curves.decelerate, parent: animation);
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: FadeTransition(
-                  opacity: animation,
-                  child: child,
-                ),
-              );
-            },
-            reverseTransitionDuration:  const Duration(milliseconds: 100),
-            transitionDuration: const Duration(milliseconds: 200),
-            pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
-              openedGroup: widget.openedGroup,
-              path:newPath,
-            ),
-          )
-        ,
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            animation =
+                CurvedAnimation(curve: Curves.decelerate, parent: animation);
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+            );
+          },
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          transitionDuration: const Duration(milliseconds: 200),
+          pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
+            openedGroup: widget.openedGroup,
+            path: newPath,
+          ),
+        ),
       );
     } else {
       Navigator.push(
-        context,
+          context,
           PageRouteBuilder(
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
               const begin = Offset(1.0, 0.0);
               const end = Offset.zero;
               const curve = Curves.ease;
 
               var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
               animation =
                   CurvedAnimation(curve: Curves.decelerate, parent: animation);
               return SlideTransition(
@@ -122,14 +122,13 @@ class _FoldersPageState extends State<FoldersPage> {
                 ),
               );
             },
-            reverseTransitionDuration:  const Duration(milliseconds: 100),
+            reverseTransitionDuration: const Duration(milliseconds: 100),
             transitionDuration: const Duration(milliseconds: 250),
             pageBuilder: (context, animation, secondaryAnimation) => FilesPage(
               openedGroup: widget.openedGroup,
-              path:newPath,
+              path: newPath,
             ),
-          )
-      );
+          ));
     }
   }
 

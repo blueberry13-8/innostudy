@@ -70,7 +70,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '31031967889',
     projectId: 'innostudy-df50a',
     storageBucket: 'innostudy-df50a.appspot.com',
-    iosClientId: '31031967889-17cdajvaheev1di1vu66jsnot1lpit47.apps.googleusercontent.com',
+    iosClientId:
+        '31031967889-17cdajvaheev1di1vu66jsnot1lpit47.apps.googleusercontent.com',
     iosBundleId: 'com.example.innostudy',
   );
 }
