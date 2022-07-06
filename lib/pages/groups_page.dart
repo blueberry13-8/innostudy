@@ -233,7 +233,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
         onPressed: () async {
           await showDialog(
             context: context,
-            builder: (BuildContext context) => PopUpObject(
+            builder: (BuildContext context) => const PopUpObject(
               type: PermissionableType.group,
             ),
           );
