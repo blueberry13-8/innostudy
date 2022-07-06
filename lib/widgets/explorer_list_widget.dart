@@ -28,8 +28,13 @@ class ExplorerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: listObjects.length,
+        itemCount: listObjects.length + 1,
         itemBuilder: (BuildContext context, int index) {
+          if (index == listObjects.length) {
+            return const SizedBox(
+              height: 70,
+            );
+          }
           return Card(
             elevation: 4,
             margin: const EdgeInsets.symmetric(vertical: 4),
