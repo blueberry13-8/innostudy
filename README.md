@@ -23,13 +23,22 @@ Students can create their own groups where they can share the content <i>(video,
 * Saving files in Data Base
 * File sharing
 * Groups and folders creation
+* Permission system with passwords to secure your content
+* Support of Android and Web platforms
+* Reporting crashes via Crashlytics
+* Dark and light theme
+* Beautiful animations
 
 ## Technologies used
 
-Whole application was built using [Flutter](https://flutter.dev) framework.
-To store user information we used a Authentication from [Firebase](firebase.google.com) platform.
-Furthermore, Firestore and Storage services was connected to create the file system.
-For uploading and opening files in Android we import [File Picker](https://pub.dev/packages/file_picker) and [Open File](https://pub.dev/packages/open_file) libraries to our project.
+* [Dart programming language](https://dart.dev)
+* [Flutter framework](https://flutter.dev)
+* [Firebase](https://firebase.google.com)
+  * Firestore
+  * Storage
+  * Authentication
+  * Crashlytics
+* Different flutter libraries
 
 ## Project installation for modifications
 Before project installation be sure that you have installed [Flutter](https://flutter.dev) framework
