@@ -106,9 +106,11 @@ class _SettingsPageState extends State<SettingsPage> {
                         top: 10, bottom: 5, left: 15, right: 15),
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                        color: Theme.of(context).hoverColor,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10))),
+                      color: Theme.of(context).hoverColor,
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
                     child: Column(
                       children: [
                         Container(
