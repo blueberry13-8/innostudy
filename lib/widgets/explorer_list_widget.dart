@@ -47,7 +47,10 @@ class ExplorerList extends StatelessWidget {
             },
             child: Card(
               elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 4),
+              margin: const EdgeInsets.symmetric(
+                vertical: 4,
+                horizontal: 4,
+              ),
               child: ListTile(
                 onTap: () {
                   onOpen(index);
@@ -55,23 +58,6 @@ class ExplorerList extends StatelessWidget {
                 title: Text(
                   listObjects[index].getName(),
                   style: Theme.of(context).textTheme.bodyText1,
-                ),
-                subtitle: Container(
-                  margin: const EdgeInsets.only(top: 3),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).focusColor,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(7),
-                    ),
-                  ),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-                    child: Text(
-                      listObjects[index].getCreator(),
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                  ),
                 ),
                 leading: Icon(
                   objectIcon,
