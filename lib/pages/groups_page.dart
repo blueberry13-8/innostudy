@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work/pages/settings_page.dart';
@@ -100,6 +101,11 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
+              if (EasyDynamicTheme.of(context).themeMode == ThemeMode.light) {
+                selectedTheme = 1;
+              } else if (EasyDynamicTheme.of(context).themeMode == ThemeMode.dark) {
+                selectedTheme = 2;
+              }
               Navigator.push(
                   context,
                   PageRouteBuilder(
