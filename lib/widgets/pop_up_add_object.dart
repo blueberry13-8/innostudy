@@ -36,9 +36,10 @@ class _PopUpObjectState extends State<PopUpObject> {
     return Hero(
         tag: 'but',
         child: AlertDialog(
-            backgroundColor: Theme.of(context).focusColor,
+            backgroundColor: Theme.of(context).hoverColor,
             shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15.0))),
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+            ),
             title: Column(
               children: [
                 Text(
@@ -50,17 +51,12 @@ class _PopUpObjectState extends State<PopUpObject> {
                 ),
                 TextField(
                   onChanged: (String value) => name = value,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
                 const SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  height: 10,
-                  color: Theme.of(context).backgroundColor,
-                  thickness: 1,
-                ),
-                const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Text(
                   'Enter description',
@@ -68,14 +64,14 @@ class _PopUpObjectState extends State<PopUpObject> {
                 ),
                 TextField(
                   onChanged: (String value) => description = value,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
                 const SizedBox(
                   height: 15,
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).backgroundColor,
-                  ),
                   onPressed: () async {
                     if (name != '') {
                       if (widget.type == PermissionableType.group) {
