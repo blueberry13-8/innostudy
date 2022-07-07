@@ -78,7 +78,11 @@ class ParticularInfo extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         return ListView(
           children: [
-            Center(
+            Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(
+                vertical: 10,
+              ),
               child: Text(
                 title,
                 style: TextStyle(
@@ -86,9 +90,6 @@ class ParticularInfo extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
             ),
             Container(
               padding: const EdgeInsets.only(

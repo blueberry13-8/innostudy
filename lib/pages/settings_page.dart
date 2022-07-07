@@ -157,29 +157,34 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 250,
-                  ),
-                  ElevatedButton(
-                    child: Text(
-                      'About this app',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const InfoPage(),
-                        ),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+      bottomSheet: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        height: 80,
+        padding: const EdgeInsets.only(
+          bottom: 30,
+        ),
+        alignment: Alignment.bottomCenter,
+        child: ElevatedButton(
+          child: Text(
+            'About this app',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const InfoPage(),
+              ),
+            );
+          },
         ),
       ),
     );

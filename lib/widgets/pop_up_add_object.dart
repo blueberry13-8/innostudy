@@ -42,7 +42,6 @@ class _PopUpObjectState extends State<PopUpObject> {
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15.0))),
             title: Column(
-
               children: [
                 Text(
                   'Enter name',
@@ -85,43 +84,30 @@ class _PopUpObjectState extends State<PopUpObject> {
                         addGroup(Group(
                                 groupName: name,
                                 description: description,
+                                files:[],
                                 folders: [],
+                                folderName: name,
+                                description: description,
+                                withFolders: withFolders,
                                 creator:
-                                    FirebaseAuth.instance.currentUser!.email!))
-                            .then((value) => replaceLastRoute(context));
-                      } else if (widget.type == PermissionableType.folder) {
-                        addFolder(
-                                widget.parentGroup!,
-                                Folder(
-                                    files: [],
-                                    folders: [],
-                                    folderName: name,
-                                    description: description,
-                                    withFolders: withFolders,
-                                    creator: FirebaseAuth
-                                        .instance.currentUser!.email!),
-                                widget.path!)
-                            .then((value) => replaceLastRoute(context));
-                      }
-                    } else {
-                      pessimisticToast('Name can not be empty', 3);
-                    }
-                  },
-                  child: Text(
-                    "Add",
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Builder(builder: (BuildContext context) {
-                  if (widget.type == PermissionableType.folder) {
-                    return FolderTypeSwitch(
-                      callback: (value) => withFolders = value,
+                                    FirebaseAuth.instance.currentUser!.email!),
+                            widget.path!)
+                        .then(
+                      (value) => replaceLastRoute(context),
                     );
-                  } else {
-                    return Container();
                   }
-                }),
-              ],
-            )));
+                } else {
+                  pessimisticToast('Name can not be empty', 3);
+                }
+              },
+              child: Text(
+                "Add",
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

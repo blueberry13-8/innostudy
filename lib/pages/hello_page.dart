@@ -21,6 +21,7 @@ class HelloPage extends StatefulWidget {
 class _HelloPageState extends State<HelloPage> {
   String curPass = "";
   String curNick = "";
+  bool _newbie = false;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _HelloPageState extends State<HelloPage> {
               return const Text("Error");
             } else if (snapshot.hasData) {
               Consumer();
-              return const GroupsPage();
+              return GroupsPage(openTutorial: _newbie);
             } else {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -140,6 +141,7 @@ class _HelloPageState extends State<HelloPage> {
                                 email: curNick,
                                 password: curPass,
                               );
+                              _newbie = true;
                               await addRegisteredUser(curNick);
                             } on FirebaseAuthException catch (e) {
                               if (e.code == 'weak-password') {

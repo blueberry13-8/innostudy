@@ -67,9 +67,6 @@ class _PermissionsPage extends State<PermissionsPage> {
               Expanded(
                 flex: 2,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: const Color(0xFFBCAAA4),
-                  ),
                   onPressed: () {
                     if (_userList.contains(controller.text)) {
                       widget.permissionEntity.owners.add(controller.text);
@@ -80,7 +77,12 @@ class _PermissionsPage extends State<PermissionsPage> {
                       pessimisticToast("This user does not exists", 1);
                     }
                   },
-                  child: const Text("ADD"),
+                  child: Text(
+                    'Add',
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -113,10 +115,17 @@ class _PermissionsPage extends State<PermissionsPage> {
             }),
           ),
         ),
-        Expanded(
-          flex: 1,
+        Container(
+          margin: const EdgeInsets.only(
+            bottom: 15,
+          ),
           child: ElevatedButton(
-            child: const Text("Set password"),
+            child: Text(
+              'Set password',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
             onPressed: () {
               showDialog(
                 context: context,

@@ -3,6 +3,7 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:work/firebase/firebase_functions.dart';
 import 'package:work/pages/missing_internet_connection.dart';
 import 'package:work/utils/internet_connection_check.dart';
@@ -10,6 +11,9 @@ import 'firebase/firebase_options.dart';
 import 'pages/hello_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   if (!(await checkInternetBool())) {
     runApp(const MissingInternetConnection());
     return;
@@ -40,21 +44,27 @@ class InnoStudyApp extends StatelessWidget {
     return MaterialApp(
       title: 'InnoStudy',
       theme: ThemeData(
-        hoverColor: Colors.lightGreen[100],
-        focusColor: Colors.lime[200],
-        scaffoldBackgroundColor: Colors.white,
-        backgroundColor: Colors.white,
+        hoverColor: const Color(0xffdbe6ff),
+        focusColor: const Color(0xffABC4FF),
+        scaffoldBackgroundColor: const Color(0xffEDF2FB),
+        backgroundColor: const Color(0xffEDF2FB),
         primaryColor: Colors.black87,
-        appBarTheme: AppBarTheme(
-          color: Colors.lightGreen[300],
-          foregroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          color: Color(0xff85c0ff),
+          foregroundColor: Colors.black87, //Color(0xffEDF2FB),
+          titleTextStyle: TextStyle(
+            color: Colors.black87,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.lightGreen[300],
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xffABC4FF),
+          foregroundColor: Colors.black87,
         ),
         brightness: Brightness.light,
-        cardTheme: CardTheme(
-          color: Colors.yellow[100],
+        cardTheme: const CardTheme(
+          color: Color(0xffCCDBFD),
         ),
         iconTheme: const IconThemeData(
           color: Colors.black87,
@@ -68,7 +78,7 @@ class InnoStudyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Colors.lime[200],
+            primary: const Color(0xffABC4FF),
           ),
         ),
       ),
