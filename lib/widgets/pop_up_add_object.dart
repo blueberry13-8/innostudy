@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:work/firebase/additional_firebase_functions.dart';
-import 'package:work/widgets/switch.dart';
 import '../core/folder.dart';
 import '../core/group.dart';
 import '../firebase/firebase_functions.dart';
@@ -84,14 +82,9 @@ class _PopUpObjectState extends State<PopUpObject> {
                         addGroup(Group(
                                 groupName: name,
                                 description: description,
-                                files:[],
                                 folders: [],
-                                folderName: name,
-                                description: description,
-                                withFolders: withFolders,
                                 creator:
-                                    FirebaseAuth.instance.currentUser!.email!),
-                            widget.path!)
+                                    FirebaseAuth.instance.currentUser!.email!),)
                         .then(
                       (value) => replaceLastRoute(context),
                     );
