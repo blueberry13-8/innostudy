@@ -10,18 +10,14 @@ Students can create their own groups where they can share the content <i>(video,
 ## Demonstration
 
 <p>Starting page:</p>
-<img src="./screens/start_screen.jpg" width="230" height="400">
 <p>Groups page:</p>
-<img src="./screens/groups_screen.jpg" width="230" height="400">
 <p>Folders page:</p>
-<img src="./screens/folders_screen.jpg" width="230" height="400">
 <p>Files page:</p>
-<img src="./screens/files_screen.jpg" width="230" height="400">
 
 ## List of features
 * Accounts for users
-* Saving files in Data Base
-* File sharing
+* Saving files in Firebase Storage
+* Files sharing
 * Groups and folders creation
 * Permission system with passwords to secure your content
 * Support of Android and Web platforms

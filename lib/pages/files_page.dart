@@ -90,7 +90,7 @@ class _FilesPageState extends State<FilesPage> {
               }
               return ExplorerList(
                 listObjects: listObjects,
-                objectIcon: Icons.group,
+                objectIcon: Icons.file_present,
                 openSettingsCondition: (index) {
                   RightsEntity rights = checkRightsForFile(_filesList[index]);
                   return rights.openFileSettings;
