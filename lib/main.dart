@@ -92,6 +92,11 @@ class InnoStudyApp extends StatelessWidget {
           color: Color.fromRGBO(45, 80, 115, 1.0),
           shadowColor: Color.fromRGBO(50, 85, 120, 1.0),
           foregroundColor: Colors.white,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Color.fromRGBO(45, 80, 115, 1.0),
