@@ -103,7 +103,8 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
             onPressed: () {
               if (EasyDynamicTheme.of(context).themeMode == ThemeMode.light) {
                 selectedTheme = 1;
-              } else if (EasyDynamicTheme.of(context).themeMode == ThemeMode.dark) {
+              } else if (EasyDynamicTheme.of(context).themeMode ==
+                  ThemeMode.dark) {
                 selectedTheme = 2;
               }
               Navigator.push(
