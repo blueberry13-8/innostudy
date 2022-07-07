@@ -41,8 +41,9 @@ class ExplorerList extends StatelessWidget {
             showDialog(
               context: context,
               builder: (BuildContext context) => PopUpWindow(
-                  creator: listObjects[index].getCreator(),
-                  description: listObjects[index].getDescription()),
+                creator: listObjects[index].getCreator(),
+                description: listObjects[index].getDescription(),
+              ),
             );
           },
           child: Card(
