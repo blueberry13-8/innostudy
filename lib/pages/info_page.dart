@@ -78,10 +78,11 @@ class ParticularInfo extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         return ListView(
           children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Center(
+            Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(
+                vertical: 10,
+              ),
               child: Text(
                 title,
                 style: TextStyle(
@@ -90,37 +91,32 @@ class ParticularInfo extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    top: 10, bottom: 10, left: 10, right: 10),
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).hoverColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
-                  ),
+            Container(
+              padding: const EdgeInsets.only(
+                  top: 10, bottom: 10, left: 10, right: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).hoverColor,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(10),
                 ),
-                child: Builder(
-                  builder: (BuildContext context) => snapshot.hasData
-                      ? Text(
-                          snapshot.data!,
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 17,
-                          ),
-                        )
-                      : Text(
-                          "Something went wrong...",
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 17,
-                          ),
+              ),
+              child: Builder(
+                builder: (BuildContext context) => snapshot.hasData
+                    ? Text(
+                        snapshot.data!,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 17,
                         ),
-                ),
+                      )
+                    : Text(
+                        "Something went wrong...",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 17,
+                        ),
+                      ),
               ),
             ),
           ],
