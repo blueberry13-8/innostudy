@@ -55,7 +55,7 @@ void showConnectionErrorAndCloseApp(BuildContext upContext) {
           ),
         ),
       );
-      return alertDialog;
+      return WillPopScope(child: alertDialog, onWillPop: () async => false);
     },
   );
 }
