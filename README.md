@@ -11,23 +11,28 @@ Students can create their own groups where they can share the content <i>(video,
 
 <p>Starting page:</p>
 <p float="left">
- <img src="./screens/start_light.jpg" width="230" height="470">
- <img src="./screens/start_dark.jpg" width="230" height="470">
+ <img src="./screens/start_light.jpg" width="230" height="490">
+ <img src="./screens/start_dark.jpg" width="230" height="490">
 </p>
 <p>Groups page:</p>
 <p float="left">
- <img src="./screens/groups_light.jpg" width="230" height="470">
- <img src="./screens/groups_dark.jpg" width="230" height="470">
+ <img src="./screens/groups_light.jpg" width="230" height="490">
+ <img src="./screens/groups_dark.jpg" width="230" height="490">
 </p>
 <p>Folders page:</p>
 <p float="left">
- <img src="./screens/folders_light.jpg" width="230" height="470">
- <img src="./screens/folders_dark.jpg" width="230" height="470">
+ <img src="./screens/folders_light.jpg" width="230" height="490">
+ <img src="./screens/folders_dark.jpg" width="230" height="490">
 </p>
 <p>Files page:</p>
 <p float="left">
- <img src="./screens/files_light.jpg" width="230" height="470">
- <img src="./screens/files_dark.jpg" width="230" height="470">
+ <img src="./screens/files_light.jpg" width="230" height="490">
+ <img src="./screens/files_dark.jpg" width="230" height="490">
+</p>
+<p>Settings page:</p>
+<p float="left">
+ <img src="./screens/settings_light.jpg" width="230" height="490">
+ <img src="./screens/settings_dark.jpg" width="230" height="490">
 </p>
 
 ## List of features
