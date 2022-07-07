@@ -40,21 +40,27 @@ class InnoStudyApp extends StatelessWidget {
     return MaterialApp(
       title: 'InnoStudy',
       theme: ThemeData(
-        hoverColor: Colors.lightGreen[100],
-        focusColor: Colors.lime[200],
+        hoverColor: const Color(0xffd1f8ca),
+        focusColor: const Color(0xff73e17c),
         scaffoldBackgroundColor: Colors.white,
         backgroundColor: Colors.white,
         primaryColor: Colors.black87,
-        appBarTheme: AppBarTheme(
-          color: Colors.lightGreen[300],
-          foregroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          color: Color(0xff73e17c),//0xff76C893),
+          foregroundColor: Colors.black87,
+          titleTextStyle: TextStyle(
+            color: Colors.black87,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.lightGreen[300],
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xff73e17c),
+          foregroundColor: Colors.black87,
         ),
         brightness: Brightness.light,
-        cardTheme: CardTheme(
-          color: Colors.yellow[100],
+        cardTheme: const CardTheme(
+          color: Color(0xffd1f8ca), //Color(0xffd3ffe0),
         ),
         iconTheme: const IconThemeData(
           color: Colors.black87,
@@ -62,13 +68,14 @@ class InnoStudyApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(
           bodyText1: TextStyle(
+            //backgroundColor: Color(0xff82c49d),
             color: Colors.black,
             fontSize: 18,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Colors.lime[200],
+            primary: const Color(0xff73e17c),
           ),
         ),
       ),
@@ -111,3 +118,44 @@ class InnoStudyApp extends StatelessWidget {
     );
   }
 }
+/*
+theme: ThemeData(
+        hoverColor: const Color(0xffE2EAFC),
+        focusColor: const Color(0xffCCDBFD),
+        scaffoldBackgroundColor: const Color(0xffEDF2FB),
+        backgroundColor: const Color(0xffEDF2FB),
+        primaryColor: Colors.black87,
+        appBarTheme: const AppBarTheme(
+          color: Color(0xff85c0ff),
+          foregroundColor: Colors.black87,//Color(0xffEDF2FB),
+          titleTextStyle: TextStyle(
+            color: Colors.black87,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xffABC4FF),
+          foregroundColor: Colors.black87,
+        ),
+        brightness: Brightness.light,
+        cardTheme: const CardTheme(
+          color: Color(0xffCCDBFD),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.black87,
+          size: 25,
+        ),
+        textTheme: const TextTheme(
+          bodyText1: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xffABC4FF),
+          ),
+        ),
+      ),
+ */

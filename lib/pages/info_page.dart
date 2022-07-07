@@ -93,32 +93,34 @@ class ParticularInfo extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Container(
-              padding: const EdgeInsets.only(
-                  top: 10, bottom: 10, left: 10, right: 10),
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).hoverColor,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
+            SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.only(
+                    top: 10, bottom: 10, left: 10, right: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).hoverColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(10),
+                  ),
                 ),
-              ),
-              child: Builder(
-                builder: (BuildContext context) => snapshot.hasData
-                    ? Text(
-                        snapshot.data!,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 17,
+                child: Builder(
+                  builder: (BuildContext context) => snapshot.hasData
+                      ? Text(
+                          snapshot.data!,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 17,
+                          ),
+                        )
+                      : Text(
+                          "Something went wrong...",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 17,
+                          ),
                         ),
-                      )
-                    : Text(
-                        "Something went wrong...",
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 17,
-                        ),
-                      ),
+                ),
               ),
             ),
           ],
