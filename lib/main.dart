@@ -3,6 +3,7 @@ import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:work/firebase/firebase_functions.dart';
 import 'package:work/pages/missing_internet_connection.dart';
 import 'package:work/utils/internet_connection_check.dart';
@@ -10,6 +11,9 @@ import 'firebase/firebase_options.dart';
 import 'pages/hello_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   if (!(await checkInternetBool())) {
     runApp(const MissingInternetConnection());
     return;
@@ -70,7 +74,7 @@ class InnoStudyApp extends StatelessWidget {
           bodyText1: TextStyle(
             //backgroundColor: Color(0xff82c49d),
             color: Colors.black,
-            fontSize: 18,
+            fontSize: 20,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
