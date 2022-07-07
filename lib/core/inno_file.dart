@@ -15,18 +15,18 @@ class InnoFile {
 
   //The creator of file
   String creator = "undefined";
-  String description = "undefined";
+  String description = "";
 
   InnoFile(
       {this.realFile,
       required this.fileName,
       required this.creator,
       this.parentFolder,
-      this.description = 'undefined'});
+      this.description = ''});
 
   factory InnoFile.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('description') == false) {
-      json['description'] = 'undefined';
+      json['description'] = '';
     }
     return InnoFile(
         fileName: json['fileName'],
