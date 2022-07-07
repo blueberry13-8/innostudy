@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:work/firebase/additional_firebase_functions.dart';
+import 'package:work/widgets/switch.dart';
+
 import '../core/folder.dart';
 import '../core/group.dart';
 import '../firebase/firebase_functions.dart';
@@ -35,9 +38,9 @@ class _PopUpObjectState extends State<PopUpObject> {
         tag: 'but',
         child: AlertDialog(
           scrollable: true,
-          alignment: Alignment.center,
-            backgroundColor: Theme.of(context).focusColor,
-            shape: const RoundedRectangleBorder(
+            backgroundColor: Theme.of(context).hoverColor,
+
+        shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15.0))),
             title: Column(
               children: [
@@ -74,33 +77,51 @@ class _PopUpObjectState extends State<PopUpObject> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).backgroundColor,
+                    primary: Theme.of(context).focusColor,
                   ),
                   onPressed: () async {
                     if (name != '') {
                       if (widget.type == PermissionableType.group) {
                         addGroup(Group(
-                                groupName: name,
-                                description: description,
+                            groupName: name,
+                            description: description,
+                            folders: [],
+                            creator:
+                            FirebaseAuth.instance.currentUser!.email!))
+                            .then((value) => replaceLastRoute(context));
+                      } else if (widget.type == PermissionableType.folder) {
+                        addFolder(
+                            widget.parentGroup!,
+                            Folder(
+                                files: [],
                                 folders: [],
-                                creator:
-                                    FirebaseAuth.instance.currentUser!.email!),)
-                        .then(
-                      (value) => replaceLastRoute(context),
+                                folderName: name,
+                                description: description,
+                                withFolders: withFolders,
+                                creator: FirebaseAuth
+                                    .instance.currentUser!.email!),
+                            widget.path!)
+                            .then((value) => replaceLastRoute(context));
+                      }
+                    } else {
+                      pessimisticToast('Name can not be empty', 3);
+                    }
+                  },
+                  child: Text(
+                    "Add",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ),
+                Builder(builder: (BuildContext context) {
+                  if (widget.type == PermissionableType.folder) {
+                    return FolderTypeSwitch(
+                      callback: (value) => withFolders = value,
                     );
+                  } else {
+                    return Container();
                   }
-                } else {
-                  pessimisticToast('Name can not be empty', 3);
-                }
-              },
-              child: Text(
-                "Add",
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                }),
+              ],
+            )));
   }
 }
