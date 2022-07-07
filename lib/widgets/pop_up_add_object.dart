@@ -23,7 +23,7 @@ class PopUpObject extends StatefulWidget {
 class _PopUpObjectState extends State<PopUpObject> {
   late String name = '';
 
-  late String description = 'undefined';
+  late String description = '';
 
   bool withFolders = false;
 

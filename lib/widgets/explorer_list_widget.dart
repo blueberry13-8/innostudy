@@ -29,123 +29,124 @@ class ExplorerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: listObjects.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == listObjects.length) {
-            return const SizedBox(
-              height: 70,
+      itemCount: listObjects.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == listObjects.length) {
+          return const SizedBox(
+            height: 70,
+          );
+        }
+        return GestureDetector(
+          onLongPress: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => PopUpWindow(
+                  creator: listObjects[index].getCreator(),
+                  description: listObjects[index].getDescription()),
             );
-          }
-          return GestureDetector(
-            onLongPress: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => PopUpWindow(
-                    creator: listObjects[index].getCreator(),
-                    description: listObjects[index].getDescription()),
-              );
-            },
-            child: Card(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(
-                vertical: 4,
-                horizontal: 4,
+          },
+          child: Card(
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(
+              vertical: 4,
+              horizontal: 4,
+            ),
+            child: ListTile(
+              onTap: () {
+                onOpen(index);
+              },
+              title: Text(
+                listObjects[index].getName(),
+                style: Theme.of(context).textTheme.bodyText1,
               ),
-              child: ListTile(
-                onTap: () {
-                  onOpen(index);
-                },
-                title: Text(
-                  listObjects[index].getName(),
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                leading: Icon(
-                  objectIcon,
-                  color: Theme.of(context).primaryColor,
-                ),
-                trailing: openSettingsCondition(index)
-                    ? PopupMenuButton<int>(
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        offset: const Offset(0, 50),
-                        color: Theme.of(context).backgroundColor,
-                        elevation: 3,
-                        onSelected: ((value) {
-                          //Navigator.of(context).pop();
-                          if (value == 1) {
-                            onDelete(index);
-                          } else if (value == 2) {
-                            onOpenSettings(index);
-                          }
-                        }),
-                        itemBuilder: (context) => [
-                              PopupMenuItem(
-                                  value: 1,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Icon(
-                                              Icons.delete_forever,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          )),
-                                      Expanded(
-                                        flex: 8,
-                                        child: Text(
-                                          'Delete',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                              PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Icon(
-                                              Icons.settings,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          )),
-                                      Expanded(
-                                        flex: 8,
-                                        child: Text(
-                                          'Privacy settings',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ))
-                            ])
-                    : IconButton(
-                        onPressed: () {
-                          onEyePressed(index);
-                        },
-                        icon: Icon(readactorCondition(index)
-                            ? Icons.edit
-                            : Icons.remove_red_eye_outlined),
+              leading: Icon(
+                objectIcon,
+                color: Theme.of(context).primaryColor,
+              ),
+              trailing: openSettingsCondition(index)
+                  ? PopupMenuButton<int>(
+                      icon: Icon(
+                        Icons.more_vert,
                         color: Theme.of(context).primaryColor,
                       ),
-              ),
+                      offset: const Offset(0, 50),
+                      color: Theme.of(context).backgroundColor,
+                      elevation: 3,
+                      onSelected: ((value) {
+                        //Navigator.of(context).pop();
+                        if (value == 1) {
+                          onDelete(index);
+                        } else if (value == 2) {
+                          onOpenSettings(index);
+                        }
+                      }),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 1,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 8,
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 2,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.settings,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 8,
+                                child: Text(
+                                  'Privacy settings',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        onEyePressed(index);
+                      },
+                      icon: Icon(readactorCondition(index)
+                          ? Icons.edit
+                          : Icons.remove_red_eye_outlined),
+                      color: Theme.of(context).primaryColor,
+                    ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
