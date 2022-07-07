@@ -61,7 +61,7 @@ class ExplorerList extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context).focusColor,
                     borderRadius: const BorderRadius.all(
-                      Radius.circular(7), //<--- border radius here
+                      Radius.circular(7),
                     ),
                   ),
                   child: Padding(

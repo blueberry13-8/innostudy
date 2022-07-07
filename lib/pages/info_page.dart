@@ -78,6 +78,7 @@ class ParticularInfo extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         return ListView(
           children: [
+            const SizedBox(height: 20,),
             Center(
               child: Text(
                 title,
@@ -88,7 +89,7 @@ class ParticularInfo extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 10,
+              height: 20,
             ),
             Container(
               padding: const EdgeInsets.only(
