@@ -95,8 +95,6 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
         elevation: 0.1,
         title: const Text('Group page'),
         centerTitle: true,
-
-        /// Here we can add button to change mode from light to dark and vice versa or a search button
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.settings),
