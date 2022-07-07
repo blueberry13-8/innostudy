@@ -50,7 +50,7 @@ class InnoStudyApp extends StatelessWidget {
         backgroundColor: Colors.white,
         primaryColor: Colors.black87,
         appBarTheme: const AppBarTheme(
-          color: Color(0xff73e17c),//0xff76C893),
+          color: Color(0xff73e17c), //0xff76C893),
           foregroundColor: Colors.black87,
           titleTextStyle: TextStyle(
             color: Colors.black87,

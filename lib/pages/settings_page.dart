@@ -166,7 +166,9 @@ class _SettingsPageState extends State<SettingsPage> {
       bottomSheet: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         height: 80,
-        padding: const EdgeInsets.only(bottom: 30,),
+        padding: const EdgeInsets.only(
+          bottom: 30,
+        ),
         alignment: Alignment.bottomCenter,
         child: ElevatedButton(
           child: Text(
