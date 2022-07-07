@@ -55,6 +55,7 @@ Students can create their own groups where they can share the content <i>(video,
   * Storage
   * Authentication
   * Crashlytics
+  * Hosting
 * Different flutter libraries
 
 ## Project installation for modifications
