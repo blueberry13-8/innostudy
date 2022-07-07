@@ -26,7 +26,7 @@ class Folder {
   //The name of the folder
   String folderName;
 
-  String description = 'undefined';
+  String description = '';
 
   //Folder permissions
   late PermissionEntity permissions;
@@ -39,7 +39,7 @@ class Folder {
       required this.withFolders,
       this.parentFolder,
       required this.creator,
-      this.description = 'undefined'}) {
+      this.description = ''}) {
     if (!withFolders) {
       for (var file in files!) {
         file.parentFolder = this;
@@ -54,7 +54,7 @@ class Folder {
   factory Folder.fromJson(Map<String, dynamic> loadedJson) {
     bool nested = loadedJson['withFolders'];
     if (loadedJson.containsKey('description') == false) {
-      loadedJson['description'] = 'undefined';
+      loadedJson['description'] = '';
     }
     if (!nested) {
       List<InnoFile> innoFiles = [];
@@ -107,7 +107,8 @@ class Folder {
         'folderName': folderName,
         'folders': notParsed,
         'withFolders': withFolders,
-        'creator': creator
+        'creator': creator,
+        'description': description,
       };
     }
   }
