@@ -10,10 +10,30 @@ Students can create their own groups where they can share the content <i>(video,
 ## Demonstration
 
 <p>Starting page:</p>
+<p float="left">
+ <img src="./screens/start_light.jpg" width="230" height="490">
+ <img src="./screens/start_dark.jpg" width="230" height="490">
+</p>
 <p>Groups page:</p>
-<img scr="./screens/groups_light.jpg" width="230" height="460">
+<p float="left">
+ <img src="./screens/groups_light.jpg" width="230" height="490">
+ <img src="./screens/groups_dark.jpg" width="230" height="490">
+</p>
 <p>Folders page:</p>
+<p float="left">
+ <img src="./screens/folders_light.jpg" width="230" height="490">
+ <img src="./screens/folders_dark.jpg" width="230" height="490">
+</p>
 <p>Files page:</p>
+<p float="left">
+ <img src="./screens/files_light.jpg" width="230" height="490">
+ <img src="./screens/files_dark.jpg" width="230" height="490">
+</p>
+<p>Settings page:</p>
+<p float="left">
+ <img src="./screens/settings_light.jpg" width="230" height="490">
+ <img src="./screens/settings_dark.jpg" width="230" height="490">
+</p>
 
 ## List of features
 * Accounts for users
@@ -57,4 +77,7 @@ flutter pub get
 Now you can do any changes and modification in project.
 
 ## Android release
-You can try InnoStudy now. Just install Android release by [this link](https://github.com/blueberry13-8/innostudy/releases/download/v1.0.1/InnoStudyApp-v1.0.1.apk).
+You can try InnoStudy now. Just install Android release by [this link](https://github.com/blueberry13-8/innostudy/releases/download/v1.1.0/app-release.apk).
+
+## Web version
+Moreover, [here](https://innostudy-df50a.web.app/#/) you can find deployed web version of our application.
