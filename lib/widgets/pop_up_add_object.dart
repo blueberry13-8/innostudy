@@ -32,60 +32,60 @@ class _PopUpObjectState extends State<PopUpObject> {
   @override
   Widget build(BuildContext context) {
     return Hero(
-        tag: 'but',
-        child: AlertDialog(
-          scrollable: true,
-          alignment: Alignment.center,
-            backgroundColor: Theme.of(context).focusColor,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15.0))),
-            title: Column(
-              children: [
-                Text(
-                  'Enter name',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                TextField(
-                  onChanged: (String value) => name = value,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Divider(
-                  height: 10,
-                  color: Theme.of(context).backgroundColor,
-                  thickness: 1,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Enter description',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                TextField(
-                  onChanged: (String value) => description = value,
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).backgroundColor,
-                  ),
-                  onPressed: () async {
-                    if (name != '') {
-                      if (widget.type == PermissionableType.group) {
-                        addGroup(Group(
-                                groupName: name,
-                                description: description,
-                                folders: [],
-                                creator:
-                                    FirebaseAuth.instance.currentUser!.email!),)
-                        .then(
+      tag: 'but',
+      child: AlertDialog(
+        scrollable: true,
+        alignment: Alignment.center,
+        backgroundColor: Theme.of(context).focusColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        title: Column(
+          children: [
+            Text(
+              'Enter name',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            TextField(
+              onChanged: (String value) => name = value,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Divider(
+              height: 10,
+              color: Theme.of(context).backgroundColor,
+              thickness: 1,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Enter description',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            TextField(
+              onChanged: (String value) => description = value,
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).backgroundColor,
+              ),
+              onPressed: () async {
+                if (name != '') {
+                  if (widget.type == PermissionableType.group) {
+                    addGroup(
+                      Group(
+                          groupName: name,
+                          description: description,
+                          folders: [],
+                          creator: FirebaseAuth.instance.currentUser!.email!),
+                    ).then(
                       (value) => replaceLastRoute(context),
                     );
                   }
