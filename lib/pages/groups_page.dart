@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_dynamic_theme/easy_dynamic_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:work/pages/info_page.dart';
 import 'package:work/pages/settings_page.dart';
 import 'package:work/permission_system/permission_dialog.dart';
 import 'package:work/permission_system/permission_master.dart';
@@ -21,7 +22,10 @@ import 'folders_page.dart';
 
 ///Widget that represent groups page
 class GroupsPage extends StatefulWidget {
-  const GroupsPage({Key? key}) : super(key: key);
+  final bool? openTutorial;
+  static bool wasAlreadyOpen = false;
+
+  const GroupsPage({Key? key, this.openTutorial}) : super(key: key);
 
   @override
   State<GroupsPage> createState() => _GroupsPage();
@@ -80,7 +84,25 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _textController.text = _lastGroupName;
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (widget.openTutorial != null &&
+            widget.openTutorial! &&
+            !GroupsPage.wasAlreadyOpen) {
+          GroupsPage.wasAlreadyOpen = true;
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) {
+                return const InfoPage();
+              },
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
