@@ -36,10 +36,13 @@ class _PopUpObjectState extends State<PopUpObject> {
     return Hero(
         tag: 'but',
         child: AlertDialog(
+          scrollable: true,
+          alignment: Alignment.center,
             backgroundColor: Theme.of(context).focusColor,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15.0))),
             title: Column(
+
               children: [
                 Text(
                   'Enter name',
