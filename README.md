@@ -11,6 +11,7 @@ Students can create their own groups where they can share the content <i>(video,
 
 <p>Starting page:</p>
 <p>Groups page:</p>
+<img scr="./screens/groups_light.jpg" width="230" height="460">
 <p>Folders page:</p>
 <p>Files page:</p>
 
