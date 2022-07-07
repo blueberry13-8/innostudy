@@ -86,14 +86,15 @@ class ExplorerList extends StatelessWidget {
                           child: Row(
                             children: [
                               Expanded(
-                                  flex: 2,
-                                  child: Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  )),
+                                flex: 2,
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.delete_forever,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
                               Expanded(
                                 flex: 8,
                                 child: Text(
