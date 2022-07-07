@@ -49,7 +49,7 @@ class _FilesPageState extends State<FilesPage> {
     if (kDebugMode) {
       print('${_filesList[index].fileName} is opened');
     }
-    openInnoFile(_filesList[index], widget.path, widget.openedGroup);
+    await openInnoFile(_filesList[index], widget.path, widget.openedGroup);
   }
 
   @override
@@ -100,7 +100,15 @@ class _FilesPageState extends State<FilesPage> {
                   return rights.openFileSettings;
                 },
                 onOpen: (index) {
-                  openFile(index);
+                  showDialog(
+                    barrierDismissible: false,
+                    context: this.context,
+                    builder: (context) {
+                      return ActionProgress(parentContext: this.context);
+                    },
+                  );
+                  openFile(index)
+                      .then((value) => Navigator.of(this.context).pop());
                 },
                 onDelete: (index) {
                   RightsEntity rights = checkRightsForFile(_filesList[index]);

@@ -10,7 +10,7 @@ import 'package:work/core/inno_file.dart';
 import '../core/folder.dart';
 import '../firebase/additional_firebase_functions.dart';
 
-void openInnoFile(InnoFile innoFile, List<Folder> path, Group group) async {
+Future<void> openInnoFile(InnoFile innoFile, List<Folder> path, Group group) async {
   if (kIsWeb) {
     debugPrint("Openning file on browser...");
     String url =
