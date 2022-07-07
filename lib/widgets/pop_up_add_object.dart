@@ -52,17 +52,12 @@ class _PopUpObjectState extends State<PopUpObject> {
             ),
             TextField(
               onChanged: (String value) => name = value,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
             ),
             const SizedBox(
-              height: 10,
-            ),
-            Divider(
-              height: 10,
-              color: Theme.of(context).backgroundColor,
-              thickness: 1,
-            ),
-            const SizedBox(
-              height: 10,
+              height: 20,
             ),
             Text(
               'Enter description',
@@ -70,6 +65,9 @@ class _PopUpObjectState extends State<PopUpObject> {
             ),
             TextField(
               onChanged: (String value) => description = value,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
             ),
             const SizedBox(
               height: 15,
