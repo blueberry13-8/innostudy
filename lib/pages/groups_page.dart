@@ -53,32 +53,33 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
       print("${_groupList[index].groupName} is opened");
     }
     Navigator.push(
-        context,
-        PageRouteBuilder(
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.ease;
+      context,
+      PageRouteBuilder(
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
 
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            animation =
-                CurvedAnimation(curve: Curves.decelerate, parent: animation);
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-            );
-          },
-          reverseTransitionDuration: const Duration(milliseconds: 100),
-          transitionDuration: const Duration(milliseconds: 250),
-          pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
-            openedGroup: _groupList[index],
-            path: const [],
-          ),
-        ));
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          animation =
+              CurvedAnimation(curve: Curves.decelerate, parent: animation);
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          );
+        },
+        reverseTransitionDuration: const Duration(milliseconds: 100),
+        transitionDuration: const Duration(milliseconds: 250),
+        pageBuilder: (context, animation, secondaryAnimation) => FoldersPage(
+          openedGroup: _groupList[index],
+          path: const [],
+        ),
+      ),
+    );
   }
 
   @override
@@ -128,31 +129,32 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                 selectedTheme = 2;
               }
               Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.ease;
+                context,
+                PageRouteBuilder(
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.ease;
 
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-                        animation = CurvedAnimation(
-                            curve: Curves.decelerate, parent: animation);
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          ),
-                        );
-                      },
-                      reverseTransitionDuration:
-                          const Duration(milliseconds: 100),
-                      transitionDuration: const Duration(milliseconds: 250),
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const SettingsPage()));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+                    animation = CurvedAnimation(
+                        curve: Curves.decelerate, parent: animation);
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    );
+                  },
+                  reverseTransitionDuration: const Duration(milliseconds: 100),
+                  transitionDuration: const Duration(milliseconds: 250),
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const SettingsPage(),
+                ),
+              );
             },
           ),
         ],
@@ -167,11 +169,11 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
               return const Text("Error");
             } else if (snapshot.hasData) {
               _groupList = querySnapshotToGroupList(snapshot.data!);
-              List<PermissionEntity> permissionEntitites =
+              List<PermissionEntity> permissionEntities =
                   querySnapshotToListOfPermissionEntities(snapshot.data!);
               List<PermissionableObject> listObjects = [];
               for (int i = 0; i < _groupList.length; i++) {
-                _groupList[i].permissions = permissionEntitites[i];
+                _groupList[i].permissions = permissionEntities[i];
                 listObjects.add(PermissionableObject.fromGroup(_groupList[i]));
               }
               return ExplorerList(
@@ -188,7 +190,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                 onOpen: (index) {
                   RightsEntity rights = checkRightsForGroup(_groupList[index]);
                   if (rights.seeFolders) {
-                    openGroup(index, permissionEntitites[index]);
+                    openGroup(index, permissionEntities[index]);
                   } else {
                     pessimisticToast(
                         "You don't have rights for this action.", 1);
@@ -226,7 +228,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                     MaterialPageRoute(
                       builder: (context) => PermissionsPage(
                         path: const [],
-                        permissionEntity: permissionEntitites[index],
+                        permissionEntity: permissionEntities[index],
                         permissionableObject:
                             PermissionableObject.fromGroup(_groupList[index]),
                       ),
@@ -236,13 +238,13 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                 onEyePressed: (index) {
                   RightsEntity rights = checkRightsForGroup(_groupList[index]);
                   if (!rights.addFolders) {
-                    if (permissionEntitites[index].password.isEmpty) {
+                    if (permissionEntities[index].password.isEmpty) {
                       pessimisticToast(
                           "Only creator can invite you to manage this group.",
                           1);
                     } else {
                       showPermissionDialog(
-                          permissionEntitites[index],
+                          permissionEntities[index],
                           PermissionableObject.fromGroup(_groupList[index]),
                           [],
                           context);
