@@ -78,7 +78,7 @@ flutter pub get
 Now you can do any changes and modification in project.
 
 ## Android release
-You can try InnoStudy now. Just install Android release by [this link](https://github.com/blueberry13-8/innostudy/releases/download/v1.1.0/app-release.apk).
+You can try InnoStudy now. Just install Android release by [this link](https://github.com/blueberry13-8/innostudy/releases/latest/InnoStudy.apk).
 
 ## Web version
 Moreover, [here](https://innostudy-df50a.web.app/#/) you can find deployed web version of our application.
