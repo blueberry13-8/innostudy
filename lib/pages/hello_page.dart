@@ -317,7 +317,7 @@ class _HelloPageState extends State<HelloPage> {
                         height: 40,
                         child: ElevatedButton(
                           child: const Text(
-                            'Forget password?',
+                            'Forgot password?',
                             style: TextStyle(
                               color: Color(0xff000000),
                             ),
