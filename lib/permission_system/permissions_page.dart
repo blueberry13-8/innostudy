@@ -149,7 +149,7 @@ class _PermissionsPage extends State<PermissionsPage> {
                         alignment: Alignment.center,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFFBCAAA4),
+                            backgroundColor: const Color(0xFFBCAAA4),
                           ),
                           onPressed: () {
                             if (passwordController.text.isNotEmpty) {

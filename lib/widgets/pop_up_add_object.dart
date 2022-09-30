@@ -74,7 +74,7 @@ class _PopUpObjectState extends State<PopUpObject> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).focusColor,
+                backgroundColor: Theme.of(context).focusColor,
               ),
               onPressed: () async {
                 if (name != '') {

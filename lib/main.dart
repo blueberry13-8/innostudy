@@ -78,7 +78,7 @@ class InnoStudyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffABC4FF),
+            backgroundColor: const Color(0xffABC4FF),
           ),
         ),
       ),
@@ -117,7 +117,7 @@ class InnoStudyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Colors.blueGrey[300],
+            backgroundColor: Colors.blueGrey[300],
           ),
         ),
       ),
