@@ -106,7 +106,6 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
