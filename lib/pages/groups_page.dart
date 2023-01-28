@@ -106,10 +106,6 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

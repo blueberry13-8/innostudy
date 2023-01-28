@@ -71,7 +71,7 @@ class InnoStudyApp extends StatelessWidget {
           size: 25,
         ),
         textTheme: const TextTheme(
-          bodyText1: TextStyle(
+          bodyLarge: TextStyle(
             color: Colors.black,
             fontSize: 18,
           ),
@@ -110,7 +110,7 @@ class InnoStudyApp extends StatelessWidget {
           size: 25,
         ),
         textTheme: const TextTheme(
-          bodyText1: TextStyle(
+          bodyLarge: TextStyle(
             color: Colors.white,
             fontSize: 18,
           ),

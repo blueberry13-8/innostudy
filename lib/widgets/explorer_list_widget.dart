@@ -58,7 +58,7 @@ class ExplorerList extends StatelessWidget {
               },
               title: Text(
                 listObjects[index].getName(),
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               leading: Icon(
                 objectIcon,
