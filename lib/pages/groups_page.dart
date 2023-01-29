@@ -110,16 +110,15 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
     Navigator.push(
       context,
       PageRouteBuilder(
-        transitionsBuilder:
-            (context, animation, secondaryAnimation, child) {
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.ease;
 
-          var tween = Tween(begin: begin, end: end)
-              .chain(CurveTween(curve: curve));
-          animation = CurvedAnimation(
-              curve: Curves.decelerate, parent: animation);
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          animation =
+              CurvedAnimation(curve: Curves.decelerate, parent: animation);
           return SlideTransition(
             position: animation.drive(tween),
             child: FadeTransition(
@@ -131,7 +130,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
         reverseTransitionDuration: const Duration(milliseconds: 100),
         transitionDuration: const Duration(milliseconds: 250),
         pageBuilder: (context, animation, secondaryAnimation) =>
-        const SettingsPage(),
+            const SettingsPage(),
       ),
     );
   }
