@@ -16,9 +16,6 @@ class _InfoPageState extends State<InfoPage> {
       appBar: AppBar(
         title: const Text(
           'About',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
         ),
         centerTitle: true,
       ),
@@ -105,10 +102,7 @@ class ParticularInfo extends StatelessWidget {
                 builder: (BuildContext context) => snapshot.hasData
                     ? Text(
                         snapshot.data!,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 17,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium,
                       )
                     : Text(
                         "Something went wrong...",

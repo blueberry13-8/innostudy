@@ -34,7 +34,7 @@ class PopUpWindow extends StatelessWidget {
           description != ''
               ? Divider(
                   height: 10,
-                  color: Theme.of(context).backgroundColor,
+                  color: Theme.of(context).colorScheme.background,
                   thickness: 2,
                 )
               : const SizedBox(),
