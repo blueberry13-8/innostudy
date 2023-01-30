@@ -45,7 +45,7 @@ class _PopUpObjectState extends State<PopUpObject> {
           children: [
             Text(
               'Enter name',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(
               height: 5,
@@ -61,7 +61,7 @@ class _PopUpObjectState extends State<PopUpObject> {
             ),
             Text(
               'Enter description',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             TextField(
               onChanged: (String value) => description = value,

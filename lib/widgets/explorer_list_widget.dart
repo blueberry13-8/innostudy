@@ -100,9 +100,7 @@ class ExplorerList extends StatelessWidget {
                                 flex: 8,
                                 child: Text(
                                   'Delete',
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               )
                             ],
@@ -126,9 +124,7 @@ class ExplorerList extends StatelessWidget {
                                 flex: 8,
                                 child: Text(
                                   'Privacy settings',
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               )
                             ],
