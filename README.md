@@ -46,7 +46,7 @@ Students can create their own groups where they can share the content <i>(video,
 * Dark and light theme
 * Beautiful animations
 
-## Technologies used
+## Technologies and materials used
 
 * [Dart programming language](https://dart.dev)
 * [Flutter framework](https://flutter.dev)
