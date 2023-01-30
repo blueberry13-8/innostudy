@@ -92,43 +92,45 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       try {
                         await FirebaseAuth.instance
                             .sendPasswordResetEmail(email: mail);
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            var button = TextButton(
-                              child: Text(
-                                'Close',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              var button = TextButton(
+                                child: Text(
+                                  'Close',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                              },
-                            );
-                            var alertDialog = AlertDialog(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              title: Text(
-                                'Reset password',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                              var alertDialog = AlertDialog(
+                                backgroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                title: Text(
+                                  'Reset password',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
-                              ),
-                              content: Text(
-                                "The email with link for resetting password has been sent to your email. If you don't see it check your spam folder.",
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
+                                content: Text(
+                                  "The email with link for resetting password has been sent to your email. If you don't see it check your spam folder.",
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
-                              ),
-                              actions: [
-                                button,
-                              ],
-                            );
-                            return alertDialog;
-                          },
-                        );
+                                actions: [
+                                  button,
+                                ],
+                              );
+                              return alertDialog;
+                            },
+                          );
+                        }
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'invalid-email') {
                           pessimisticToast('Email is malformed', 4);

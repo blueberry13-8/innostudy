@@ -46,7 +46,7 @@ Students can create their own groups where they can share the content <i>(video,
 * Dark and light theme
 * Beautiful animations
 
-## Technologies used
+## Technologies and materials used
 
 * [Dart programming language](https://dart.dev)
 * [Flutter framework](https://flutter.dev)
@@ -57,6 +57,7 @@ Students can create their own groups where they can share the content <i>(video,
   * Crashlytics
   * Hosting
 * Different flutter libraries
+* <a href="https://www.flaticon.com/free-icons/education" title="education icons">Education icons created by Freepik - Flaticon</a>
 
 ## Project installation for modifications
 Before project installation be sure that you have installed [Flutter](https://flutter.dev) framework

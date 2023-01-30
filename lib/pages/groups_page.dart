@@ -20,7 +20,7 @@ import '../widgets/pop_up_add_object.dart';
 import '../widgets/vladislav_alert.dart';
 import 'folders_page.dart';
 
-///Widget that represent groups page
+/// Stateful widget that represent groups page
 class GroupsPage extends StatefulWidget {
   final bool? openTutorial;
   static bool wasAlreadyOpen = false;
@@ -32,7 +32,7 @@ class GroupsPage extends StatefulWidget {
 }
 
 class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
-  //List of existing groups
+  ///List of existing groups
   late List<Group> _groupList;
 
   late final String _lastGroupName = '';
@@ -106,12 +106,42 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
     );
   }
 
+  void goToSettings() {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          animation =
+              CurvedAnimation(curve: Curves.decelerate, parent: animation);
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          );
+        },
+        reverseTransitionDuration: const Duration(milliseconds: 100),
+        transitionDuration: const Duration(milliseconds: 250),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const SettingsPage(),
+      ),
+    );
+  }
+
+  /// Build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.1,
-        title: const Text('Group page'),
+        title: const Text('Groups'),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -123,33 +153,7 @@ class _GroupsPage extends State<GroupsPage> with TickerProviderStateMixin {
                   ThemeMode.dark) {
                 selectedTheme = 2;
               }
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(1.0, 0.0);
-                    const end = Offset.zero;
-                    const curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-                    animation = CurvedAnimation(
-                        curve: Curves.decelerate, parent: animation);
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    );
-                  },
-                  reverseTransitionDuration: const Duration(milliseconds: 100),
-                  transitionDuration: const Duration(milliseconds: 250),
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const SettingsPage(),
-                ),
-              );
+              goToSettings();
             },
           ),
         ],

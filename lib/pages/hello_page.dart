@@ -152,43 +152,45 @@ class _HelloPageState extends State<HelloPage> {
                               await addRegisteredUser(curNick);
                               Consumer();
                               setState(() {});
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  var button = TextButton(
-                                    child: Text(
-                                      'Close',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                              if (context.mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    var button = TextButton(
+                                      child: Text(
+                                        'Close',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge,
                                       ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      setState(() {});
-                                    },
-                                  );
-                                  var alertDialog = AlertDialog(
-                                    backgroundColor: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                    title: Text(
-                                      'Email confirmation',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        setState(() {});
+                                      },
+                                    );
+                                    var alertDialog = AlertDialog(
+                                      backgroundColor: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      title: Text(
+                                        'Email confirmation',
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       ),
-                                    ),
-                                    content: Text(
-                                      "Please, check your email to verify your account. If you haven't got the email, check your spam folder.",
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                      content: Text(
+                                        "Please, check your email to verify your account. If you haven't got the email, check your spam folder.",
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                       ),
-                                    ),
-                                    actions: [
-                                      button,
-                                    ],
-                                  );
-                                  return alertDialog;
-                                },
-                              );
+                                      actions: [
+                                        button,
+                                      ],
+                                    );
+                                    return alertDialog;
+                                  },
+                                );
+                              }
                             } on FirebaseAuthException catch (e) {
                               if (e.code == 'weak-password') {
                                 pessimisticToast('password is too weak', 4);
@@ -230,57 +232,63 @@ class _HelloPageState extends State<HelloPage> {
                               Consumer.data = user.user!;
                               if (!user.user!.emailVerified) {
                                 _newbie = true;
-                                await showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    var buttonResendEmail = TextButton(
-                                      child: Text(
-                                        'Resend email',
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
+                                if (context.mounted) {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      var buttonResendEmail = TextButton(
+                                        child: Text(
+                                          'Resend email',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () {
-                                        user.user?.sendEmailVerification();
-                                        Navigator.of(context).pop();
-                                        pessimisticToast(
-                                            'New email has been sent', 4);
-                                      },
-                                    );
-                                    var buttonClose = TextButton(
-                                      child: Text(
-                                        'Close',
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
+                                        onPressed: () {
+                                          user.user?.sendEmailVerification();
+                                          Navigator.of(context).pop();
+                                          pessimisticToast(
+                                              'New email has been sent', 4);
+                                        },
+                                      );
+                                      var buttonClose = TextButton(
+                                        child: Text(
+                                          'Close',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    );
-                                    var alertDialog = AlertDialog(
-                                      backgroundColor: Theme.of(context)
-                                          .scaffoldBackgroundColor,
-                                      title: Text(
-                                        'Your email is not confirmed',
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                      var alertDialog = AlertDialog(
+                                        backgroundColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                        title: Text(
+                                          'Your email is not confirmed',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
                                         ),
-                                      ),
-                                      content: Text(
-                                        "Please, check your email to verify your account. If you haven't got the email, check your spam folder or try to resend the email.",
-                                        style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
+                                        content: Text(
+                                          "Please, check your email to verify your account. If you haven't got the email, check your spam folder or try to resend the email.",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
                                         ),
-                                      ),
-                                      actions: [
-                                        buttonResendEmail,
-                                        buttonClose,
-                                      ],
-                                    );
-                                    return alertDialog;
-                                  },
-                                );
+                                        actions: [
+                                          buttonResendEmail,
+                                          buttonClose,
+                                        ],
+                                      );
+                                      return alertDialog;
+                                    },
+                                  );
+                                }
                               } else if (user.user!.emailVerified) {
                                 setState(() {});
                                 //Consumer();

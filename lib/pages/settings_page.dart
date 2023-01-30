@@ -33,10 +33,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   Text(
                     'Choose theme of App',
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                    // style: TextStyle(
+                    //   fontSize: 25,
+                    //   color: Theme.of(context).primaryColor,
+                    // ),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(
                     height: 20,
@@ -63,27 +64,30 @@ class _SettingsPageState extends State<SettingsPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'System',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          style: Theme.of(context).textTheme.labelLarge,
+                          // style: TextStyle(
+                          //   color: Theme.of(context).primaryColor,
+                          // ),
                         ),
                       ),
                       1: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Light',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          style: Theme.of(context).textTheme.labelLarge,
+                          // style: TextStyle(
+                          //   color: Theme.of(context).primaryColor,
+                          // ),
                         ),
                       ),
                       2: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Dark',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          // style: TextStyle(
+                          //   color: Theme.of(context).primaryColor,
+                          // ),
+                          style: Theme.of(context).textTheme.labelLarge,
                         ),
                       ),
                     },
@@ -93,10 +97,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   Text(
                     'Account information',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 25,
-                    ),
+                    // style: TextStyle(
+                    //   color: Theme.of(context).primaryColor,
+                    //   fontSize: 25,
+                    // ),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(
                     height: 20,
@@ -117,10 +122,11 @@ class _SettingsPageState extends State<SettingsPage> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'E-mail',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 23,
-                            ),
+                            // style: TextStyle(
+                            //   color: Theme.of(context).primaryColor,
+                            //   fontSize: 23,
+                            // ),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                         const SizedBox(
@@ -132,10 +138,11 @@ class _SettingsPageState extends State<SettingsPage> {
                             width: 300,
                             child: Text(
                               Consumer.data.email!,
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 20,
-                              ),
+                              // style: TextStyle(
+                              //   color: Theme.of(context).primaryColor,
+                              //   fontSize: 20,
+                              // ),
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                           ),
                         ),
@@ -149,9 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           },
                           child: Text(
                             'Log out',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                            ),
+                            style: Theme.of(context).textTheme.labelLarge,
                           ),
                         ),
                       ],
@@ -173,9 +178,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: ElevatedButton(
           child: Text(
             'About this app',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
+            style: Theme.of(context).textTheme.labelLarge,
           ),
           onPressed: () {
             Navigator.push(

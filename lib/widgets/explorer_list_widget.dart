@@ -58,7 +58,7 @@ class ExplorerList extends StatelessWidget {
               },
               title: Text(
                 listObjects[index].getName(),
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               leading: Icon(
                 objectIcon,
@@ -71,7 +71,7 @@ class ExplorerList extends StatelessWidget {
                         color: Theme.of(context).primaryColor,
                       ),
                       offset: const Offset(0, 50),
-                      color: Theme.of(context).backgroundColor,
+                      color: Theme.of(context).colorScheme.background,
                       elevation: 3,
                       onSelected: ((value) {
                         //Navigator.of(context).pop();
@@ -100,9 +100,7 @@ class ExplorerList extends StatelessWidget {
                                 flex: 8,
                                 child: Text(
                                   'Delete',
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               )
                             ],
@@ -126,9 +124,7 @@ class ExplorerList extends StatelessWidget {
                                 flex: 8,
                                 child: Text(
                                   'Privacy settings',
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               )
                             ],

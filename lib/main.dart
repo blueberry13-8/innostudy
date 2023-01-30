@@ -19,21 +19,22 @@ void main() async {
     return;
   }
 
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    loadAppFirebase();
-    runApp(
-      EasyDynamicThemeWidget(
-        child: const InnoStudyApp(),
-      ),
-    );
-  },
-      ((error, stack) =>
-          FirebaseCrashlytics.instance.recordError(error, stack)));
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      loadAppFirebase();
+      runApp(
+        EasyDynamicThemeWidget(
+          child: const InnoStudyApp(),
+        ),
+      );
+    },
+    ((error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)),
+  );
 }
 
 class InnoStudyApp extends StatelessWidget {
@@ -43,11 +44,14 @@ class InnoStudyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'InnoStudy',
+
+      /// ThemeData for light theme of app
       theme: ThemeData(
+        // parameter for color of frames
         hoverColor: const Color(0xffdbe6ff),
+        // parameter for color of buttons
         focusColor: const Color(0xffABC4FF),
         scaffoldBackgroundColor: const Color(0xffEDF2FB),
-        backgroundColor: const Color(0xffEDF2FB),
         primaryColor: Colors.black87,
         appBarTheme: const AppBarTheme(
           color: Color(0xff85c0ff),
@@ -62,7 +66,6 @@ class InnoStudyApp extends StatelessWidget {
           backgroundColor: Color(0xffABC4FF),
           foregroundColor: Colors.black87,
         ),
-        brightness: Brightness.light,
         cardTheme: const CardTheme(
           color: Color(0xffCCDBFD),
         ),
@@ -70,23 +73,26 @@ class InnoStudyApp extends StatelessWidget {
           color: Colors.black87,
           size: 25,
         ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-          ),
-        ),
+        textTheme: const TextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xffABC4FF),
           ),
         ),
+        colorScheme: const ColorScheme.light(
+          background: Color(0xffEDF2FB),
+        ),
       ),
+
+      /// ThemeData for dark theme of app
       darkTheme: ThemeData(
         primaryColor: Colors.white,
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
-        backgroundColor: Colors.blueGrey,
+
+        // parameter for color of frames
         hoverColor: Colors.blueGrey,
+
+        // parameter for color of buttons
         focusColor: Colors.blueGrey[300],
         appBarTheme: const AppBarTheme(
           color: Color.fromRGBO(45, 80, 115, 1.0),
@@ -109,19 +115,21 @@ class InnoStudyApp extends StatelessWidget {
           color: Colors.white,
           size: 25,
         ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
+        textTheme: const TextTheme(),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blueGrey[300],
           ),
         ),
+        colorScheme: const ColorScheme.dark(
+          background: Colors.blueGrey,
+        ),
       ),
+
+      /// ThemeMode for dynamic changing of theme
       themeMode: EasyDynamicTheme.of(context).themeMode,
+
+      /// Home page of our app
       home: const HelloPage(),
     );
   }
