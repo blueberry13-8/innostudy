@@ -19,13 +19,13 @@ class PopUpWindow extends StatelessWidget {
           Center(
             child: Text(
               'Created by:',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           Center(
             child: Text(
               creator,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           const SizedBox(
