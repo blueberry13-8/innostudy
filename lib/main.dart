@@ -47,6 +47,7 @@ class InnoStudyApp extends StatelessWidget {
 
       /// ThemeData for light theme of app
       theme: ThemeData(
+        useMaterial3: true,
         // parameter for color of frames
         hoverColor: const Color(0xffdbe6ff),
         // parameter for color of buttons
@@ -86,6 +87,7 @@ class InnoStudyApp extends StatelessWidget {
 
       /// ThemeData for dark theme of app
       darkTheme: ThemeData(
+        useMaterial3: true,
         primaryColor: Colors.white,
         scaffoldBackgroundColor: const Color.fromRGBO(53, 62, 84, 1.0),
 
