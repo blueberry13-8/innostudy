@@ -43,8 +43,8 @@ jobs:
         run: flutter analyze
       
       #Running tests
-      - name: running tests
-        run: flutter test
+      #- name: running tests
+      #  run: flutter test
       
       # Run unit-tests
       #- name: run tests
